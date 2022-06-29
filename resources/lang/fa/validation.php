@@ -153,6 +153,7 @@ return [
         "name" => "نام",
         "national_code" => "کد ملی",
         "type" => "نوع",
+        "status" => "وضعیت" ,
         "routes" => "مسیر ها",
         "arranged" => "برنامه ریزی شده",
         "mid-arranged" => "نیمه برنامه ریزی شده",

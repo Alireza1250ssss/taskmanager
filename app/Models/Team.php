@@ -6,6 +6,7 @@ use App\Http\Traits\FilterRecords;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Team extends Model
@@ -22,5 +23,19 @@ class Team extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class,'project_ref_id');
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function tasks(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Task::class ,
+            'task_team',
+            'team_ref_id',
+            'task_ref_id',
+            'team_id'
+        );
     }
 }

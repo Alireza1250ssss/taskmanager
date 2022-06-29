@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,9 +23,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('/register',[AuthController::class,'register'])->name('register');
+Route::post('/login',[AuthController::class,'login'])->name('login');
 
-Route::apiResources([
-   'companies' => CompanyController::class ,
-   'projects' => ProjectController::class ,
-   'teams' => TeamController::class ,
-]);
+Route::middleware(['jwt_auth'])->group(function(){
+
+    Route::apiResources([
+        'companies' => CompanyController::class ,
+        'projects' => ProjectController::class ,
+        'teams' => TeamController::class ,
+        'users' => UserController::class
+    ]);
+
+});
