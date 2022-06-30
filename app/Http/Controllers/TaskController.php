@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,14 +27,15 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreTaskRequest $request
      * @return JsonResponse
      */
-    public function store(Request $request) : JsonResponse
+    public function store(StoreTaskRequest $request) : JsonResponse
     {
         $task = Task::create($request->validated());
+        $task->teams()->sync($request->get('teams'));
         $response = $this->getResponse(__('apiResponse.store',['resource'=>'تسک']), [
-            'task' => $task
+            'task' => $task->load('teams')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -46,7 +49,7 @@ class TaskController extends Controller
     public function show(Task $task) : JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'تسک']), [
-            'task' => $task
+            'task' => $task->load('teams')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -54,15 +57,18 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param UpdateTaskRequest $request
      * @param Task $task
      * @return JsonResponse
      */
-    public function update(Request $request, Task $task) : JsonResponse
+    public function update(UpdateTaskRequest $request, Task $task) : JsonResponse
     {
         $task->update($request->validated());
+        if ($request->filled('teams')){
+            $task->teams()->sync($request->get('teams'));
+        }
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'تسک']), [
-            'task' => $task
+            'task' => $task->load('teams')
         ]);
 
         return response()->json($response, $response['statusCode']);

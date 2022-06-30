@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateTaskRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class UpdateTaskRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +25,10 @@ class UpdateTaskRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'user_ref_id' => [Rule::exists('users','user_id')->withoutTrashed()],
+            'parent_id' => Rule::exists('tasks','task_id')->withoutTrashed() ,
+            'teams' => 'array' ,
+            'teams.*' => Rule::exists('teams','team_id')->withoutTrashed(),
         ];
     }
 }

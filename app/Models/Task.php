@@ -14,8 +14,8 @@ class Task extends Model
     use HasFactory,FilterRecords,SoftDeletes;
 
     protected $primaryKey = 'task_id';
-    protected $fillable = ['title' , 'description' , 'user_ref_id'];
-    public array $filters = ['title','description','user_ref_id'];
+    protected $fillable = ['title' , 'description' , 'user_ref_id','parent_id'];
+    public array $filters = ['title','description','user_ref_id','parent_id'];
 
     /**
      * @return BelongsTo
