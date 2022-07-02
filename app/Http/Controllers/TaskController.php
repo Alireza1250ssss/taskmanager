@@ -35,7 +35,7 @@ class TaskController extends Controller
         $task = Task::create($request->validated());
         $task->teams()->sync($request->get('teams'));
         $response = $this->getResponse(__('apiResponse.store',['resource'=>'تسک']), [
-            'task' => $task->load('teams')
+            'task' => $task->load('teams','taskMetas')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -48,6 +48,7 @@ class TaskController extends Controller
      */
     public function show(Task $task) : JsonResponse
     {
+        $task->mergeMeta('taskMetas');
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'تسک']), [
             'task' => $task->load('teams')
         ]);
@@ -68,7 +69,7 @@ class TaskController extends Controller
             $task->teams()->sync($request->get('teams'));
         }
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'تسک']), [
-            'task' => $task->load('teams')
+            'task' => $task->load('teams','taskMetas')
         ]);
 
         return response()->json($response, $response['statusCode']);
