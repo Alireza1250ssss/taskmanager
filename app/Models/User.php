@@ -50,6 +50,14 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * @return HasMany
+     */
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(Schedule::class , 'user_ref_id');
+    }
+
+    /**
      * @return Attribute
      */
     protected function password() : Attribute
