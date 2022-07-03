@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\TaskController;
@@ -36,7 +37,9 @@ Route::middleware(['jwt_auth'])->group(function(){
         'teams' => TeamController::class ,
         'users' => UserController::class ,
         'tasks' => TaskController::class ,
-        'schedules' => ScheduleController::class
-    ]);
+        'schedules' => ScheduleController::class ,
+        'leave' => LeaveController::class ,
+        ]);
+
 
 });

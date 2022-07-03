@@ -195,6 +195,11 @@ return [
         "available" => "موجود",
         "size" => "اندازه",
 		"file" => "فایل",
-		"fullname" => "نام کامل"
+		"fullname" => "نام کامل",
+        "schedule" => 'زمان بندی',
+        "schedule.*.time_from" => 'زمان شروع زمان بندی',
+        "schedule.*.time_to" => 'زمان پایان زمان بندی',
+        "schedule.*.day" => 'تاریخ زمان بندی',
+        "schedule.*.type" => 'نوع زمان بندی',
     ],
 ];

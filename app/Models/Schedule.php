@@ -23,4 +23,12 @@ class Schedule extends Model
     {
         return $this->belongsTo(User::class ,'user_ref_id');
     }
+
+    /**
+     * @return BelongsTo
+     */
+    public function leave(): BelongsTo
+    {
+        return $this->belongsTo(Leave::class ,'leave_ref_id');
+    }
 }

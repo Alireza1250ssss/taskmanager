@@ -7,7 +7,7 @@
 return [
   'index' => ':resource های مورد نظر دریافت شدند' ,
   'show' => ':resource با موفقیت دریافت شد'  ,
-  'store' => ':resource با موفپقیت ساخته شد' ,
+  'store' => ':resource با موفقیت ساخته شد' ,
   'update' => ':resource با موفقیت به روز رسانی شد',
   'destroy' => ':items آیتم با موفقیت حذف شدند',
   'markAsRead' => ':items آیتم با موفقیت به خوانده شده ها اضافه شدند',
