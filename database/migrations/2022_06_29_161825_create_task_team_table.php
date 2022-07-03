@@ -16,9 +16,11 @@ class CreateTaskTeamTable extends Migration
         Schema::create('task_team', function (Blueprint $table) {
             $table->id('task_team_id');
             $table->foreignId('task_ref_id');
-            $table->foreign('task_ref_id')->references('task_id')->on('tasks');
+            $table->foreign('task_ref_id')->references('task_id')->on('tasks')
+            ->cascadeOnDelete();
             $table->foreignId('team_ref_id');
-            $table->foreign('team_ref_id')->references('team_id')->on('teams');
+            $table->foreign('team_ref_id')->references('team_id')->on('teams')
+            ->cascadeOnDelete();
         });
     }
 

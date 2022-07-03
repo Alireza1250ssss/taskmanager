@@ -17,7 +17,8 @@ class CreateTeamsTable extends Migration
             $table->id('team_id');
             $table->string('name');
             $table->foreignId('project_ref_id');
-            $table->foreign('project_ref_id')->references('project_id')->on('projects');
+            $table->foreign('project_ref_id')->references('project_id')->on('projects')
+            ->cascadeOnDelete();
             $table->timestamps();
         });
     }

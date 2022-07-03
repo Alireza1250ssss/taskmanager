@@ -16,7 +16,8 @@ class CreateTaskMetasTable extends Migration
         Schema::create('task_metas', function (Blueprint $table) {
             $table->id('task_meta_id');
             $table->foreignId('task_ref_id');
-            $table->foreign('task_ref_id')->references('task_id')->on('tasks');
+            $table->foreign('task_ref_id')->references('task_id')->on('tasks')
+            ->cascadeOnDelete();
             $table->string('task_key');
             $table->string('task_value');
             $table->timestamps();

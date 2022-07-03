@@ -20,7 +20,8 @@ class CreateTasksTable extends Migration
             $table->string('title');
             $table->string('description',1000);
             $table->foreignId('parent_id')->nullable();
-            $table->foreign('parent_id')->references('task_id')->on('tasks');
+            $table->foreign('parent_id')->references('task_id')->on('tasks')
+            ->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });

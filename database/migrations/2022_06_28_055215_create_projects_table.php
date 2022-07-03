@@ -17,7 +17,8 @@ class CreateProjectsTable extends Migration
             $table->id('project_id');
             $table->string('name');
             $table->foreignId('company_ref_id');
-            $table->foreign('company_ref_id')->references('company_id')->on('companies');
+            $table->foreign('company_ref_id')->references('company_id')->on('companies')
+            ->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
