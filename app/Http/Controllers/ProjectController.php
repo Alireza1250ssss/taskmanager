@@ -35,7 +35,7 @@ class ProjectController extends Controller
     {
         $project = Project::create($request->validated());
         $response = $this->getResponse(__('apiResponse.store',['resource'=>'پروژه']), [
-            'project' => $project
+            'project' => $project->load('teams')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -49,7 +49,7 @@ class ProjectController extends Controller
     public function show(Project $project) : JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'پروژه']), [
-            'project' => $project
+            'project' => $project->load('teams')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -65,7 +65,7 @@ class ProjectController extends Controller
     {
         $project->update($request->validated());
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'پروژه']), [
-            'project' => $project
+            'project' => $project->load('teams')
         ]);
 
         return response()->json($response, $response['statusCode']);
