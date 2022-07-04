@@ -48,7 +48,7 @@ class CompanyController extends Controller
     public function show(Company $company): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'کمپانی']), [
-            'company' => $company
+            'company' => $company->load('projects')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -65,7 +65,7 @@ class CompanyController extends Controller
     {
         $company->update($request->validated());
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'کمپانی']), [
-            'company' => $company
+            'company' => $company->load('projects')
         ]);
 
         return response()->json($response, $response['statusCode']);
