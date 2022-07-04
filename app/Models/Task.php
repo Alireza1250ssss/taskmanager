@@ -16,8 +16,8 @@ class Task extends Model
     use HasFactory, FilterRecords, SoftDeletes;
 
     protected $primaryKey = 'task_id';
-    protected $fillable = ['title', 'description', 'user_ref_id', 'parent_id'];
-    public array $filters = ['title', 'description', 'user_ref_id', 'parent_id'];
+    protected $fillable = ['title', 'description', 'user_ref_id', 'parent_id','team_ref_id'];
+    public array $filters = ['title', 'description', 'user_ref_id', 'parent_id','team_ref_id'];
     protected $hidden = ['taskMetas'];
 
     /**
@@ -29,16 +29,11 @@ class Task extends Model
     }
 
     /**
-     * @return BelongsToMany
+     * @return BelongsTo
      */
-    public function teams(): BelongsToMany
+    public function team(): BelongsTo
     {
-        return $this->belongsToMany(Team::class,
-            'task_team',
-            'task_ref_id',
-            'team_ref_id',
-            'task_id'
-        );
+        return $this->belongsTo(Team::class , 'team_ref_id');
     }
 
     /**

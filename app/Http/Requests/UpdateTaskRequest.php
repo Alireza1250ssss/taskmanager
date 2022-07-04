@@ -27,8 +27,7 @@ class UpdateTaskRequest extends FormRequest
         return [
             'user_ref_id' => [Rule::exists('users','user_id')->withoutTrashed()],
             'parent_id' => Rule::exists('tasks','task_id')->withoutTrashed() ,
-            'teams' => 'array' ,
-            'teams.*' => Rule::exists('teams','team_id')->withoutTrashed(),
+            'team_ref_id' => [ Rule::exists('teams','team_id')->withoutTrashed()] ,
         ];
     }
 }

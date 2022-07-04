@@ -15,7 +15,7 @@ class CreateTasksTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id('task_id');
-            $table->foreignId('user_ref_id');
+            $table->foreignId('user_ref_id')->nullable();
             $table->foreign('user_ref_id')->references('user_id')->on('users');
             $table->string('title');
             $table->string('description',1000);
