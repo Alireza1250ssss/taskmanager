@@ -31,6 +31,8 @@ Route::post('/login',[AuthController::class,'login'])->name('login');
 
 Route::middleware(['jwt_auth'])->group(function(){
 
+    Route::post('/users/{user}/permissions',[UserController::class , 'setPermissions'])->name('set-permissions');
+
     Route::apiResources([
         'companies' => CompanyController::class ,
         'projects' => ProjectController::class ,
@@ -40,6 +42,7 @@ Route::middleware(['jwt_auth'])->group(function(){
         'schedules' => ScheduleController::class ,
         'leave' => LeaveController::class ,
         ]);
+
 
 
 });

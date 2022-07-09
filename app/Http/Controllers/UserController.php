@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 
 class UserController extends Controller
@@ -81,6 +82,26 @@ class UserController extends Controller
     {
         $count = User::destroy(explode(',',$user));
         $response = $this->getResponse(__('apiResponse.destroy',['items'=>$count]));
+        return response()->json($response, $response['statusCode']);
+    }
+
+    /**
+     * @param User $user
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function setPermissions(User $user,Request $request): JsonResponse
+    {
+        $request->validate([
+            'permissions' => 'required|array',
+            'permissions.*' => Rule::exists('permissions','permission_id')->withoutTrashed()
+        ]);
+        //sync permissions of user
+        $user->permissions()->sync($request->get('permissions'));
+
+        $response = $this->getResponse(__('apiResponse.update',['resource'=>'کاربر']), [
+            'user' => $user->load('permissions')
+        ]);
         return response()->json($response, $response['statusCode']);
     }
 }
