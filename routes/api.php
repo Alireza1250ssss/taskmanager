@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ProjectController;
@@ -37,6 +38,8 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::put('/notifications/mark-as-read',[AccountController::class , 'markAsRead'])->name('mark-as-read-notifications');
 
     Route::post('/users/{user}/permissions',[UserController::class , 'setPermissions'])->name('set-permissions');
+
+    Route::apiResource('tasks.comments', CommentController::class)->shallow();
 
     Route::apiResources([
         'companies' => CompanyController::class ,
