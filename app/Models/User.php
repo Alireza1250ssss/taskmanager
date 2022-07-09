@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use App\Http\Traits\FilterRecords;
+use App\Models\Permissions\Permission;
+use App\Models\Permissions\Role;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -40,6 +43,19 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'verify_code',
     ];
+
+    /**
+     * @return BelongsToMany
+     */
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(
+          Permission::class,
+          'permission_user',
+          'user_ref_id',
+          'permission_ref_id'
+        );
+    }
 
     /**
      * @return HasMany

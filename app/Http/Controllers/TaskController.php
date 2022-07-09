@@ -33,8 +33,11 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request) : JsonResponse
     {
         $task = Task::create($request->validated());
+        if ($request->filled('task_metas'))
+            $task->taskMetas()->createMany($request->get('task_metas'));
+        $task->mergeMeta('taskMetas');
         $response = $this->getResponse(__('apiResponse.store',['resource'=>'تسک']), [
-            'task' => $task->load('team','taskMetas')
+            'task' => $task->load('team','stage','status')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -49,7 +52,7 @@ class TaskController extends Controller
     {
         $task->mergeMeta('taskMetas');
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'تسک']), [
-            'task' => $task->load('team')
+            'task' => $task->load('team','status','stage')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -64,8 +67,13 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, Task $task) : JsonResponse
     {
         $task->update($request->validated());
+        if ($request->filled('task_metas')) {
+            $task->taskMetas()->delete();
+            $task->taskMetas()->createMany($request->get('task_metas'));
+        }
+        $task->mergeMeta('taskMetas');
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'تسک']), [
-            'task' => $task->load('team','taskMetas')
+            'task' => $task->load('team','status','stage')
         ]);
 
         return response()->json($response, $response['statusCode']);

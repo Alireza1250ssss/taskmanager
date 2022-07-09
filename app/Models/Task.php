@@ -16,8 +16,8 @@ class Task extends Model
     use HasFactory, FilterRecords, SoftDeletes;
 
     protected $primaryKey = 'task_id';
-    protected $fillable = ['title', 'description', 'user_ref_id', 'parent_id','team_ref_id'];
-    public array $filters = ['title', 'description', 'user_ref_id', 'parent_id','team_ref_id'];
+    protected $fillable = ['title', 'description', 'user_ref_id', 'parent_id','team_ref_id','stage_ref-id0','status_ref_id'];
+    public array $filters = ['title', 'description', 'user_ref_id', 'parent_id','team_ref_id','stage_ref-id0','status_ref_id'];
     protected $hidden = ['taskMetas'];
 
     /**
@@ -34,6 +34,22 @@ class Task extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class , 'team_ref_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(Status::class , 'status_ref_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function stage(): BelongsTo
+    {
+        return $this->belongsTo(Stage::class , 'stage_ref_id');
     }
 
     /**

@@ -201,5 +201,10 @@ return [
         "schedule.*.time_to" => 'زمان پایان زمان بندی',
         "schedule.*.day" => 'تاریخ زمان بندی',
         "schedule.*.type" => 'نوع زمان بندی',
+        "permissions" => 'دسترسی ها',
+        "stage_ref_id" => 'مرحله مربوطه',
+        "status_ref_id" => "وضعیت مربوطه",
+        "task_metas.*.task_key" => "کلید متا",
+        "task_metas.*.task_value" => "مقدار متا",
     ],
 ];
