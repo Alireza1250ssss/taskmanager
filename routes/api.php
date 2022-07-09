@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\LeaveController;
@@ -30,6 +31,10 @@ Route::post('/register',[AuthController::class,'register'])->name('register');
 Route::post('/login',[AuthController::class,'login'])->name('login');
 
 Route::middleware(['jwt_auth'])->group(function(){
+
+    Route::get('/notifications',[AccountController::class ,'getNotifications'])->name('get-notifications');
+    Route::delete('/notifications',[AccountController::class , 'deleteNotifications'])->name('delete-notifications');
+    Route::put('/notifications/mark-as-read',[AccountController::class , 'markAsRead'])->name('mark-as-read-notifications');
 
     Route::post('/users/{user}/permissions',[UserController::class , 'setPermissions'])->name('set-permissions');
 
