@@ -7,6 +7,8 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\StageController;
+use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
@@ -42,6 +44,9 @@ Route::middleware(['jwt_auth'])->group(function(){
         ->name('set-permissions');
 
     Route::apiResource('tasks.comments', CommentController::class)->shallow();
+
+    Route::apiResource('stages', StageController::class)->only(['index']);
+    Route::apiResource('statuses', StatusController::class)->only(['index']);
 
     Route::apiResources([
         'companies' => CompanyController::class ,
