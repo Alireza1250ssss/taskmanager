@@ -18,5 +18,6 @@ class StageSeeder extends Seeder
         Stage::create(['name'=> 'todo']);
         Stage::create(['name'=> 'doing']);
         Stage::create(['name'=> 'review']);
+        Stage::create(['name'=> 'done']);
     }
 }

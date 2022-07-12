@@ -15,9 +15,11 @@ class AddTwoColumnsToTasksTable extends Migration
     {
         Schema::table('tasks', function (Blueprint $table) {
             $table->foreignId('stage_ref_id')->default(7); // defaults the id of 'to do' record
-            $table->foreign('stage_ref_id')->references('stage_id')->on('stages');
+            $table->foreign('stage_ref_id')->references('stage_id')->on('stages')
+            ->cascadeOnDelete();
             $table->foreignId('status_ref_id')->nullable();
-            $table->foreign('status_ref_id')->references('status_id')->on('statuses');
+            $table->foreign('status_ref_id')->references('status_id')->on('statuses')
+            ->nullOnDelete();
         });
     }
 
