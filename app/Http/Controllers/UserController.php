@@ -87,20 +87,32 @@ class UserController extends Controller
 
     /**
      * @param User $user
+     * @param string $type
      * @param Request $request
      * @return JsonResponse
      */
-    public function setPermissions(User $user,Request $request): JsonResponse
+    public function setPermissions(User $user,string $type,Request $request): JsonResponse
     {
+        // permission info mentioned here
+        $permissiveRelations = [
+          'fields' => ['table'=>'fields' , 'primaryKey' => 'field_id'] ,
+          'entities' => ['table' => 'entities' , 'primaryKey' => 'entity_id'] ,
+        ];
+
+        $tableName = $permissiveRelations[$type]['table'];
+        $primaryKey = $permissiveRelations[$type]['primaryKey'];
+
         $request->validate([
             'permissions' => 'required|array',
-            'permissions.*' => Rule::exists('permissions','permission_id')->withoutTrashed()
+            'permissions.*' => Rule::exists($tableName,$primaryKey) ,
         ]);
+
+
         //sync permissions of user
-        $user->permissions()->sync($request->get('permissions'));
+        $user->$type()->sync($request->get('permissions'));
 
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'کاربر']), [
-            'user' => $user->load('permissions')
+            'user' => $user->load($type)
         ]);
         return response()->json($response, $response['statusCode']);
     }

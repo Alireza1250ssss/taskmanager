@@ -37,7 +37,9 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::delete('/notifications',[AccountController::class , 'deleteNotifications'])->name('delete-notifications');
     Route::put('/notifications/mark-as-read',[AccountController::class , 'markAsRead'])->name('mark-as-read-notifications');
 
-    Route::post('/users/{user}/permissions',[UserController::class , 'setPermissions'])->name('set-permissions');
+    Route::post('/users/{user}/permissions/{type}',[UserController::class , 'setPermissions'])
+        ->where('type',"(fields)|(entities)")
+        ->name('set-permissions');
 
     Route::apiResource('tasks.comments', CommentController::class)->shallow();
 
