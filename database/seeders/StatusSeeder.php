@@ -17,5 +17,7 @@ class StatusSeeder extends Seeder
         Status::create(['name' => 'accepted']);
         Status::create(['name' => 'rejected']);
         Status::create(['name' => 'stopped']);
+        Status::create(['name' => 'continued']);
+        Status::create(['name' => 'waiting']);
     }
 }

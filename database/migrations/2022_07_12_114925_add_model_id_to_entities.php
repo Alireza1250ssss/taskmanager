@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddUniqueIndexToEntitiesTable extends Migration
+class AddModelIdToEntities extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddUniqueIndexToEntitiesTable extends Migration
     public function up()
     {
         Schema::table('entities', function (Blueprint $table) {
-            $table->unique(['key','action','model_id']);
+            $table->foreignId('model_id')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AddUniqueIndexToEntitiesTable extends Migration
     public function down()
     {
         Schema::table('entities', function (Blueprint $table) {
-            $table->dropUnique(['key','action','model_id']);
+            $table->dropColumn('model_id');
         });
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ResolvePermissionController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StageController;
 use App\Http\Controllers\StatusController;
@@ -43,6 +44,7 @@ Route::middleware(['jwt_auth'])->group(function(){
         ->where('type',"(fields)|(entities)")
         ->name('set-permissions');
 
+    Route::post("/permissions/resolve",[ResolvePermissionController::class ,'resolvePermission'])->name('permissions.resolve');
     Route::apiResource('tasks.comments', CommentController::class)->shallow();
 
     Route::apiResource('stages', StageController::class)->only(['index']);

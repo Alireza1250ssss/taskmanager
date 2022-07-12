@@ -35,7 +35,7 @@ class TeamController extends Controller
     {
         $team = Team::create($request->validated());
         $response = $this->getResponse(__('apiResponse.store',['resource'=>'تیم']), [
-            'team' => $team
+            'team' => $team->load('project.company')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -49,7 +49,7 @@ class TeamController extends Controller
     public function show(Team $team) : JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'تیم']), [
-            'team' => $team
+            'team' => $team->load('project.company')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -65,7 +65,7 @@ class TeamController extends Controller
     {
         $team->update($request->validated());
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'تیم']), [
-            'team' => $team
+            'team' => $team->load('project.company')
         ]);
 
         return response()->json($response, $response['statusCode']);

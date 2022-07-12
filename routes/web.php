@@ -14,8 +14,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-
-        $res = \Illuminate\Support\Facades\DB::table('user')->select()->get();
-        dd($res);
-
+    return response()->json('salam');
 });
