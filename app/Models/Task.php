@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Traits\FilterRecords;
 use App\Http\Traits\MainPropertyGetter;
+use App\Http\Traits\MainPropertySetter;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,11 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Task extends Model
 {
-    use HasFactory, FilterRecords, SoftDeletes,MainPropertyGetter;
+    use HasFactory, FilterRecords, SoftDeletes,MainPropertyGetter,MainPropertySetter;
 
     protected $primaryKey = 'task_id';
-    protected $fillable = ['title', 'description', 'user_ref_id', 'parent_id','team_ref_id','stage_ref-id0','status_ref_id'];
-    public array $filters = ['title', 'description', 'user_ref_id', 'parent_id','team_ref_id','stage_ref-id0','status_ref_id'];
+    protected $fillable = ['title', 'description', 'user_ref_id', 'parent_id','team_ref_id','stage_ref_id','status_ref_id'];
+    public array $filters = ['title', 'description', 'user_ref_id', 'parent_id','team_ref_id','stage_ref_id','status_ref_id'];
     protected $hidden = ['taskMetas'];
 
     /**

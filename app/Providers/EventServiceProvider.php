@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\Company;
 use App\Models\Leave;
+use App\Models\Project;
+use App\Observers\BaseObserver;
 use App\Observers\CompanyObserver;
 use App\Observers\SetLeaveScheduleObserver;
 use Illuminate\Auth\Events\Registered;
@@ -31,7 +33,8 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Leave::observe(SetLeaveScheduleObserver::class);
-        Company::observe([CompanyObserver::class]);
+        Leave::observe([SetLeaveScheduleObserver::class,BaseObserver::class]);
+        Company::observe([BaseObserver::class]);
+        Project::observe([BaseObserver::class]);
     }
 }

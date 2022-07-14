@@ -10,4 +10,10 @@ trait MainPropertyGetter
     {
         return $this->fillable;
     }
+
+    public function getPrimaryKey()
+    {
+        return $this->primaryKey;
+    }
+
 }

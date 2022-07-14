@@ -93,7 +93,12 @@ class User extends Authenticatable implements JWTSubject
      */
     public function entities(): MorphToMany
     {
-        return $this->morphedByMany(Entity::class , 'permissible');
+        return $this->morphedByMany(
+            Entity::class ,
+            'permissible' ,
+            'permissibles' ,
+            'user_ref_id'
+        );
     }
 
 

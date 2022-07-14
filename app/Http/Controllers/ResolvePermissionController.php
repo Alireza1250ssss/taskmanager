@@ -36,9 +36,9 @@ class ResolvePermissionController extends Controller
         $entity = self::$models[$request->get('name')];
 
         $request->validate([
-            'id' => ['required', Rule::exists($entity['table'], $entity['primaryKey'])],
-            'insert_fields' => 'boolean',
-            'only_fields' => 'boolean'
+            'id' => [Rule::requiredIf($request->get('only_fields',false) == false) , Rule::exists($entity['table'], $entity['primaryKey'])],
+            'insert_fields' => 'required|boolean',
+            'only_fields' => 'required|boolean'
         ]);
 
         // Upsert entities
@@ -50,13 +50,17 @@ class ResolvePermissionController extends Controller
                     ['key' => $class, 'action' => 'read', 'model_id' => $request->get('id')],
                     ['key' => $class, 'action' => 'update', 'model_id' => $request->get('id')],
                     ['key' => $class, 'action' => 'delete', 'model_id' => $request->get('id')],
-                    ['key' => $class, 'action' => 'create', 'model_id' => null],
+
                 ], ['key', 'action', 'model_id']);
+
+                // insert create action separately because the unique index is on
+                // key,action,model_id fields
                 Entity::query()->updateOrInsert([
                     'key' => $class,
                     'action' => 'create'
                 ],['action' => 'create']);
-            }// Upsert fields
+            }
+            // Upsert fields
             if ($request->filled('insert_fields') && $request->get('insert_fields')) {
                 $entityModel = new $entity['class'];
                 $fields = $entityModel->getFillable();
@@ -67,7 +71,6 @@ class ResolvePermissionController extends Controller
                 return response()->json($response, $response['statusCode']);
             }
         } catch (\Exception $e) {
-            dd($e->getMessage());
             $response = $this->getError('مشکلی در ثبت دسترسی ها وجود داشت !', [], self::$HTTP_SERVER_ERROR);
             return response()->json($response, $response['statusCode']);
         }
