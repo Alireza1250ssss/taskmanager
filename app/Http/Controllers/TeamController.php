@@ -49,7 +49,7 @@ class TeamController extends Controller
     public function show(Team $team) : JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'تیم']), [
-            'team' => $team->load('project.company')
+            'team' => $team->load(['project.company','tasks'])
         ]);
         return response()->json($response, $response['statusCode']);
     }
