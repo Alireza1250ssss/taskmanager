@@ -16,4 +16,8 @@ trait MainPropertyGetter
         return $this->primaryKey;
     }
 
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
 }

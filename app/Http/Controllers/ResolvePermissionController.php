@@ -8,6 +8,7 @@ use App\Models\Field;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -74,5 +75,49 @@ class ResolvePermissionController extends Controller
             $response = $this->getError('مشکلی در ثبت دسترسی ها وجود داشت !', [], self::$HTTP_SERVER_ERROR);
             return response()->json($response, $response['statusCode']);
         }
+    }
+
+    /**
+     * @param User $user
+     * @param string $type
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function setPermissions(User $user, string $type, Request $request): JsonResponse
+    {
+        // permission info mentioned here
+        $permissiveRelations = [
+            'fields' => ['table' => 'fields', 'primaryKey' => 'field_id'],
+            'entities' => ['table' => 'entities', 'primaryKey' => 'entity_id'],
+        ];
+
+        $tableName = $permissiveRelations[$type]['table'];
+        $primaryKey = $permissiveRelations[$type]['primaryKey'];
+
+        $request->validate([
+            'permissions' => 'required|array',
+            'permissions.*' => Rule::exists($tableName, $primaryKey),
+        ]);
+
+
+        //sync permissions of user
+        if ($type === 'entities')
+            $user->$type()->sync($request->get('permissions'));
+        else {
+            $parentPermission = Entity::query()->where([
+                'key' => static::$models[$request->get('field_entity')]['class'],
+                'action' => $request->get('field_entity_action') ,
+                'model_id' => $request->get('field_entity_id')
+            ])->firstOrFail()->users->where('user_id',$user->user_id)->firstOrFail()->pivot;
+
+            $user->$type()->syncWithPivotValues(
+                $request->get('permissions'),
+                ['parent_id' =>$parentPermission->id]);
+        }
+
+        $response = $this->getResponse(__('apiResponse.update', ['resource' => 'کاربر']), [
+            'user' => $user->load($type)
+        ]);
+        return response()->json($response, $response['statusCode']);
     }
 }

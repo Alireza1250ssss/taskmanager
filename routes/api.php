@@ -27,7 +27,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+
+Route::middleware('jwt_auth')->get('/user', function (Request $request) {
+    dd('hi');
     return $request->user();
 });
 
@@ -40,7 +42,7 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::delete('/notifications',[AccountController::class , 'deleteNotifications'])->name('delete-notifications');
     Route::put('/notifications/mark-as-read',[AccountController::class , 'markAsRead'])->name('mark-as-read-notifications');
 
-    Route::post('/users/{user}/permissions/{type}',[UserController::class , 'setPermissions'])
+    Route::post('/users/{user}/permissions/{type}',[ResolvePermissionController::class , 'setPermissions'])
         ->where('type',"(fields)|(entities)")
         ->name('set-permissions');
 

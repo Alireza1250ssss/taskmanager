@@ -48,8 +48,13 @@ class TeamController extends Controller
      */
     public function show(Team $team) : JsonResponse
     {
+        $team->load(['project.company','tasks']);
+        $team->tasks->transform(function($item,$key){
+           $item->mergeMeta('taskMetas');
+           return $item;
+        });
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'تیم']), [
-            'team' => $team->load(['project.company','tasks'])
+            'team' => $team
         ]);
         return response()->json($response, $response['statusCode']);
     }

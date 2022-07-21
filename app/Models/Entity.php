@@ -19,6 +19,12 @@ class Entity extends Model
      */
     public function users(): MorphToMany
     {
-        return $this->morphToMany(User::class , 'permissible');
+        return $this->morphToMany(
+            User::class ,
+            'permissible',
+            'permissibles',
+            'permissible_id',
+            'user_ref_id'
+        )->withPivot(['id']);
     }
 }

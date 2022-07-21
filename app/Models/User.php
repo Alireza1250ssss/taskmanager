@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Http\Traits\FilterRecords;
+use App\Http\Traits\MainPropertyGetter;
+use App\Http\Traits\MainPropertySetter;
 use App\Models\Permissions\Permission;
 use App\Models\Permissions\Role;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -20,7 +22,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable,FilterRecords,SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable,FilterRecords,SoftDeletes,MainPropertySetter,MainPropertyGetter;
 
     protected $primaryKey = 'user_id';
     public array $filters = [
@@ -85,7 +87,7 @@ class User extends Authenticatable implements JWTSubject
             'permissible' ,
             'permissibles' ,
             'user_ref_id'
-        );
+        )->withPivot('id');
     }
 
     /**
@@ -98,7 +100,7 @@ class User extends Authenticatable implements JWTSubject
             'permissible' ,
             'permissibles' ,
             'user_ref_id'
-        );
+        )->withPivot(['id']);
     }
 
 

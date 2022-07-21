@@ -2,12 +2,17 @@
 
 namespace App\Providers;
 
+use App\Events\ModelRetrievedEvent;
+use App\Listeners\CheckRetrieveModel;
 use App\Models\Company;
 use App\Models\Leave;
 use App\Models\Project;
+use App\Models\Task;
+use App\Models\User;
 use App\Observers\BaseObserver;
 use App\Observers\CompanyObserver;
 use App\Observers\SetLeaveScheduleObserver;
+use App\Observers\TaskObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -24,6 +29,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        ModelRetrievedEvent::class => [
+          CheckRetrieveModel::class
+        ],
     ];
 
     /**
@@ -33,8 +41,11 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Leave::observe([SetLeaveScheduleObserver::class,BaseObserver::class]);
+
+
+//        Leave::observe([SetLeaveScheduleObserver::class,BaseObserver::class]);
         Company::observe([BaseObserver::class]);
-        Project::observe([BaseObserver::class]);
+//        Project::observe([BaseObserver::class]);
+//        User::observe([BaseObserver::class]); !!!!!!!!!!!!!!!!!!!!!
     }
 }

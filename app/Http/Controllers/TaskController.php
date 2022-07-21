@@ -50,7 +50,7 @@ class TaskController extends Controller
      */
     public function show(Task $task) : JsonResponse
     {
-//        $task->mergeMeta('taskMetas');
+        $task->mergeMeta('taskMetas');
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'تسک']), [
             'task' => $task->load('team','status','stage','comments')
         ]);

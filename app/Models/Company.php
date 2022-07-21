@@ -17,6 +17,7 @@ class Company extends Model
     protected $fillable = ['name'];
     protected $primaryKey = 'company_id';
     public array $filters = ['name'];
+    protected $hidden = ['created_at','updated_at'];
 
     /**
      * @return HasMany
@@ -25,4 +26,5 @@ class Company extends Model
     {
         return $this->hasMany(Project::class,'company_ref_id');
     }
+
 }

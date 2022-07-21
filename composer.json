@@ -13,6 +13,7 @@
         "laravel/sanctum": "^2.11",
         "laravel/telescope": "^4.9",
         "laravel/tinker": "^2.5",
+        "phpmailer/phpmailer": "^6.6",
         "rebing/graphql-laravel": "^8.3",
         "spatie/laravel-permission": "^5.5",
         "tymon/jwt-auth": "^1.0"
