@@ -1,7 +1,8 @@
 
 <?php
 function execPrint($command) {
-    $result = array();
+    
+	$result = array();
     exec($command, $result);
     print("<pre>");
     foreach ($result as $line) {
