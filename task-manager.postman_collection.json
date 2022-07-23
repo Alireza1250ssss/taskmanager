@@ -1,0 +1,2893 @@
+{
+	"info": {
+		"_postman_id": "cb9f9fe2-8af8-467f-ace3-c301db4486ab",
+		"name": "task-manager",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18632516"
+	},
+	"item": [
+		{
+			"name": "company",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/companies?page=2",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"companies"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								}
+							]
+						},
+						"description": "this one is to retrieve all resource in pagination"
+					},
+					"response": []
+				},
+				{
+					"name": "store",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"my first test company\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/companies",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"companies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/companies/6",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"companies",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"an updated name of company\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/companies/11",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"companies",
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/companies/8,9",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"companies",
+								"8,9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "project",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/projects",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"projects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/projects/21",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"projects",
+								"21"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "store",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"my first project\",\n    \"company_ref_id\" : 4\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/projects",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"projects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"my first project updated\",\n    \"company_ref_id\" : 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/projects/21",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"projects",
+								"21"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/projects/2,5",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"projects",
+								"2,5"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "team",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/teams",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"teams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/teams/2",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"teams",
+								"2"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "show",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/teams/2",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"teams",
+										"2"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 23 Jul 2022 06:16:05 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 23 Jul 2022 06:16:05 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"تیم با موفقیت دریافت شد\",\n    \"data\": {\n        \"team\": {\n            \"team_id\": 2,\n            \"name\": \"Mikayla Carter\",\n            \"project_ref_id\": 1,\n            \"created_at\": \"2022-06-28T02:16:02.000000Z\",\n            \"updated_at\": \"2022-06-28T02:16:02.000000Z\",\n            \"deleted_at\": null,\n            \"project\": {\n                \"project_id\": 1,\n                \"name\": \"deserunt\",\n                \"company_ref_id\": 1,\n                \"created_at\": \"2022-06-28T02:16:02.000000Z\",\n                \"updated_at\": \"2022-06-28T02:16:02.000000Z\",\n                \"deleted_at\": null,\n                \"company\": {\n                    \"company_id\": 1,\n                    \"name\": \"qui\",\n                    \"deleted_at\": null\n                }\n            },\n            \"tasks\": [\n                {\n                    \"task_id\": 30,\n                    \"user_ref_id\": 16,\n                    \"title\": \"natus\",\n                    \"description\": \"Aut voluptatem est debitis necessitatibus dolorem qui. Laboriosam eos velit nemo enim provident sequi cumque. Ex id dolor nam assumenda excepturi tempora.\",\n                    \"parent_id\": null,\n                    \"created_at\": \"2022-07-12T08:01:19.000000Z\",\n                    \"updated_at\": \"2022-07-16T06:47:39.000000Z\",\n                    \"deleted_at\": null,\n                    \"team_ref_id\": 2,\n                    \"stage_ref_id\": 11,\n                    \"status_ref_id\": 3,\n                    \"real_time\": null,\n                    \"estimate_time\": \"1 hour\",\n                    \"priority\": \"normal\",\n                    \"labels\": \"z24prZjBnb2TmG27\"\n                },\n                {\n                    \"task_id\": 26,\n                    \"user_ref_id\": 11,\n                    \"title\": \"ipsa\",\n                    \"description\": \"Sunt voluptatem consequuntur est occaecati aut. In natus et et at ut nostrum. Vel pariatur praesentium harum recusandae enim sit nam non.\",\n                    \"parent_id\": null,\n                    \"created_at\": \"2022-07-12T08:01:19.000000Z\",\n                    \"updated_at\": \"2022-07-16T06:47:39.000000Z\",\n                    \"deleted_at\": null,\n                    \"team_ref_id\": 2,\n                    \"stage_ref_id\": 10,\n                    \"status_ref_id\": 1,\n                    \"real_time\": null,\n                    \"estimate_time\": \"0.5 hour\",\n                    \"priority\": \"normal\",\n                    \"labels\": \"vuboMGau1ZymURLp\"\n                }\n            ]\n        }\n    },\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "store",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"my team\",\n    \"project_ref_id\":9\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/teams",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"teams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"ye chiz update shode\",\n    \"project_ref_id\":11\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/teams/38",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"teams",
+								"38"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/teams/4,14,155",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"teams",
+								"4,14,155"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/users?first_name=Z",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "first_name",
+									"value": "Z"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/users/13",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/users/9",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "store",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\" : \"ali\",\n    \"last_name\" :\"salehi\",\n    \"password\" : \"alireza369369\",\n    \"password_confirmation\":\"alireza369369\",\n    \"phone\" :\"09134809813\",\n    \"email\" :\"alireza.salehi13810102@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/users",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"maniac\",\n    \"phone\": \"09134809830\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/users/16",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set permissions",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"permissions\":[\n        1,2\n    ],\n    \"field_entity\":\"company\",\n    \"field_entity_action\":\"read\",\n    \"field_entity_id\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/users/19/permissions/fields",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"19",
+								"permissions",
+								"fields"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "set permissions",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"permissions\":[\n        1,2\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASEURI}}/api/users/11/permissions/fields",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"11",
+										"permissions",
+										"fields"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 12 Jul 2022 06:07:44 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 12 Jul 2022 06:07:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"کاربر با موفقیت به روز رسانی شد\",\n    \"data\": {\n        \"user\": {\n            \"user_id\": 11,\n            \"first_name\": \"Solon\",\n            \"last_name\": \"Carter\",\n            \"phone\": \"+1.270.473.0586\",\n            \"email\": \"charles.muller@example.com\",\n            \"status\": \"verified\",\n            \"username\": \"kennedy33\",\n            \"verify_code_expire_time\": null,\n            \"created_at\": \"2022-06-29T11:40:49.000000Z\",\n            \"updated_at\": \"2022-06-29T11:40:49.000000Z\",\n            \"deleted_at\": null,\n            \"fields\": [\n                {\n                    \"field_id\": 1,\n                    \"model\": \"App\\\\Models\\\\User\",\n                    \"name\": \"email\",\n                    \"created_at\": \"2022-07-12T06:01:31.000000Z\",\n                    \"updated_at\": \"2022-07-12T06:01:31.000000Z\",\n                    \"pivot\": {\n                        \"user_ref_id\": 11,\n                        \"permissible_id\": 1,\n                        \"permissible_type\": \"App\\\\Models\\\\Field\"\n                    }\n                },\n                {\n                    \"field_id\": 2,\n                    \"model\": \"App\\\\Models\\\\User\",\n                    \"name\": \"national_code\",\n                    \"created_at\": \"2022-07-12T06:02:05.000000Z\",\n                    \"updated_at\": \"2022-07-12T06:02:05.000000Z\",\n                    \"pivot\": {\n                        \"user_ref_id\": 11,\n                        \"permissible_id\": 2,\n                        \"permissible_type\": \"App\\\\Models\\\\Field\"\n                    }\n                }\n            ]\n        }\n    },\n    \"statusCode\": 200\n}"
+						},
+						{
+							"name": "set permissions",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"permissions\":[\n        1,2\n    ],\n    \"field_entity\":\"company\",\n    \"field_entity_action\":\"read\",\n    \"field_entity_id\": 5\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASEURI}}/api/users/19/permissions/fields",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"19",
+										"permissions",
+										"fields"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 17 Jul 2022 06:39:57 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 17 Jul 2022 06:39:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"کاربر با موفقیت به روز رسانی شد\",\n    \"data\": {\n        \"user\": {\n            \"user_id\": 19,\n            \"first_name\": null,\n            \"last_name\": null,\n            \"phone\": \"09140438837\",\n            \"email\": \"alirezasalehi.1250ssss@gmail.com\",\n            \"status\": \"pending\",\n            \"username\": \"alireza_ssss\",\n            \"verify_code_expire_time\": null,\n            \"created_at\": \"2022-06-29T12:52:23.000000Z\",\n            \"updated_at\": \"2022-06-29T12:52:23.000000Z\",\n            \"deleted_at\": null,\n            \"fields\": [\n                {\n                    \"field_id\": 1,\n                    \"model\": \"App\\\\Models\\\\User\",\n                    \"name\": \"email\",\n                    \"created_at\": \"2022-07-12T06:01:31.000000Z\",\n                    \"updated_at\": \"2022-07-12T06:01:31.000000Z\",\n                    \"pivot\": {\n                        \"user_ref_id\": 19,\n                        \"permissible_id\": 1,\n                        \"permissible_type\": \"App\\\\Models\\\\Field\"\n                    }\n                },\n                {\n                    \"field_id\": 2,\n                    \"model\": \"App\\\\Models\\\\User\",\n                    \"name\": \"national_code\",\n                    \"created_at\": \"2022-07-12T06:02:05.000000Z\",\n                    \"updated_at\": \"2022-07-12T06:02:05.000000Z\",\n                    \"pivot\": {\n                        \"user_ref_id\": 19,\n                        \"permissible_id\": 2,\n                        \"permissible_type\": \"App\\\\Models\\\\Field\"\n                    }\n                }\n            ]\n        }\n    },\n    \"statusCode\": 200\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"xalirezasalehi.1250ssss@gmail.com\",\n    \"phone\":\"09140438837\",\n    \"username\":\"alireza_ssss\",\n    \"first_name\":\"ali\",\n    \"last_name\":\"salehi\",\n    \"password\":\"12345\",\n    \"password_confirmation\":\"12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/register",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"alirezasalehi.1250ssss@gmail.com\",\n    \"password\":\"12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/login",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/user",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "user",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/user",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"user"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 16 Jul 2022 05:15:19 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 16 Jul 2022 05:15:19 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "57"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"user_id\": 19,\n    \"first_name\": null,\n    \"last_name\": null,\n    \"phone\": \"09140438837\",\n    \"email\": \"alirezasalehi.1250ssss@gmail.com\",\n    \"status\": \"pending\",\n    \"username\": \"alireza_ssss\",\n    \"verify_code_expire_time\": null,\n    \"created_at\": \"2022-06-29T12:52:23.000000Z\",\n    \"updated_at\": \"2022-06-29T12:52:23.000000Z\",\n    \"deleted_at\": null\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "task",
+			"item": [
+				{
+					"name": "comments",
+					"item": [
+						{
+							"name": "index",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/tasks/12/comments",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"12",
+										"comments"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "index",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASEURI}}/api/tasks/12/comments",
+											"host": [
+												"{{BASEURI}}"
+											],
+											"path": [
+												"api",
+												"tasks",
+												"12",
+												"comments"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:8000"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 09 Jul 2022 09:40:50 GMT"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 09 Jul 2022 09:40:50 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/7.4.30"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "60"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "59"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"message\": \" های مورد نظر دریافت شدند\",\n    \"data\": [\n        {\n            \"current_page\": 1,\n            \"data\": [\n                {\n                    \"comment_id\": 14,\n                    \"user_ref_id\": 7,\n                    \"content\": \"Gryphon. 'Of course,' the Mock Turtle sang this, very slowly and sadly:-- '\\\"Will you walk a little timidly: 'but it's no use speaking to it,' she thought, and rightly too, that very few little girls.\",\n                    \"commentable_type\": \"App\\\\Models\\\\Task\",\n                    \"commentable_id\": 12,\n                    \"parent_id\": null,\n                    \"created_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"updated_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"comment_id\": 5,\n                    \"user_ref_id\": 12,\n                    \"content\": \"Alice did not sneeze, were the two sides of it; then Alice put down her anger as well she might, what a Mock Turtle repeated thoughtfully. 'I should like to see what was the only difficulty was.\",\n                    \"commentable_type\": \"App\\\\Models\\\\Task\",\n                    \"commentable_id\": 12,\n                    \"parent_id\": null,\n                    \"created_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"updated_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"comment_id\": 3,\n                    \"user_ref_id\": 5,\n                    \"content\": \"SWIM--\\\" you can't take LESS,' said the Mock Turtle; 'but it doesn't mind.' The table was a long silence after this, and Alice looked all round her head. 'If I eat one of the hall: in fact she was.\",\n                    \"commentable_type\": \"App\\\\Models\\\\Task\",\n                    \"commentable_id\": 12,\n                    \"parent_id\": null,\n                    \"created_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"updated_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"deleted_at\": null\n                }\n            ],\n            \"first_page_url\": \"http://localhost:8000/api/tasks/12/comments?page=1\",\n            \"from\": 1,\n            \"last_page\": 1,\n            \"last_page_url\": \"http://localhost:8000/api/tasks/12/comments?page=1\",\n            \"links\": [\n                {\n                    \"url\": null,\n                    \"label\": \"&laquo; قبلی\",\n                    \"active\": false\n                },\n                {\n                    \"url\": \"http://localhost:8000/api/tasks/12/comments?page=1\",\n                    \"label\": \"1\",\n                    \"active\": true\n                },\n                {\n                    \"url\": null,\n                    \"label\": \"بعدی &raquo;\",\n                    \"active\": false\n                }\n            ],\n            \"next_page_url\": null,\n            \"path\": \"http://localhost:8000/api/tasks/12/comments\",\n            \"per_page\": 10,\n            \"prev_page_url\": null,\n            \"to\": 3,\n            \"total\": 3\n        }\n    ],\n    \"statusCode\": 200\n}"
+								}
+							]
+						},
+						{
+							"name": "store",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"content\" :\"salam chetori?\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASEURI}}/api/tasks/12/comments",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"12",
+										"comments"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "store",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"content\" :\"salam chetori?\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASEURI}}/api/tasks/12/comments",
+											"host": [
+												"{{BASEURI}}"
+											],
+											"path": [
+												"api",
+												"tasks",
+												"12",
+												"comments"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:8000"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 09 Jul 2022 09:50:34 GMT"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 09 Jul 2022 09:50:34 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/7.4.30"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "60"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "57"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"message\": \"کامنت با موفقیت ساخته شد\",\n    \"data\": {\n        \"comment\": {\n            \"content\": \"salam chetori?\",\n            \"user_ref_id\": 19,\n            \"commentable_id\": 12,\n            \"commentable_type\": \"App\\\\Models\\\\Task\",\n            \"updated_at\": \"2022-07-09T09:50:34.000000Z\",\n            \"created_at\": \"2022-07-09T09:50:34.000000Z\",\n            \"comment_id\": 16\n        }\n    },\n    \"statusCode\": 200\n}"
+								}
+							]
+						},
+						{
+							"name": "show",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/comments/5",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"comments",
+										"5"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "show",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASEURI}}/api/comments/5",
+											"host": [
+												"{{BASEURI}}"
+											],
+											"path": [
+												"api",
+												"comments",
+												"5"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:8000"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 09 Jul 2022 09:53:28 GMT"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 09 Jul 2022 09:53:28 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/7.4.30"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "60"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "56"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"message\": \"کامنت با موفقیت دریافت شد\",\n    \"data\": {\n        \"comment\": {\n            \"comment_id\": 5,\n            \"user_ref_id\": 12,\n            \"content\": \"Alice did not sneeze, were the two sides of it; then Alice put down her anger as well she might, what a Mock Turtle repeated thoughtfully. 'I should like to see what was the only difficulty was.\",\n            \"commentable_type\": \"App\\\\Models\\\\Task\",\n            \"commentable_id\": 12,\n            \"parent_id\": null,\n            \"created_at\": \"2022-07-09T09:11:49.000000Z\",\n            \"updated_at\": \"2022-07-09T09:11:49.000000Z\",\n            \"deleted_at\": null,\n            \"reply_comments\": [\n                {\n                    \"comment_id\": 14,\n                    \"user_ref_id\": 7,\n                    \"content\": \"Gryphon. 'Of course,' the Mock Turtle sang this, very slowly and sadly:-- '\\\"Will you walk a little timidly: 'but it's no use speaking to it,' she thought, and rightly too, that very few little girls.\",\n                    \"commentable_type\": \"App\\\\Models\\\\Task\",\n                    \"commentable_id\": 12,\n                    \"parent_id\": 5,\n                    \"created_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"updated_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"deleted_at\": null\n                }\n            ],\n            \"parent_comment\": null\n        }\n    },\n    \"statusCode\": 200\n}"
+								}
+							]
+						},
+						{
+							"name": "update",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"parent_id\":5,\n    \"content\":\"salaaam bah chetori?\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASEURI}}/api/comments/16",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"comments",
+										"16"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "update",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"parent_id\":5,\n    \"content\":\"salaaam bah chetori?\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASEURI}}/api/comments/16",
+											"host": [
+												"{{BASEURI}}"
+											],
+											"path": [
+												"api",
+												"comments",
+												"16"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Host",
+											"value": "localhost:8000"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 09 Jul 2022 09:59:56 GMT"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 09 Jul 2022 09:59:56 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/7.4.30"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "60"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "58"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"message\": \"کامنت با موفقیت به روز رسانی شد\",\n    \"data\": {\n        \"comment\": {\n            \"comment_id\": 16,\n            \"user_ref_id\": 19,\n            \"content\": \"salaaam bah chetori?\",\n            \"commentable_type\": \"App\\\\Models\\\\Task\",\n            \"commentable_id\": 12,\n            \"parent_id\": 5,\n            \"created_at\": \"2022-07-09T09:50:34.000000Z\",\n            \"updated_at\": \"2022-07-09T09:59:56.000000Z\",\n            \"deleted_at\": null,\n            \"reply_comments\": [],\n            \"parent_comment\": {\n                \"comment_id\": 5,\n                \"user_ref_id\": 12,\n                \"content\": \"Alice did not sneeze, were the two sides of it; then Alice put down her anger as well she might, what a Mock Turtle repeated thoughtfully. 'I should like to see what was the only difficulty was.\",\n                \"commentable_type\": \"App\\\\Models\\\\Task\",\n                \"commentable_id\": 12,\n                \"parent_id\": null,\n                \"created_at\": \"2022-07-09T09:11:49.000000Z\",\n                \"updated_at\": \"2022-07-09T09:11:49.000000Z\",\n                \"deleted_at\": null\n            }\n        }\n    },\n    \"statusCode\": 200\n}"
+								}
+							]
+						},
+						{
+							"name": "delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/comments/16,1",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"comments",
+										"16,1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "index",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/tasks?title=es",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "es"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/tasks/12",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"12"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "show",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/tasks/12",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"12"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 09 Jul 2022 10:03:03 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 09 Jul 2022 10:03:03 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"تسک با موفقیت دریافت شد\",\n    \"data\": {\n        \"task\": {\n            \"task_id\": 12,\n            \"user_ref_id\": 14,\n            \"title\": \"dolorum\",\n            \"description\": \"Iusto rerum est atque qui minima. Totam sint assumenda at magnam porro sequi. Asperiores voluptate harum magnam ab. Omnis hic eos quidem.\",\n            \"parent_id\": null,\n            \"created_at\": \"2022-06-29T11:44:56.000000Z\",\n            \"updated_at\": \"2022-06-29T11:44:56.000000Z\",\n            \"deleted_at\": null,\n            \"team_ref_id\": 5,\n            \"stage_ref_id\": 7,\n            \"status_ref_id\": null,\n            \"team\": {\n                \"team_id\": 5,\n                \"name\": \"Prof. Oran Sanford\",\n                \"project_ref_id\": 3,\n                \"created_at\": \"2022-06-28T02:16:02.000000Z\",\n                \"updated_at\": \"2022-06-28T02:16:02.000000Z\",\n                \"deleted_at\": null\n            },\n            \"status\": null,\n            \"stage\": {\n                \"stage_id\": 7,\n                \"name\": \"todo\",\n                \"created_at\": \"2022-07-09T04:36:10.000000Z\",\n                \"updated_at\": \"2022-07-09T04:36:10.000000Z\",\n                \"deleted_at\": null\n            },\n            \"comments\": [\n                {\n                    \"comment_id\": 3,\n                    \"user_ref_id\": 5,\n                    \"content\": \"SWIM--\\\" you can't take LESS,' said the Mock Turtle; 'but it doesn't mind.' The table was a long silence after this, and Alice looked all round her head. 'If I eat one of the hall: in fact she was.\",\n                    \"commentable_type\": \"App\\\\Models\\\\Task\",\n                    \"commentable_id\": 12,\n                    \"parent_id\": null,\n                    \"created_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"updated_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"comment_id\": 5,\n                    \"user_ref_id\": 12,\n                    \"content\": \"Alice did not sneeze, were the two sides of it; then Alice put down her anger as well she might, what a Mock Turtle repeated thoughtfully. 'I should like to see what was the only difficulty was.\",\n                    \"commentable_type\": \"App\\\\Models\\\\Task\",\n                    \"commentable_id\": 12,\n                    \"parent_id\": null,\n                    \"created_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"updated_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"comment_id\": 14,\n                    \"user_ref_id\": 7,\n                    \"content\": \"Gryphon. 'Of course,' the Mock Turtle sang this, very slowly and sadly:-- '\\\"Will you walk a little timidly: 'but it's no use speaking to it,' she thought, and rightly too, that very few little girls.\",\n                    \"commentable_type\": \"App\\\\Models\\\\Task\",\n                    \"commentable_id\": 12,\n                    \"parent_id\": 5,\n                    \"created_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"updated_at\": \"2022-07-09T09:11:49.000000Z\",\n                    \"deleted_at\": null\n                }\n            ]\n        }\n    },\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/tasks/4,1",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"4,1"
+							]
+						},
+						"description": "you can select one or more items to soft delete , implode them with \" , \" (a comma) in the path parameter"
+					},
+					"response": []
+				},
+				{
+					"name": "store",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"parent_id\" :5,\n    \"stage_ref_id\":9,\n    \"status_ref_id\":1,\n    \"user_ref_id\": 4,\n    \"title\":\"fgggfg یک تسک\",\n    \"team_ref_id\":5,\n    \"description\":\"yek seri tozihat ghashang\",\n    \"task_metas\":[\n        {\n            \"task_key\":\"summery\",\n            \"task_value\":\"good bad ugly\"\n        },\n        {\n            \"task_key\":\"score\",\n            \"task_value\": \"20\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/tasks",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "store",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"parent_id\" :5,\n    \"stage_ref_id\":9,\n    \"status_ref_id\":1,\n    \"user_ref_id\": 4,\n    \"title\":\"fgggfg یک تسک\",\n    \"team_ref_id\":5,\n    \"description\":\"yek seri tozihat ghashang\",\n    \"task_metas\":[\n        {\n            \"task_key\":\"summery\",\n            \"task_value\":\"good bad ugly\"\n        },\n        {\n            \"task_key\":\"score\",\n            \"task_value\": \"20\"\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASEURI}}/api/tasks",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"tasks"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 09 Jul 2022 05:27:27 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 09 Jul 2022 05:27:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"تسک با موفقیت ساخته شد\",\n    \"data\": {\n        \"task\": {\n            \"title\": \"fgggfg یک تسک\",\n            \"user_ref_id\": 4,\n            \"parent_id\": 5,\n            \"team_ref_id\": 5,\n            \"description\": \"yek seri tozihat ghashang\",\n            \"status_ref_id\": 1,\n            \"updated_at\": \"2022-07-09T05:27:27.000000Z\",\n            \"created_at\": \"2022-07-09T05:27:27.000000Z\",\n            \"task_id\": 24,\n            \"summery\": \"good bad ugly\",\n            \"score\": \"20\",\n            \"team\": {\n                \"team_id\": 5,\n                \"name\": \"Prof. Oran Sanford\",\n                \"project_ref_id\": 3,\n                \"created_at\": \"2022-06-28T02:16:02.000000Z\",\n                \"updated_at\": \"2022-06-28T02:16:02.000000Z\",\n                \"deleted_at\": null\n            },\n            \"stage\": null,\n            \"status\": {\n                \"status_id\": 1,\n                \"name\": \"accepted\",\n                \"created_at\": \"2022-07-09T04:37:30.000000Z\",\n                \"updated_at\": \"2022-07-09T04:37:30.000000Z\",\n                \"deleted_at\": null\n            }\n        }\n    },\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"team_ref_id\":9\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/tasks/23",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"23"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "update",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"team_ref_id\":9\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASEURI}}/api/tasks/23",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"23"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 09 Jul 2022 05:32:41 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 09 Jul 2022 05:32:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"تسک با موفقیت به روز رسانی شد\",\n    \"data\": {\n        \"task\": {\n            \"task_id\": 23,\n            \"user_ref_id\": 4,\n            \"title\": \"fgggfg یک تسک\",\n            \"description\": \"yek seri tozihat ghashang\",\n            \"parent_id\": 5,\n            \"created_at\": \"2022-07-09T05:26:04.000000Z\",\n            \"updated_at\": \"2022-07-09T05:32:41.000000Z\",\n            \"deleted_at\": null,\n            \"team_ref_id\": 9,\n            \"stage_ref_id\": 7,\n            \"status_ref_id\": 1,\n            \"summery\": \"good bad ugly\",\n            \"score\": \"20\",\n            \"team\": {\n                \"team_id\": 9,\n                \"name\": \"Sonny Sporer DVM\",\n                \"project_ref_id\": 5,\n                \"created_at\": \"2022-06-28T02:16:02.000000Z\",\n                \"updated_at\": \"2022-06-28T02:16:02.000000Z\",\n                \"deleted_at\": null\n            },\n            \"status\": {\n                \"status_id\": 1,\n                \"name\": \"accepted\",\n                \"created_at\": \"2022-07-09T04:37:30.000000Z\",\n                \"updated_at\": \"2022-07-09T04:37:30.000000Z\",\n                \"deleted_at\": null\n            },\n            \"stage\": {\n                \"stage_id\": 7,\n                \"name\": \"todo\",\n                \"created_at\": \"2022-07-09T04:36:10.000000Z\",\n                \"updated_at\": \"2022-07-09T04:36:10.000000Z\",\n                \"deleted_at\": null\n            }\n        }\n    },\n    \"statusCode\": 200\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "schedule",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/schedules?user_ref_id=15",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"schedules"
+							],
+							"query": [
+								{
+									"key": "user_ref_id",
+									"value": "15"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/schedules/14",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"schedules",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/schedules/10,1",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"schedules",
+								"10,1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "delete",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/schedules/10,1",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"schedules",
+										"10,1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 02 Jul 2022 09:50:18 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 02 Jul 2022 09:50:18 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"1 آیتم با موفقیت حذف شدند\",\n    \"data\": [],\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "store",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_ref_id\":8,\n    \"time_from\": \"18:18\",\n    \"time_to\" :\"22:00\",\n    \"day\":\"saturday\",\n    \"type\":\"face_to_face\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/schedules",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"schedules"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "store",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_ref_id\":8,\n    \"time_from\": \"18:18\",\n    \"time_to\" :\"22:00\",\n    \"day\":\"saturday\",\n    \"type\":\"face_to_face\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASEURI}}/api/schedules",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"schedules"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 02 Jul 2022 09:55:16 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 02 Jul 2022 09:55:16 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"زمان بندی با موفپقیت ساخته شد\",\n    \"data\": {\n        \"schedule\": {\n            \"user_ref_id\": 8,\n            \"time_from\": \"18:18\",\n            \"time_to\": \"22:00\",\n            \"day\": \"saturday\",\n            \"type\": \"face_to_face\",\n            \"updated_at\": \"2022-07-02T09:55:16.000000Z\",\n            \"created_at\": \"2022-07-02T09:55:16.000000Z\",\n            \"schedule_id\": 21,\n            \"user\": {\n                \"user_id\": 8,\n                \"first_name\": \"Daphne\",\n                \"last_name\": \"McDermott\",\n                \"phone\": \"726-957-8413\",\n                \"email\": \"dock.kovacek@example.org\",\n                \"status\": \"pending\",\n                \"username\": \"myrtice.osinski\",\n                \"verify_code_expire_time\": null,\n                \"created_at\": \"2022-06-29T11:40:49.000000Z\",\n                \"updated_at\": \"2022-06-29T11:40:49.000000Z\",\n                \"deleted_at\": null\n            }\n        }\n    },\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_ref_id\":8,\n    \"time_from\":\"14:00\",\n    \"time_to\" :\"17:00\",\n    \"day\":\"saturday\",\n    \"type\":\"remote\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/schedules/21",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"schedules",
+								"21"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "update",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_ref_id\":8,\n    \"time_from\":\"14:00\",\n    \"time_to\" :\"17:00\",\n    \"day\":\"saturday\",\n    \"type\":\"remote\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASEURI}}/api/schedules/21",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"schedules",
+										"21"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 02 Jul 2022 10:08:50 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 02 Jul 2022 10:08:50 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "55"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"زمان بندی با موفقیت به روز رسانی شد\",\n    \"data\": {\n        \"schedule\": {\n            \"schedule_id\": 21,\n            \"user_ref_id\": 8,\n            \"time_from\": \"14:00\",\n            \"time_to\": \"17:00\",\n            \"type\": \"remote\",\n            \"day\": \"saturday\",\n            \"created_at\": \"2022-07-02T09:55:16.000000Z\",\n            \"updated_at\": \"2022-07-02T10:08:50.000000Z\",\n            \"deleted_at\": null,\n            \"user\": {\n                \"user_id\": 8,\n                \"first_name\": \"Daphne\",\n                \"last_name\": \"McDermott\",\n                \"phone\": \"726-957-8413\",\n                \"email\": \"dock.kovacek@example.org\",\n                \"status\": \"pending\",\n                \"username\": \"myrtice.osinski\",\n                \"verify_code_expire_time\": null,\n                \"created_at\": \"2022-06-29T11:40:49.000000Z\",\n                \"updated_at\": \"2022-06-29T11:40:49.000000Z\",\n                \"deleted_at\": null\n            }\n        }\n    },\n    \"statusCode\": 200\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "leave",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/leave",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"leave"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "index",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/leaves",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"leaves"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Jul 2022 05:20:49 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Jul 2022 05:20:49 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"رخصت های مورد نظر دریافت شدند\",\n    \"data\": [\n        {\n            \"current_page\": 1,\n            \"data\": [\n                {\n                    \"leave_id\": 13,\n                    \"time_from\": \"18:22:00\",\n                    \"time_to\": \"13:35:00\",\n                    \"status\": \"pending\",\n                    \"user_ref_id\": 11,\n                    \"type\": \"off\",\n                    \"created_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"updated_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"leave_id\": 12,\n                    \"time_from\": \"13:46:00\",\n                    \"time_to\": \"11:55:00\",\n                    \"status\": \"pending\",\n                    \"user_ref_id\": 6,\n                    \"type\": \"off\",\n                    \"created_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"updated_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"leave_id\": 11,\n                    \"time_from\": \"08:57:00\",\n                    \"time_to\": \"01:09:00\",\n                    \"status\": \"refused\",\n                    \"user_ref_id\": 13,\n                    \"type\": \"alternative\",\n                    \"created_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"updated_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"leave_id\": 10,\n                    \"time_from\": \"07:32:00\",\n                    \"time_to\": \"05:04:00\",\n                    \"status\": \"refused\",\n                    \"user_ref_id\": 5,\n                    \"type\": \"alternative\",\n                    \"created_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"updated_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"leave_id\": 9,\n                    \"time_from\": \"04:01:00\",\n                    \"time_to\": \"17:49:00\",\n                    \"status\": \"refused\",\n                    \"user_ref_id\": 15,\n                    \"type\": \"remote\",\n                    \"created_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"updated_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"leave_id\": 8,\n                    \"time_from\": \"00:40:00\",\n                    \"time_to\": \"12:38:00\",\n                    \"status\": \"pending\",\n                    \"user_ref_id\": 6,\n                    \"type\": \"alternative\",\n                    \"created_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"updated_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"leave_id\": 7,\n                    \"time_from\": \"00:45:00\",\n                    \"time_to\": \"04:10:00\",\n                    \"status\": \"refused\",\n                    \"user_ref_id\": 3,\n                    \"type\": \"alternative\",\n                    \"created_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"updated_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"leave_id\": 6,\n                    \"time_from\": \"01:31:00\",\n                    \"time_to\": \"23:21:00\",\n                    \"status\": \"refused\",\n                    \"user_ref_id\": 4,\n                    \"type\": \"off\",\n                    \"created_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"updated_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"leave_id\": 5,\n                    \"time_from\": \"00:26:00\",\n                    \"time_to\": \"09:43:00\",\n                    \"status\": \"pending\",\n                    \"user_ref_id\": 3,\n                    \"type\": \"remote\",\n                    \"created_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"updated_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"leave_id\": 4,\n                    \"time_from\": \"03:31:00\",\n                    \"time_to\": \"13:49:00\",\n                    \"status\": \"pending\",\n                    \"user_ref_id\": 11,\n                    \"type\": \"alternative\",\n                    \"created_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"updated_at\": \"2022-07-03T05:14:20.000000Z\",\n                    \"deleted_at\": null\n                }\n            ],\n            \"first_page_url\": \"http://localhost:8000/api/leaves?page=1\",\n            \"from\": 1,\n            \"last_page\": 2,\n            \"last_page_url\": \"http://localhost:8000/api/leaves?page=2\",\n            \"links\": [\n                {\n                    \"url\": null,\n                    \"label\": \"&laquo; قبلی\",\n                    \"active\": false\n                },\n                {\n                    \"url\": \"http://localhost:8000/api/leaves?page=1\",\n                    \"label\": \"1\",\n                    \"active\": true\n                },\n                {\n                    \"url\": \"http://localhost:8000/api/leaves?page=2\",\n                    \"label\": \"2\",\n                    \"active\": false\n                },\n                {\n                    \"url\": \"http://localhost:8000/api/leaves?page=2\",\n                    \"label\": \"بعدی &raquo;\",\n                    \"active\": false\n                }\n            ],\n            \"next_page_url\": \"http://localhost:8000/api/leaves?page=2\",\n            \"path\": \"http://localhost:8000/api/leaves\",\n            \"per_page\": 10,\n            \"prev_page_url\": null,\n            \"to\": 10,\n            \"total\": 12\n        }\n    ],\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "show",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/leave/12",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"leave",
+								"12"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "show",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/leave/12",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"leave",
+										"12"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Jul 2022 10:01:21 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Jul 2022 10:01:21 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "57"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"رخصت با موفقیت دریافت شد\",\n    \"data\": {\n        \"leave\": {\n            \"leave_id\": 12,\n            \"time_from\": \"13:46:00\",\n            \"time_to\": \"11:55:00\",\n            \"status\": \"pending\",\n            \"user_ref_id\": 6,\n            \"type\": \"off\",\n            \"created_at\": \"2022-07-03T05:14:20.000000Z\",\n            \"updated_at\": \"2022-07-03T05:14:20.000000Z\",\n            \"deleted_at\": null,\n            \"params\": null,\n            \"user\": {\n                \"user_id\": 6,\n                \"first_name\": \"Amaya\",\n                \"last_name\": \"Hodkiewicz\",\n                \"phone\": \"+1 (334) 267-5113\",\n                \"email\": \"rraynor@example.org\",\n                \"status\": \"pending\",\n                \"username\": \"tia59\",\n                \"verify_code_expire_time\": null,\n                \"created_at\": \"2022-06-29T11:40:49.000000Z\",\n                \"updated_at\": \"2022-06-29T11:40:49.000000Z\",\n                \"deleted_at\": null\n            },\n            \"schedules\": []\n        }\n    },\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/leave/2",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"leave",
+								"2"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "delete",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/leave/2",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"leave",
+										"2"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Jul 2022 06:18:58 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Jul 2022 06:18:58 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"1 آیتم با موفقیت حذف شدند\",\n    \"data\": [],\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "store",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_ref_id\":4,\n    \"time_from\" : \"18:30\",\n    \"time_to\":\"21:21\",\n    \"type\":\"remote\",\n    \"schedule\":[\n        {\n           \"time_from\":\"19:30\" ,\n           \"time_to\" : \"22:30\" ,\n           \"day\":\"2022-12-05\" ,\n           \"type\":\"remote\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/leave",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"leave"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "store",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_ref_id\":4,\n    \"time_from\" : \"18:30\",\n    \"time_to\":\"21:21\",\n    \"type\":\"remote\",\n    \"schedule\":[\n        {\n           \"time_from\":\"19:30\" ,\n           \"time_to\" : \"22:30\" ,\n           \"day\":\"2022-12-05\" ,\n           \"type\":\"remote\"\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASEURI}}/api/leave",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"leave"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Jul 2022 10:21:06 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Jul 2022 10:21:06 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "57"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"رخصت با موفقیت ساخته شد\",\n    \"data\": {\n        \"leave\": {\n            \"user_ref_id\": 4,\n            \"time_from\": \"18:30\",\n            \"time_to\": \"21:21\",\n            \"type\": \"remote\",\n            \"params\": \"[{\\\"time_from\\\":\\\"19:30\\\",\\\"time_to\\\":\\\"22:30\\\",\\\"day\\\":\\\"2022-12-05\\\",\\\"type\\\":\\\"remote\\\"}]\",\n            \"updated_at\": \"2022-07-03T10:21:06.000000Z\",\n            \"created_at\": \"2022-07-03T10:21:06.000000Z\",\n            \"leave_id\": 16\n        }\n    },\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_ref_id\":4,\n    \"time_from\" : \"18:30\",\n    \"time_to\":\"21:21\",\n    \"type\":\"remote\",\n    \"status\":\"accepted\",\n    \"schedule\":[\n        {\n           \"time_from\":\"19:30\" ,\n           \"time_to\" : \"22:30\" ,\n           \"day\":\"2022-12-05\" ,\n           \"type\":\"remote\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/leave/16",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"leave",
+								"16"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "update",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_ref_id\":4,\n    \"time_from\" : \"18:30\",\n    \"time_to\":\"21:21\",\n    \"type\":\"remote\",\n    \"status\":\"accepted\",\n    \"schedule\":[\n        {\n           \"time_from\":\"19:30\" ,\n           \"time_to\" : \"22:30\" ,\n           \"day\":\"2022-12-05\" ,\n           \"type\":\"remote\"\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASEURI}}/api/leave/16",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"leave",
+										"16"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Jul 2022 11:50:08 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Jul 2022 11:50:08 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"رخصت با موفقیت به روز رسانی شد\",\n    \"data\": {\n        \"leave\": {\n            \"leave_id\": 16,\n            \"time_from\": \"18:30\",\n            \"time_to\": \"21:21\",\n            \"status\": \"accepted\",\n            \"user_ref_id\": 4,\n            \"type\": \"remote\",\n            \"created_at\": \"2022-07-03T10:21:06.000000Z\",\n            \"updated_at\": \"2022-07-03T11:50:08.000000Z\",\n            \"deleted_at\": null,\n            \"params\": [\n                {\n                    \"time_from\": \"19:30\",\n                    \"time_to\": \"22:30\",\n                    \"day\": \"2022-12-05\",\n                    \"type\": \"remote\"\n                }\n            ]\n        }\n    },\n    \"statusCode\": 200\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "notifications",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/notifications",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"uuids\":[\n        \"c188cd20-b5b2-4d87-b0de-01c22524df5c\",\n        \"57b32ce1-f334-4ffd-8d7d-b9548d5fa9a3\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/notifications",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark as read",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"uuids\":[\n        \"c188cd20-b5b2-4d87-b0de-01c22524df5c\",\n        \"57b32ce1-f334-4ffd-8d7d-b9548d5fa9a3\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/notifications/mark-as-read",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"notifications",
+								"mark-as-read"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "stage",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/stages",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"stages"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "index",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/stages",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"stages"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 12 Jul 2022 06:25:44 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 12 Jul 2022 06:25:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"مرحله های مورد نظر دریافت شدند\",\n    \"data\": [\n        {\n            \"current_page\": 1,\n            \"data\": [\n                {\n                    \"stage_id\": 9,\n                    \"name\": \"review\",\n                    \"created_at\": \"2022-07-09T04:36:10.000000Z\",\n                    \"updated_at\": \"2022-07-09T04:36:10.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"stage_id\": 8,\n                    \"name\": \"doing\",\n                    \"created_at\": \"2022-07-09T04:36:10.000000Z\",\n                    \"updated_at\": \"2022-07-09T04:36:10.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"stage_id\": 7,\n                    \"name\": \"todo\",\n                    \"created_at\": \"2022-07-09T04:36:10.000000Z\",\n                    \"updated_at\": \"2022-07-09T04:36:10.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"stage_id\": 6,\n                    \"name\": \"backlog\",\n                    \"created_at\": \"2022-07-09T04:36:10.000000Z\",\n                    \"updated_at\": \"2022-07-09T04:36:10.000000Z\",\n                    \"deleted_at\": null\n                }\n            ],\n            \"first_page_url\": \"http://localhost:8000/api/stages?page=1\",\n            \"from\": 1,\n            \"last_page\": 1,\n            \"last_page_url\": \"http://localhost:8000/api/stages?page=1\",\n            \"links\": [\n                {\n                    \"url\": null,\n                    \"label\": \"&laquo; قبلی\",\n                    \"active\": false\n                },\n                {\n                    \"url\": \"http://localhost:8000/api/stages?page=1\",\n                    \"label\": \"1\",\n                    \"active\": true\n                },\n                {\n                    \"url\": null,\n                    \"label\": \"بعدی &raquo;\",\n                    \"active\": false\n                }\n            ],\n            \"next_page_url\": null,\n            \"path\": \"http://localhost:8000/api/stages\",\n            \"per_page\": 10,\n            \"prev_page_url\": null,\n            \"to\": 4,\n            \"total\": 4\n        }\n    ],\n    \"statusCode\": 200\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "status",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/statuses",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"statuses"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "index",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/statuses",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"statuses"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 12 Jul 2022 06:28:17 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 12 Jul 2022 06:28:17 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"وضعیت های مورد نظر دریافت شدند\",\n    \"data\": [\n        {\n            \"current_page\": 1,\n            \"data\": [\n                {\n                    \"status_id\": 3,\n                    \"name\": \"stopped\",\n                    \"created_at\": \"2022-07-09T04:37:30.000000Z\",\n                    \"updated_at\": \"2022-07-09T04:37:30.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"status_id\": 2,\n                    \"name\": \"rejected\",\n                    \"created_at\": \"2022-07-09T04:37:30.000000Z\",\n                    \"updated_at\": \"2022-07-09T04:37:30.000000Z\",\n                    \"deleted_at\": null\n                },\n                {\n                    \"status_id\": 1,\n                    \"name\": \"accepted\",\n                    \"created_at\": \"2022-07-09T04:37:30.000000Z\",\n                    \"updated_at\": \"2022-07-09T04:37:30.000000Z\",\n                    \"deleted_at\": null\n                }\n            ],\n            \"first_page_url\": \"http://localhost:8000/api/statuses?page=1\",\n            \"from\": 1,\n            \"last_page\": 1,\n            \"last_page_url\": \"http://localhost:8000/api/statuses?page=1\",\n            \"links\": [\n                {\n                    \"url\": null,\n                    \"label\": \"&laquo; قبلی\",\n                    \"active\": false\n                },\n                {\n                    \"url\": \"http://localhost:8000/api/statuses?page=1\",\n                    \"label\": \"1\",\n                    \"active\": true\n                },\n                {\n                    \"url\": null,\n                    \"label\": \"بعدی &raquo;\",\n                    \"active\": false\n                }\n            ],\n            \"next_page_url\": null,\n            \"path\": \"http://localhost:8000/api/statuses\",\n            \"per_page\": 10,\n            \"prev_page_url\": null,\n            \"to\": 3,\n            \"total\": 3\n        }\n    ],\n    \"statusCode\": 200\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "permissions",
+			"item": [
+				{
+					"name": "resolve",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"task\",\n    \"insert_fields\": true,\n    \"only_fields\":true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURI}}/api/permissions/resolve",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"permissions",
+								"resolve"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "resolve",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"company\",\n    \"id\":5,\n    \"insert_fields\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASEURI}}/api/permissions/resolve",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"permissions",
+										"resolve"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 13 Jul 2022 04:59:57 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 13 Jul 2022 04:59:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"دسترسی ها ساخته شدند\",\n    \"data\": [],\n    \"statusCode\": 200\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{JWT}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASEURI",
+			"value": "localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "JWT",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY1ODM3ODY4OCwiZXhwIjoxNjU4OTgzNDg4LCJuYmYiOjE2NTgzNzg2ODgsImp0aSI6IkVZdVhIdXVvV2Jzc3FTWTEiLCJzdWIiOjE5LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwicGhvbmUiOiIwOTE0MDQzODgzNyJ9.JlIfWDL-NezGGyJbh8wo5Jx1IgnPESQC6ncLUthbeNg",
+			"type": "string"
+		}
+	]
+}
