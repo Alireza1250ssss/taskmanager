@@ -52,7 +52,7 @@ class TaskController extends Controller
     {
         $task->mergeMeta('taskMetas');
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'تسک']), [
-            'task' => $task->load('team','status','stage','comments')
+            'task' => $task->load('team.project.company','status','stage','comments')
         ]);
         return response()->json($response, $response['statusCode']);
     }
