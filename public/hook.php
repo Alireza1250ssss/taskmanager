@@ -13,5 +13,6 @@ function execPrint($command) {
 // Print the exec output inside of a pre element
 execPrint("git pull 2>&1");
 execPrint("git status");
+
 ?>
 
