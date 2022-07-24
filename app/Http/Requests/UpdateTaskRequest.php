@@ -23,7 +23,6 @@ class UpdateTaskRequest extends FormRequest
             $this->merge([
                 'user_ref_id' => auth()->user()->user_id
             ]);
-
         }
     }
 
@@ -43,6 +42,8 @@ class UpdateTaskRequest extends FormRequest
             'real_time' => 'string',
             'estimate_time' => 'string',
             'priority' => 'string',
+            'title' => 'string',
+            'description' => 'string',
             'labels' => 'string',
             'task_metas' => 'array',
             'task_metas.*.task_key' => 'required|distinct',
