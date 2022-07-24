@@ -10,6 +10,7 @@ function execPrint($command) {
     }
     print("</pre>");
 
+
 }
 // Print the exec output inside of a pre element
 execPrint("git pull");
