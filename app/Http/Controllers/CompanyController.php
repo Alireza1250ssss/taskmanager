@@ -20,7 +20,9 @@ class CompanyController extends Controller
     public function index(Request $request): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'کمپانی']),[
-            Company::getRecords($request->toArray())->get()
+            Company::getRecords($request->toArray())->addConstraints(function ($query){
+                $query->with('projects.teams');
+            })->get()
         ]);
         return response()->json($response,$response['statusCode']);
     }

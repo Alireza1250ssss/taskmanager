@@ -3,10 +3,14 @@
 namespace App\Observers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ResolvePermissionController;
 use App\Models\Entity;
 use App\Models\Field;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -138,5 +142,31 @@ class BaseObserver extends Controller
         if (!in_array($entityPermission->entity_id, auth()->user()->entities->pluck('entity_id')->toArray())) {
             throw new AuthorizationException();
         }
+    }
+
+    public function created($model)
+    {
+        $class = get_class($model);
+        $modelId =  $model->{$model->getPrimaryKey()};
+        Entity::query()->upsert([
+            ['key' => $class, 'action' => 'read', 'model_id' => $modelId],
+            ['key' => $class, 'action' => 'update', 'model_id' => $modelId],
+            ['key' => $class, 'action' => 'delete', 'model_id' => $modelId],
+
+        ], ['key', 'action', 'model_id']);
+
+        Entity::query()->updateOrInsert([
+            'key' => $class,
+            'action' => 'create'
+        ],['action' => 'create']);
+
+        $entities = Entity::query()->where([
+            'key' => $class ,
+            'action' => 'create'
+        ])->orWhere(function (Builder $builder) use ($class,$modelId){
+            $builder->where('key',$class)->where('model_id',$modelId);
+        })->get()->pluck('entity_id')->toArray();
+
+        auth()->user()->entities()->syncWithoutDetaching($entities);
     }
 }
