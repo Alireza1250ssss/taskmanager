@@ -6,6 +6,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Entity;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -22,7 +23,16 @@ class UserController extends Controller
     public function index(Request $request): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'کاربر']), [
-            User::getRecords($request->toArray())->get()
+            User::getRecords($request->toArray())->addConstraints(function ($query) use($request){
+                if ($request->filled('access_entity'))
+                    $query->whereHas('entities',function (Builder $builder) use($request){
+                        $key = ResolvePermissionController::$models[$request->get('access_entity')]['class'];
+                        $builder = $builder->where('key',$key)
+                            ->where('action',$request->get('access_entity_action'));
+                        if ($request->get('access_entity_action') !== 'read')
+                            $builder->where('model_id',$request->get('access_entity_id'));
+                    });
+            })->get()
         ]);
         return response()->json($response, $response['statusCode']);
     }

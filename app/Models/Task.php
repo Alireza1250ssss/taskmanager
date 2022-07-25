@@ -21,11 +21,11 @@ class Task extends Model
     protected $primaryKey = 'task_id';
     protected $fillable = [
         'title', 'description', 'user_ref_id', 'parent_id','team_ref_id','stage_ref_id','status_ref_id',
-        'priority' , 'label' ,'real_time' , 'estimate_time'
+        'priority' , 'labels' ,'real_time' , 'estimate_time'
     ];
     public array $filters = [
         'title', 'description', 'user_ref_id', 'parent_id','team_ref_id','stage_ref_id','status_ref_id' ,
-        'priority' , 'label' ,'real_time' , 'estimate_time'
+        'priority' , 'labels' ,'real_time' , 'estimate_time'
     ];
     protected $hidden = ['taskMetas'];
 

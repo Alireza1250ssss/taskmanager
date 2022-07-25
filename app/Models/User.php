@@ -87,7 +87,7 @@ class User extends Authenticatable implements JWTSubject
             'permissible' ,
             'permissibles' ,
             'user_ref_id'
-        )->withPivot('id');
+        )->withPivot(['id','parent_id']);
     }
 
     /**
