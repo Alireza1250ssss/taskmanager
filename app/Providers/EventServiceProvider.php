@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\Leave;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\Team;
 use App\Models\User;
 use App\Observers\BaseObserver;
 use App\Observers\CompanyObserver;
@@ -29,9 +30,6 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        ModelRetrievedEvent::class => [
-          CheckRetrieveModel::class
-        ],
     ];
 
     /**
@@ -43,9 +41,12 @@ class EventServiceProvider extends ServiceProvider
     {
 
 
-//        Leave::observe([SetLeaveScheduleObserver::class,BaseObserver::class]);
+        Leave::observe([SetLeaveScheduleObserver::class,BaseObserver::class]);
         Company::observe([BaseObserver::class]);
-//        Project::observe([BaseObserver::class]);
-//        User::observe([BaseObserver::class]); !!!!!!!!!!!!!!!!!!!!!
+        Project::observe([BaseObserver::class]);
+        Team::observe([BaseObserver::class]);
+        Task::observe([BaseObserver::class]);
+//        User::observe([BaseObserver::class]); !!!!!!!!!!!!!!!!!!!!! DO NOT UNCOMMENT THIS !!!!!!!!!!!!!
+
     }
 }

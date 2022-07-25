@@ -23,6 +23,7 @@ class ResolvePermissionController extends Controller
     ];
 
     /**
+     * resolve and persist permissions for an entity into database
      * @param Request $request
      * @return JsonResponse
      */
@@ -78,6 +79,7 @@ class ResolvePermissionController extends Controller
     }
 
     /**
+     * set and sync permissions for a user on both entity and field
      * @param User $user
      * @param string $type
      * @param Request $request
@@ -102,7 +104,7 @@ class ResolvePermissionController extends Controller
 
         //sync permissions of user
         if ($type === 'entities')
-            $user->$type()->sync($request->get('permissions'));
+            $user->$type()->syncWithoutDetaching($request->get('permissions'));
         else {
             $parentPermission = Entity::query()->where([
                 'key' => static::$models[$request->get('field_entity')]['class'],
@@ -120,4 +122,5 @@ class ResolvePermissionController extends Controller
         ]);
         return response()->json($response, $response['statusCode']);
     }
+
 }

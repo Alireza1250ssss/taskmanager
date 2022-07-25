@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Entity;
 use App\Models\Field;
 use App\Models\User;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class BaseObserver extends Controller
@@ -21,8 +22,8 @@ class BaseObserver extends Controller
         try {
             $this->user = JWTAuth::parseToken()->authenticate();
         } catch (\Exception $e) {
-            if (!in_array('jwt_auth', Route::current()->gatherMiddleware()))
-                $this->noAuth = true;
+//            if (!in_array('jwt_auth', Route::current()->gatherMiddleware()))
+            $this->noAuth = true;
         }
     }
 
@@ -85,19 +86,57 @@ class BaseObserver extends Controller
      * This observer method is called when a model record is in the updating process,
      * at this point, the updates has not yet been persisted to the database.
      * @param $modelItem
+     * @throws AuthorizationException
      */
     public function updating($modelItem)
     {
+        if ($this->noAuth === true)
+            return;
+        $modelId = $modelItem->{$modelItem->getPrimaryKey()};
+        $class = get_class($modelItem);
+        $userId = auth()->user()->user_id;
 
+        $entityPermission = Entity::query()->where([
+            'key' => $class,
+            'action' => 'update',
+            'model_id' => $modelId
+        ])->with('users')->first();
+        if (empty($entityPermission))
+            return;
+        // check if permission found
+
+        // check the permission on user
+        if (!in_array($entityPermission->entity_id, auth()->user()->entities->pluck('entity_id')->toArray())) {
+            throw new AuthorizationException();
+        }
     }
 
     /**
      * This observer method is called when a model record is in the process of creation,
      * and not yet stored into the database,
      * @param $modelItem
+     * @throws AuthorizationException
      */
     public function creating($modelItem)
     {
+        if ($this->noAuth === true)
+            return;
 
+        $class = get_class($modelItem);
+
+
+        $entityPermission = Entity::query()->where([
+            'key' => $class,
+            'action' => 'create',
+            'model_id' => null
+        ])->with('users')->first();
+        if (empty($entityPermission))
+            return;
+        // check if permission found
+
+        // check the permission on user
+        if (!in_array($entityPermission->entity_id, auth()->user()->entities->pluck('entity_id')->toArray())) {
+            throw new AuthorizationException();
+        }
     }
 }
