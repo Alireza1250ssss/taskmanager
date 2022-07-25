@@ -49,7 +49,7 @@ class CompanyController extends Controller
     public function show(Company $company): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'کمپانی']), [
-            'company' => $company->load('projects')
+            'company' => $company->load('projects.teams')
         ]);
         return response()->json($response, $response['statusCode']);
     }

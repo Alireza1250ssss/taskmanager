@@ -40,7 +40,7 @@ class UpdateTaskRequest extends FormRequest
             'stage_ref_id' => Rule::exists('stages', 'stage_id')->withoutTrashed(),
             'status_ref_id' => Rule::exists('statuses', 'status_id')->withoutTrashed(),
             'real_time' => 'string',
-            'estimate_time' => 'string',
+            'estimate_time' => 'prohibited',
             'priority' => 'string',
             'title' => 'string',
             'description' => 'string',
