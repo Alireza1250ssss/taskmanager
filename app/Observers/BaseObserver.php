@@ -81,8 +81,8 @@ class BaseObserver extends Controller
             collect($notAllowedFields)->each(function ($item, $key) use (&$modelAttributes) {
                 unset($modelAttributes[$item->name]);
             });
+            $modelItem->setAttributes($modelAttributes);
         }
-        $modelItem->setAttributes($modelAttributes);
 
     }
 
