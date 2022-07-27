@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Events\ModelRetrievedEvent;
+use App\Events\PermissionAdded;
 use App\Listeners\CheckRetrieveModel;
+use App\Listeners\SetParentsReadPermission;
 use App\Models\Company;
 use App\Models\Leave;
 use App\Models\Project;
@@ -30,6 +32,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        PermissionAdded::class => [
+          SetParentsReadPermission::class
+        ],
     ];
 
     /**
@@ -45,7 +50,7 @@ class EventServiceProvider extends ServiceProvider
         Company::observe([BaseObserver::class]);
         Project::observe([BaseObserver::class]);
         Team::observe([BaseObserver::class]);
-        Task::observe([BaseObserver::class]);
+//        Task::observe([BaseObserver::class]);
 //        User::observe([BaseObserver::class]); !!!!!!!!!!!!!!!!!!!!! DO NOT UNCOMMENT THIS !!!!!!!!!!!!!
 
     }
