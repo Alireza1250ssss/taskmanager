@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\EntityController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResolvePermissionController;
@@ -70,6 +71,7 @@ Route::middleware(['jwt_auth'])->group(function(){
         'tasks' => TaskController::class ,
         'schedules' => ScheduleController::class ,
         'leave' => LeaveController::class ,
+        'entities' => EntityController::class
         ]);
 
 
