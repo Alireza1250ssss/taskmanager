@@ -16,7 +16,8 @@ return [
   'auth-failed' => 'اطلاعات هویتی وارد شده درست نمی باشد',
   'forbidden' => 'غیر مجاز' ,
   'cant-create-token' => 'عدم ساخت موفق توکن' ,
-  'successful-login' => 'ورود با موفقیت انجام شد'
+  'successful-login' => 'ورود با موفقیت انجام شد',
+  'logout' => 'خروج با موفقیت انجام شد'
 ];
 
 

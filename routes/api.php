@@ -15,6 +15,7 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,8 +30,17 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('jwt_auth')->get('/user', function (Request $request) {
-    dd('hi');
     return $request->user();
+});
+
+Route::middleware('jwt_auth')->get('/logout', function (Request $request) {
+    JWTAuth::parseToken()->invalidate();
+    return response()->json([
+        'status' => true,
+        'message' => __('apiResponse.logout'),
+        'data' => [],
+        'statusCode' => 200
+    ]);
 });
 
 Route::post('/register',[AuthController::class,'register'])->name('register');
