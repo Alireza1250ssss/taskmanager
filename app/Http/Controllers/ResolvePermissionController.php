@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PermissionAdded;
 use App\Models\Company;
 use App\Models\Entity;
 use App\Models\Field;
@@ -103,8 +104,13 @@ class ResolvePermissionController extends Controller
 
 
         //sync permissions of user
-        if ($type === 'entities')
+        if ($type === 'entities') {
             $user->$type()->syncWithoutDetaching($request->get('permissions'));
+            PermissionAdded::dispatch(
+                Entity::query()->whereIn('entity_id',$request->get('permissions'))->get(),
+                $user
+            );
+        }
         else {
             $parentPermission = Entity::query()->where([
                 'key' => static::$models[$request->get('field_entity')]['class'],
