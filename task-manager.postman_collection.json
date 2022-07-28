@@ -436,7 +436,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASEURI}}/api/users?first_name=Z",
+							"raw": "{{BASEURI}}/api/users?access_entity=task&access_entity_action=read",
 							"host": [
 								"{{BASEURI}}"
 							],
@@ -446,8 +446,12 @@
 							],
 							"query": [
 								{
-									"key": "first_name",
-									"value": "Z"
+									"key": "access_entity",
+									"value": "task"
+								},
+								{
+									"key": "access_entity_action",
+									"value": "read"
 								}
 							]
 						}
@@ -564,7 +568,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"permissions\":[\n        1,2\n    ],\n    \"field_entity\":\"company\",\n    \"field_entity_action\":\"read\",\n    \"field_entity_id\": 5\n}",
+							"raw": "{\n    \"permissions\":[\n        172\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -572,7 +576,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASEURI}}/api/users/19/permissions/fields",
+							"raw": "{{BASEURI}}/api/users/19/permissions/entities",
 							"host": [
 								"{{BASEURI}}"
 							],
@@ -581,7 +585,7 @@
 								"users",
 								"19",
 								"permissions",
-								"fields"
+								"entities"
 							]
 						}
 					},
@@ -881,6 +885,24 @@
 							"body": "{\n    \"user_id\": 19,\n    \"first_name\": null,\n    \"last_name\": null,\n    \"phone\": \"09140438837\",\n    \"email\": \"alirezasalehi.1250ssss@gmail.com\",\n    \"status\": \"pending\",\n    \"username\": \"alireza_ssss\",\n    \"verify_code_expire_time\": null,\n    \"created_at\": \"2022-06-29T12:52:23.000000Z\",\n    \"updated_at\": \"2022-06-29T12:52:23.000000Z\",\n    \"deleted_at\": null\n}"
 						}
 					]
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/logout",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"logout"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -2749,7 +2771,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"task\",\n    \"insert_fields\": true,\n    \"only_fields\":true\n}",
+							"raw": "{\n    \"name\": \"task\",\n    \"insert_fields\": true,\n    \"id\":29,\n    \"only_fields\":true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2846,6 +2868,226 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "entity",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/entities?key=company&model_id=5&action=read",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"entities"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "company"
+								},
+								{
+									"key": "model_id",
+									"value": "5"
+								},
+								{
+									"key": "action",
+									"value": "read"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "index",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/entities?key=company&model_id=5&action=read",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"entities"
+									],
+									"query": [
+										{
+											"key": "key",
+											"value": "company"
+										},
+										{
+											"key": "model_id",
+											"value": "5"
+										},
+										{
+											"key": "action",
+											"value": "read"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 28 Jul 2022 05:20:20 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 28 Jul 2022 05:20:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"دسترسی موجودیت های مورد نظر دریافت شدند\",\n    \"data\": [\n        {\n            \"current_page\": 1,\n            \"data\": [\n                {\n                    \"entity_id\": 134,\n                    \"key\": \"App\\\\Models\\\\Company\",\n                    \"action\": \"read\",\n                    \"created_at\": \"2022-07-13T04:57:36.000000Z\",\n                    \"updated_at\": \"2022-07-13T04:59:57.000000Z\",\n                    \"model_id\": 5\n                }\n            ],\n            \"first_page_url\": \"http://localhost:8000/api/entities?page=1\",\n            \"from\": 1,\n            \"last_page\": 1,\n            \"last_page_url\": \"http://localhost:8000/api/entities?page=1\",\n            \"links\": [\n                {\n                    \"url\": null,\n                    \"label\": \"&laquo; قبلی\",\n                    \"active\": false\n                },\n                {\n                    \"url\": \"http://localhost:8000/api/entities?page=1\",\n                    \"label\": \"1\",\n                    \"active\": true\n                },\n                {\n                    \"url\": null,\n                    \"label\": \"بعدی &raquo;\",\n                    \"active\": false\n                }\n            ],\n            \"next_page_url\": null,\n            \"path\": \"http://localhost:8000/api/entities\",\n            \"per_page\": 10,\n            \"prev_page_url\": null,\n            \"to\": 1,\n            \"total\": 1\n        }\n    ],\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "show",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/entities/163",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"entities",
+								"163"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "show",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURI}}/api/entities/163",
+									"host": [
+										"{{BASEURI}}"
+									],
+									"path": [
+										"api",
+										"entities",
+										"163"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 28 Jul 2022 05:05:46 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 28 Jul 2022 05:05:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.30"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"دسترسی موجودیت با موفقیت دریافت شد\",\n    \"data\": {\n        \"entity\": {\n            \"entity_id\": 163,\n            \"key\": \"App\\\\Models\\\\Company\",\n            \"action\": \"update\",\n            \"created_at\": \"2022-07-25T11:45:52.000000Z\",\n            \"updated_at\": \"2022-07-25T11:45:52.000000Z\",\n            \"model_id\": 39,\n            \"users\": [\n                {\n                    \"user_id\": 19,\n                    \"first_name\": null,\n                    \"last_name\": null,\n                    \"phone\": \"09140438837\",\n                    \"email\": \"alirezasalehi.1250ssss@gmail.com\",\n                    \"status\": \"pending\",\n                    \"username\": \"alireza_ssss\",\n                    \"verify_code_expire_time\": null,\n                    \"created_at\": \"2022-06-29T12:52:23.000000Z\",\n                    \"updated_at\": \"2022-06-29T12:52:23.000000Z\",\n                    \"deleted_at\": null,\n                    \"pivot\": {\n                        \"permissible_id\": 163,\n                        \"user_ref_id\": 19,\n                        \"permissible_type\": \"App\\\\Models\\\\Entity\",\n                        \"id\": 22\n                    }\n                }\n            ]\n        }\n    },\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURI}}/api/entities/135",
+							"host": [
+								"{{BASEURI}}"
+							],
+							"path": [
+								"api",
+								"entities",
+								"135"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {
@@ -2886,7 +3128,7 @@
 		},
 		{
 			"key": "JWT",
-			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY1ODM3ODY4OCwiZXhwIjoxNjU4OTgzNDg4LCJuYmYiOjE2NTgzNzg2ODgsImp0aSI6IkVZdVhIdXVvV2Jzc3FTWTEiLCJzdWIiOjE5LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwicGhvbmUiOiIwOTE0MDQzODgzNyJ9.JlIfWDL-NezGGyJbh8wo5Jx1IgnPESQC6ncLUthbeNg",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY1ODkxNzIyMywiZXhwIjoxNjU5NTIyMDIzLCJuYmYiOjE2NTg5MTcyMjMsImp0aSI6IldwbnlNTU9pR2RuQ1I2WkciLCJzdWIiOjE5LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwicGhvbmUiOiIwOTE0MDQzODgzNyJ9.Kr2a2i1HYmDMrUzVBo4YpR5waCz4XgMu_oB0iAAp9yA",
 			"type": "string"
 		}
 	]
