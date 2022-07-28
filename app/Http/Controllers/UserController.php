@@ -29,7 +29,7 @@ class UserController extends Controller
                         $key = ResolvePermissionController::$models[$request->get('access_entity')]['class'];
                         $builder = $builder->where('key',$key)
                             ->where('action',$request->get('access_entity_action'));
-                        if ($request->get('access_entity_action') !== 'read')
+                        if ($request->get('access_entity_action') !== 'create')
                             $builder->where('model_id',$request->get('access_entity_id'));
                     });
             })->get()
