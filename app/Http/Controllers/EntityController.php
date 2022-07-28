@@ -17,54 +17,31 @@ class EntityController extends Controller
     public function index(Request $request) : JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'دسترسی موجودیت']),[
-            Entity::getRecords($request->toArray())->get()
+            Entity::getRecords($request->toArray())->addConstraints(function ($query) use($request){
+                if ($request->filled('key')){
+                    $key = ResolvePermissionController::$models[$request->get('key')]['class'];
+                    $query->where('key',$key);
+                }
+                if ($request->filled('action'))
+                    $query->where('action',$request->get('action'));
+                if ($request->filled('model_id'))
+                    $query->where('model_id',$request->get('model_id'));
+            })->get()
         ]);
         return response()->json($response,$response['statusCode']);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return JsonResponse
-     */
-    public function store(Request $request) : JsonResponse
-    {
-        $entity = Entity::create($request->validated());
-        $response = $this->getResponse(__('apiResponse.store',['resource'=>'']), [
-            '' => $entity
-        ]);
-        return response()->json($response, $response['statusCode']);
-    }
-
-    /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Entity  $entity
+     * @param Entity $entity
      * @return JsonResponse
      */
     public function show(Entity $entity) : JsonResponse
     {
-        $response = $this->getResponse(__('apiResponse.show',['resource'=>'']), [
-            '' => $entity
+        $response = $this->getResponse(__('apiResponse.show',['resource'=>'دسترسی موجودیت']), [
+            'entity' => $entity->load('users')
         ]);
-        return response()->json($response, $response['statusCode']);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Entity  $entity
-     * @return JsonResponse
-     */
-    public function update(Request $request, Entity $entity) : JsonResponse
-    {
-        $entity->update($request->validated());
-        $response = $this->getResponse(__('apiResponse.update',['resource'=>'']), [
-            '' => $entity
-        ]);
-
         return response()->json($response, $response['statusCode']);
     }
 

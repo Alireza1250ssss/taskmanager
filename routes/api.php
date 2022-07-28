@@ -62,6 +62,7 @@ Route::middleware(['jwt_auth'])->group(function(){
 
     Route::apiResource('stages', StageController::class)->only(['index']);
     Route::apiResource('statuses', StatusController::class)->only(['index']);
+    Route::apiResource('entities' , EntityController::class)->only(['index','show','destroy']);
 
     Route::apiResources([
         'companies' => CompanyController::class ,
@@ -71,7 +72,6 @@ Route::middleware(['jwt_auth'])->group(function(){
         'tasks' => TaskController::class ,
         'schedules' => ScheduleController::class ,
         'leave' => LeaveController::class ,
-        'entities' => EntityController::class
         ]);
 
 

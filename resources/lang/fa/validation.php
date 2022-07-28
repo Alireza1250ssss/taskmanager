@@ -206,5 +206,7 @@ return [
         "status_ref_id" => "وضعیت مربوطه",
         "task_metas.*.task_key" => "کلید متا",
         "task_metas.*.task_value" => "مقدار متا",
+        "estimate_time" => "زمان تخمینی" ,
+        'real_time' => 'زمان واقعی'
     ],
 ];

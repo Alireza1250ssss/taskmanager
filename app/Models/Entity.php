@@ -13,6 +13,7 @@ class Entity extends Model
 
     protected $primaryKey = 'entity_id';
     protected $fillable = ['key','action'];
+    public array $filters = [];
 
     /**
      * @return MorphToMany
