@@ -29,6 +29,8 @@ class UpdateUserRequest extends FormRequest
             'phone' => ['size:11',Rule::unique('users')->ignore($this->route()->parameter("user"),'user_id')],
             'password' => 'min:5|confirmed',
             'status' => 'prohibited',
+            'first_name' => 'string' ,
+            'last_name' => 'string',
             'username' => Rule::unique('users')->ignore($this->route()->parameter("user"),'user_id') ,
         ];
     }
