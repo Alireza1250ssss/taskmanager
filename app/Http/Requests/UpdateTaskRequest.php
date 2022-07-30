@@ -34,7 +34,7 @@ class UpdateTaskRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_ref_id' => [Rule::exists('users', 'user_id')->withoutTrashed()],
+            'user_ref_id' => ['nullable',Rule::exists('users', 'user_id')->withoutTrashed()],
             'parent_id' => Rule::exists('tasks', 'task_id')->withoutTrashed(),
             'team_ref_id' => [Rule::exists('teams', 'team_id')->withoutTrashed()],
             'stage_ref_id' => Rule::exists('stages', 'stage_id')->withoutTrashed(),

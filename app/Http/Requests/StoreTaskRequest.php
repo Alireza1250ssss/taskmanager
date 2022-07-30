@@ -26,7 +26,7 @@ class StoreTaskRequest extends FormRequest
     {
         return [
             'title' =>'required' ,
-            'user_ref_id' => [Rule::exists('users','user_id')->withoutTrashed()],
+            'user_ref_id' => ['nullable',Rule::exists('users','user_id')->withoutTrashed()],
             'parent_id' => Rule::exists('tasks','task_id')->withoutTrashed() ,
             'team_ref_id' => ['required', Rule::exists('teams','team_id')->withoutTrashed()],
             'description' => 'required',
