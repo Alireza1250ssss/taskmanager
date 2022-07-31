@@ -26,7 +26,9 @@ class StoreTeamRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'project_ref_id' => ['required',Rule::exists('projects','project_id')->withoutTrashed()]
+            'project_ref_id' => ['required',Rule::exists('projects','project_id')->withoutTrashed()] ,
+            'sprint_day' => 'string' ,
+            'sprint_period' => 'string' ,
         ];
     }
 
