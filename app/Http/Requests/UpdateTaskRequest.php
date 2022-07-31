@@ -24,6 +24,10 @@ class UpdateTaskRequest extends FormRequest
                 'user_ref_id' => auth()->user()->user_id
             ]);
         }
+        if (!empty($this->route('task')->estimate_time))
+            $this->merge([
+               'allow_estimate' => true
+            ]);
     }
 
     /**
@@ -40,7 +44,7 @@ class UpdateTaskRequest extends FormRequest
             'stage_ref_id' => Rule::exists('stages', 'stage_id')->withoutTrashed(),
             'status_ref_id' => Rule::exists('statuses', 'status_id')->withoutTrashed(),
             'real_time' => 'string',
-            'estimate_time' => 'prohibited',
+            'estimate_time' => 'prohibited_if:allow_estimate,true',
             'priority' => 'string',
             'title' => 'string',
             'description' => 'string',
@@ -48,6 +52,13 @@ class UpdateTaskRequest extends FormRequest
             'task_metas' => 'array',
             'task_metas.*.task_key' => 'required|distinct',
             'task_metas.*.task_value' => 'required',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'prohibited_if' => 'این فیلد قبلا وارد شده است'
         ];
     }
 }

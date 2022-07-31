@@ -33,7 +33,7 @@ class StoreTaskRequest extends FormRequest
             'stage_ref_id' => Rule::exists('stages','stage_id')->withoutTrashed(),
             'status_ref_id' => Rule::exists('statuses','status_id')->withoutTrashed(),
             'real_time' => 'prohibited',
-            'estimate_time' => 'required|string',
+            'estimate_time' => 'string',
             'priority' => 'string',
             'labels' => 'string',
             'task_metas' => 'array' ,
