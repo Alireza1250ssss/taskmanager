@@ -3,15 +3,15 @@
 namespace App\Observers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\ResolvePermissionController;
+use App\Models\Company;
 use App\Models\Entity;
 use App\Models\Field;
+use App\Models\Project;
 use App\Models\Task;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class BaseObserver extends Controller
@@ -147,26 +147,92 @@ class BaseObserver extends Controller
     public function created($model)
     {
         $class = get_class($model);
-        $modelId =  $model->{$model->getPrimaryKey()};
+        $modelId = $model->{$model->getPrimaryKey()};
         Entity::query()->upsert([
             ['key' => $class, 'action' => 'read', 'model_id' => $modelId],
             ['key' => $class, 'action' => 'update', 'model_id' => $modelId],
             ['key' => $class, 'action' => 'delete', 'model_id' => $modelId],
+            ['key' => $class, 'action' => 'owner', 'model_id' => $modelId],
 
         ], ['key', 'action', 'model_id']);
 
         Entity::query()->updateOrInsert([
             'key' => $class,
             'action' => 'create'
-        ],['action' => 'create']);
+        ], ['action' => 'create']);
 
         $entities = Entity::query()->where([
-            'key' => $class ,
+            'key' => $class,
             'action' => 'create'
-        ])->orWhere(function (Builder $builder) use ($class,$modelId){
-            $builder->where('key',$class)->where('model_id',$modelId);
+        ])->orWhere(function (Builder $builder) use ($class, $modelId) {
+            $builder->where('key', $class)->where('model_id', $modelId);
         })->get()->pluck('entity_id')->toArray();
 
         auth()->user()->entities()->syncWithoutDetaching($entities);
+        $this->setOwnersPermissions($model);
+    }
+
+
+    protected function setOwnersPermissions($childModel)
+    {
+        $modelId = $childModel->{$childModel->getPrimaryKey()};
+        $classKey = get_class($childModel);
+
+        $entitiesToGive = Entity::query()->where('key', Project::class)
+            ->where('model_id', $modelId)->orWhere(function ($query) use ($classKey) {
+                $query->where('key', $classKey)->where('action', 'create');
+            })
+            ->get()->pluck('entity_id')->toArray();
+
+        $owners = collect([]);
+        if ($classKey == Project::class){
+            $owners = Entity::query()->where([
+                'key' => Company::class ,
+                'model_id' => $childModel->company->company_id ,
+                'action' => 'owner'
+            ])->get();
+        }
+        elseif ($classKey == Team::class){
+            $owners = Entity::query()->where([
+                'key' => Company::class ,
+                'model_id' => $childModel->project->company->company_id ,
+                'action' => 'owner'
+            ])->orWhere(function($query) use ($childModel){
+                $query->where([
+                    'key' => Project::class ,
+                    'model_id' => $childModel->project->project_id ,
+                    'action' => 'owner'
+                ]);
+            })
+                ->get();
+        }
+        elseif ($classKey == Task::class)
+        {
+            $owners = Entity::query()->where([
+                'key' => Company::class ,
+                'model_id' => $childModel->team->project->company->company_id ,
+                'action' => 'owner'
+            ])->orWhere(function($query) use ($childModel){
+                $query->where([
+                    'key' => Project::class ,
+                    'model_id' => $childModel->team->project->project_id ,
+                    'action' => 'owner'
+                ]);
+            })->orWhere(function($query) use ($childModel){
+                $query->where([
+                    'key' => Team::class ,
+                    'model_id' => $childModel->team->team_id ,
+                    'action' => 'owner'
+                ]);
+            })
+                ->get();
+        }
+
+
+        if ($owners->isNotEmpty()) {
+            $owners->each(function ($owner) use ($entitiesToGive) {
+                $owner->entities()->syncWithoutDetaching($entitiesToGive);
+            });
+        }
     }
 }
