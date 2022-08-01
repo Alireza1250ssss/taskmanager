@@ -102,7 +102,7 @@ class ProjectController extends Controller
 
         if ($request->filled('users'))
             foreach ($request->get('users') as $user) {
-                $user = User::find($user);
+                $user = User::query()->where('email',$user)->first();
                 if (!empty($user))
                     $user->entities()->syncWithoutDetaching($entityToGive->entity_id);
             }
