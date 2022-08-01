@@ -24,7 +24,11 @@ class BaseObserver extends Controller
     {
 
         try {
-            $this->user = JWTAuth::parseToken()->authenticate();
+            $user = JWTAuth::parseToken()->authenticate();
+            if (!empty($user))
+                $this->user = $user;
+            else
+                $this->noAuth = true;
         } catch (\Exception $e) {
 //            if (!in_array('jwt_auth', Route::current()->gatherMiddleware()))
             $this->noAuth = true;
@@ -128,6 +132,8 @@ class BaseObserver extends Controller
 
         $class = get_class($modelItem);
 
+        if ($class = Company::class && env("MULTIPLE_COMPANY_CREATE") == 'allowed')
+            return;
 
         $entityPermission = Entity::query()->where([
             'key' => $class,
