@@ -178,7 +178,7 @@ class BaseObserver extends Controller
         $modelId = $childModel->{$childModel->getPrimaryKey()};
         $classKey = get_class($childModel);
 
-        $entitiesToGive = Entity::query()->where('key', Project::class)
+        $entitiesToGive = Entity::query()->where('key', $classKey)
             ->where('model_id', $modelId)->orWhere(function ($query) use ($classKey) {
                 $query->where('key', $classKey)->where('action', 'create');
             })
@@ -186,14 +186,16 @@ class BaseObserver extends Controller
 
         $owners = collect([]);
         if ($classKey == Project::class){
-            $owners = Entity::query()->where([
+            $relatedEntities = Entity::query()->where([
                 'key' => Company::class ,
                 'model_id' => $childModel->company->company_id ,
                 'action' => 'owner'
             ])->get();
+            foreach ($relatedEntities as $entityItem)
+                $owners = $owners->merge($entityItem->users);
         }
         elseif ($classKey == Team::class){
-            $owners = Entity::query()->where([
+            $relatedEntities = Entity::query()->where([
                 'key' => Company::class ,
                 'model_id' => $childModel->project->company->company_id ,
                 'action' => 'owner'
@@ -205,10 +207,13 @@ class BaseObserver extends Controller
                 ]);
             })
                 ->get();
+
+            foreach ($relatedEntities as $entityItem)
+                $owners = $owners->merge($entityItem->users);
         }
         elseif ($classKey == Task::class)
         {
-            $owners = Entity::query()->where([
+            $relatedEntities = Entity::query()->where([
                 'key' => Company::class ,
                 'model_id' => $childModel->team->project->company->company_id ,
                 'action' => 'owner'
@@ -226,6 +231,9 @@ class BaseObserver extends Controller
                 ]);
             })
                 ->get();
+
+            foreach ($relatedEntities as $entityItem)
+                $owners = $owners->merge($entityItem->users);
         }
 
 
