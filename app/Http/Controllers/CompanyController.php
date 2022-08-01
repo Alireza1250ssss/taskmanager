@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
 use App\Models\Company;
+use App\Models\Entity;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class CompanyController extends Controller
 {
@@ -19,12 +20,12 @@ class CompanyController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $response = $this->getResponse(__('apiResponse.index',['resource'=>'کمپانی']),[
-            Company::getRecords($request->toArray())->addConstraints(function ($query){
+        $response = $this->getResponse(__('apiResponse.index', ['resource' => 'کمپانی']), [
+            Company::getRecords($request->toArray())->addConstraints(function ($query) {
                 $query->with('projects.teams');
             })->get()
         ]);
-        return response()->json($response,$response['statusCode']);
+        return response()->json($response, $response['statusCode']);
     }
 
     /**
@@ -36,7 +37,7 @@ class CompanyController extends Controller
     public function store(StoreCompanyRequest $request): JsonResponse
     {
         $company = Company::create($request->validated());
-        $response = $this->getResponse(__('apiResponse.store',['resource'=>'کمپانی']), [
+        $response = $this->getResponse(__('apiResponse.store', ['resource' => 'کمپانی']), [
             'company' => $company
         ]);
         return response()->json($response, $response['statusCode']);
@@ -50,7 +51,7 @@ class CompanyController extends Controller
      */
     public function show(Company $company): JsonResponse
     {
-        $response = $this->getResponse(__('apiResponse.show',['resource'=>'کمپانی']), [
+        $response = $this->getResponse(__('apiResponse.show', ['resource' => 'کمپانی']), [
             'company' => $company->load('projects.teams')
         ]);
         return response()->json($response, $response['statusCode']);
@@ -67,7 +68,7 @@ class CompanyController extends Controller
     public function update(UpdateCompanyRequest $request, Company $company): JsonResponse
     {
         $company->update($request->validated());
-        $response = $this->getResponse(__('apiResponse.update',['resource'=>'کمپانی']), [
+        $response = $this->getResponse(__('apiResponse.update', ['resource' => 'کمپانی']), [
             'company' => $company->load('projects')
         ]);
 
@@ -82,8 +83,33 @@ class CompanyController extends Controller
      */
     public function destroy($company): JsonResponse
     {
-        $count = Company::destroy(explode(',',$company));
-        $response = $this->getResponse(__('apiResponse.destroy',['items'=>$count]));
+        $count = Company::destroy(explode(',', $company));
+        $response = $this->getResponse(__('apiResponse.destroy', ['items' => $count]));
         return response()->json($response, $response['statusCode']);
+    }
+
+    /**
+     * add viewer permission to a company
+     * @param Company $company
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addAssign(Company $company, Request $request): JsonResponse
+    {
+        $entityToGive = Entity::query()->where([
+            'key' => Company::class,
+            'model_id' => $company->company_id,
+            'action' => 'read'
+        ])->firstOrFail();
+
+        if ($request->filled('users'))
+            foreach ($request->get('users') as $user) {
+                $user = User::find($user);
+                if (!empty($user))
+                    $user->entities()->syncWithoutDetaching($entityToGive->entity_id);
+            }
+
+        $response = $this->getResponse(__('apiResponse.add-viewer'));
+        return response()->json($response,$response['statusCode']);
     }
 }

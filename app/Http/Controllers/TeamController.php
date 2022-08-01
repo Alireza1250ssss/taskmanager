@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTeamRequest;
 use App\Http\Requests\UpdateTeamRequest;
+use App\Models\Entity;
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -86,6 +88,25 @@ class TeamController extends Controller
     {
         $count = Team::destroy(explode(',',$team));
         $response = $this->getResponse(__('apiResponse.destroy',['items'=>$count]));
+        return response()->json($response, $response['statusCode']);
+    }
+
+    public function addAssign(Team $team,Request $request)
+    {
+        $entityToGive = Entity::query()->where([
+            'key' => Team::class,
+            'model_id' => $team->team_id,
+            'action' => 'read'
+        ])->firstOrFail();
+
+        if ($request->filled('users'))
+            foreach ($request->get('users') as $user) {
+                $user = User::find($user);
+                if (!empty($user))
+                    $user->entities()->syncWithoutDetaching($entityToGive->entity_id);
+            }
+
+        $response = $this->getResponse(__('apiResponse.add-viewer'));
         return response()->json($response, $response['statusCode']);
     }
 }

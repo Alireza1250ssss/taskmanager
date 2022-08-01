@@ -63,6 +63,9 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::apiResource('stages', StageController::class)->only(['index']);
     Route::apiResource('statuses', StatusController::class)->only(['index']);
     Route::apiResource('entities' , EntityController::class)->only(['index','show','destroy']);
+    Route::put('/companies/{company}/assign',[CompanyController::class,'addAssign'])->name('company-add-viewer');
+    Route::put('/projects/{project}/assign',[ProjectController::class,'addAssign'])->name('project-add-viewer');
+    Route::put('/teams/{team}/assign',[TeamController::class,'addAssign'])->name('team-add-viewer');
 
     Route::apiResources([
         'companies' => CompanyController::class ,

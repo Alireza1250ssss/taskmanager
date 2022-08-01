@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Models\Entity;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
@@ -90,5 +92,16 @@ class TaskController extends Controller
         $count = Task::destroy(explode(',',$task));
         $response = $this->getResponse(__('apiResponse.destroy',['items'=>$count]));
         return response()->json($response, $response['statusCode']);
+    }
+
+    public function assignTask(Task $task,Request $request)
+    {
+        $request->validate([
+            'user_ref_id' => ['required',Rule::exists('users','user_id')->withoutTrashed()]
+        ]);
+//        $entitiesToGive = Entity::query()->where([
+//            'key' => Tas
+//        ])->firstOrFail();
+
     }
 }
