@@ -107,7 +107,9 @@ class ProjectController extends Controller
                     $user->entities()->syncWithoutDetaching($entityToGive->entity_id);
             }
 
-        $response = $this->getResponse(__('apiResponse.add-viewer'));
+        $response = $this->getResponse(__('apiResponse.add-viewer'),[
+            'project' => $project
+        ]);
         return response()->json($response, $response['statusCode']);
 
     }
