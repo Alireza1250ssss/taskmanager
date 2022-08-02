@@ -29,6 +29,7 @@ class UpdateTeamRequest extends FormRequest
             'project_ref_id' => ['required',Rule::exists('projects','project_id')->withoutTrashed()],
             'sprint_day' => 'string' ,
             'sprint_period' => 'string' ,
+            'git_repo' => 'string|url' ,
         ];
     }
 
