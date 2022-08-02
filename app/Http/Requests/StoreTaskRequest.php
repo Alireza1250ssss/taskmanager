@@ -30,7 +30,11 @@ class StoreTaskRequest extends FormRequest
             'parent_id' => Rule::exists('tasks','task_id')->withoutTrashed() ,
             'team_ref_id' => ['required', Rule::exists('teams','team_id')->withoutTrashed()],
             'description' => 'required',
-            'stage_ref_id' => Rule::exists('stages','stage_id')->withoutTrashed(),
+            'stage_ref_id' => [
+                Rule::exists('stages','stage_id')
+                    ->whereIn('name',['backlog','todo'])
+                    ->withoutTrashed()
+            ],
             'status_ref_id' => Rule::exists('statuses','status_id')->withoutTrashed(),
             'real_time' => 'prohibited',
             'estimate_time' => 'string',
