@@ -29,7 +29,7 @@ class TaskObserver extends BaseObserver
             'action' => 'read'
         ])->first();
         $inTeamMates = false;
-        if (empty($teamEntity)) {
+        if (!empty($teamEntity)) {
             $teamMatesUsers = $teamEntity->users->pluck('user_id')->toArray();
             $inTeamMates = in_array($userId, $teamMatesUsers);
         }
