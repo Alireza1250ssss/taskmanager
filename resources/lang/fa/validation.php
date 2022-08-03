@@ -207,6 +207,7 @@ return [
         "task_metas.*.task_key" => "کلید متا",
         "task_metas.*.task_value" => "مقدار متا",
         "estimate_time" => "زمان تخمینی" ,
-        'real_time' => 'زمان واقعی'
+        'real_time' => 'زمان واقعی' ,
+        'git_repo' => 'ریپازیتوری گیت' ,
     ],
 ];

@@ -127,19 +127,22 @@ class BaseObserver extends Controller
      */
     public function creating($modelItem)
     {
+
         if ($this->noAuth === true)
             return;
 
         $class = get_class($modelItem);
 
-        if ($class = Company::class && env("MULTIPLE_COMPANY_CREATE") == 'allowed')
+        if ($class == Company::class && env("MULTIPLE_COMPANY_CREATE") == 'allowed')
             return;
+
 
         $entityPermission = Entity::query()->where([
             'key' => $class,
             'action' => 'create',
             'model_id' => null
         ])->with('users')->first();
+
         if (empty($entityPermission))
             return;
         // check if permission found
