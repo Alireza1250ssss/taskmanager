@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Entity;
 use App\Models\Task;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -94,14 +95,19 @@ class TaskController extends Controller
         return response()->json($response, $response['statusCode']);
     }
 
-    public function assignTask(Task $task,Request $request)
+    /**
+     * @param Task $task
+     * @return JsonResponse
+     * @throws AuthorizationException
+     */
+    public function takeTask(Task $task): JsonResponse
     {
-        $request->validate([
-            'user_ref_id' => ['required',Rule::exists('users','user_id')->withoutTrashed()]
+        if (!empty($task->user_ref_id))
+            throw new AuthorizationException();
+        $task->update([
+           'user_ref_id' => auth()->user()->user_id
         ]);
-//        $entitiesToGive = Entity::query()->where([
-//            'key' => Tas
-//        ])->firstOrFail();
-
+        $response = $this->getResponse('تسک با به شما موفقیت اختصاص داده شد');
+        return response()->json($response,$response['statusCode']);
     }
 }

@@ -66,6 +66,7 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::put('/companies/{company}/assign',[CompanyController::class,'addAssign'])->name('company-add-viewer');
     Route::put('/projects/{project}/assign',[ProjectController::class,'addAssign'])->name('project-add-viewer');
     Route::put('/teams/{team}/assign',[TeamController::class,'addAssign'])->name('team-add-viewer');
+    Route::get('/tasks/take/{task}',[TaskController::class , 'takeTask'])->name('take-task');
 
     Route::apiResources([
         'companies' => CompanyController::class ,
