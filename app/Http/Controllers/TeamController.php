@@ -9,6 +9,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 
 class TeamController extends Controller
@@ -91,8 +92,17 @@ class TeamController extends Controller
         return response()->json($response, $response['statusCode']);
     }
 
-    public function addAssign(Team $team,Request $request)
+    /**
+     * @param Team $team
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addAssign(Team $team,Request $request): JsonResponse
     {
+        $request->validate([
+            'users.*' => [Rule::exists('users','email')->withoutTrashed()]
+        ]);
+
         $entityToGive = Entity::query()->where([
             'key' => Team::class,
             'model_id' => $team->team_id,

@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 
 class ProjectController extends Controller
@@ -93,6 +94,9 @@ class ProjectController extends Controller
      */
     public function addAssign(Project $project, Request $request): JsonResponse
     {
+        $request->validate([
+           'users.*' => [Rule::exists('users','email')->withoutTrashed()]
+        ]);
 
         $entityToGive = Entity::query()->where([
             'key' => Project::class,

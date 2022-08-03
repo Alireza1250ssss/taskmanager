@@ -9,6 +9,7 @@ use App\Models\Entity;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CompanyController extends Controller
 {
@@ -96,6 +97,10 @@ class CompanyController extends Controller
      */
     public function addAssign(Company $company, Request $request): JsonResponse
     {
+        $request->validate([
+            'users.*' => [Rule::exists('users','email')->withoutTrashed()]
+        ]);
+
         $entityToGive = Entity::query()->where([
             'key' => Company::class,
             'model_id' => $company->company_id,
