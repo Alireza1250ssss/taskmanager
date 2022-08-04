@@ -40,6 +40,7 @@ class StoreTaskRequest extends FormRequest
             'estimate_time' => 'string',
             'priority' => 'string',
             'labels' => 'string',
+            'due_date' => 'string' ,
             'task_metas' => 'array' ,
             'task_metas.*.task_key' => 'required|distinct',
             'task_metas.*.task_value' => 'required',
