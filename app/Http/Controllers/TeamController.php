@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTeamRequest;
 use App\Http\Requests\UpdateTeamRequest;
+use App\Http\Requests\UserAssignViewRequest;
 use App\Models\Entity;
 use App\Models\Team;
 use App\Models\User;
@@ -94,14 +95,11 @@ class TeamController extends Controller
 
     /**
      * @param Team $team
-     * @param Request $request
+     * @param UserAssignViewRequest $request
      * @return JsonResponse
      */
-    public function addAssign(Team $team,Request $request): JsonResponse
+    public function addAssign(Team $team,UserAssignViewRequest $request): JsonResponse
     {
-        $request->validate([
-            'users.*' => [Rule::exists('users','email')->withoutTrashed()]
-        ]);
 
         $entityToGive = Entity::query()->where([
             'key' => Team::class,

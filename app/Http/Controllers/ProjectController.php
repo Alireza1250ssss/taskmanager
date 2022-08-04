@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Http\Requests\UserAssignViewRequest;
 use App\Models\Entity;
 use App\Models\Project;
 use App\Models\User;
@@ -89,14 +90,11 @@ class ProjectController extends Controller
 
     /**
      * @param Project $project
-     * @param Request $request
+     * @param UserAssignViewRequest $request
      * @return JsonResponse
      */
-    public function addAssign(Project $project, Request $request): JsonResponse
+    public function addAssign(Project $project, UserAssignViewRequest $request): JsonResponse
     {
-        $request->validate([
-           'users.*' => [Rule::exists('users','email')->withoutTrashed()]
-        ]);
 
         $entityToGive = Entity::query()->where([
             'key' => Project::class,

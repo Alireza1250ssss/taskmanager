@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
+use App\Http\Requests\UserAssignViewRequest;
 use App\Models\Company;
 use App\Models\Entity;
 use App\Models\User;
@@ -92,14 +93,11 @@ class CompanyController extends Controller
     /**
      * add viewer permission to a company
      * @param Company $company
-     * @param Request $request
+     * @param UserAssignViewRequest $request
      * @return JsonResponse
      */
-    public function addAssign(Company $company, Request $request): JsonResponse
+    public function addAssign(Company $company, UserAssignViewRequest $request): JsonResponse
     {
-        $request->validate([
-            'users.*' => [Rule::exists('users','email')->withoutTrashed()]
-        ]);
 
         $entityToGive = Entity::query()->where([
             'key' => Company::class,
