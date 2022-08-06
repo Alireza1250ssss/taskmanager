@@ -122,6 +122,13 @@ class TaskObserver extends BaseObserver
 
         $fromOwners = in_array($userId, $owners->pluck('user_id')->toArray());
 
+        return[
+          'owners' =>   $owners->pluck('user_id')->toArray() ,
+          'teammates' => $teamMatesUsers ,
+          'in teammates' => $inTeamMates ,
+          'from owners' => $fromOwners
+        ];
+
         if (!empty($modelItem->user_ref_id)) {
 
             if (!$fromOwners && ($userId == $modelItem->user_ref_id))
