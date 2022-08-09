@@ -122,20 +122,14 @@ class TaskObserver extends BaseObserver
 
         $fromOwners = in_array($userId, $owners->pluck('user_id')->toArray());
 
-//        return[
-//          'owners' =>   $owners->pluck('user_id')->toArray() ,
-//          'teammates' => $teamMatesUsers ,
-//          'in teammates' => $inTeamMates ,
-//          'from owners' => $fromOwners
-//        ];
 
         if (!empty($modelItem->user_ref_id)) {
 
             if (!$fromOwners && ($userId == $modelItem->user_ref_id))
-                throw new AuthorizationException();
+                throw new AuthorizationException('not from owners not the assigni himself');
 
         } elseif (!$inTeamMates && !$fromOwners)
-            throw new AuthorizationException();
+            throw new AuthorizationException('not in teammates not owner');
 
     }
 
