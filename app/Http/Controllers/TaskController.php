@@ -102,6 +102,7 @@ class TaskController extends Controller
      */
     public function takeTask(Task $task): JsonResponse
     {
+        return ['task' => $task->toArray() , 'is_empty' => empty($task->user_ref_id)];
         if (!empty($task->user_ref_id))
             throw new AuthorizationException();
         $task->update([
