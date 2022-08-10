@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Entity;
 use App\Models\Task;
+use App\Models\TaskLog;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,7 +36,6 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request) : JsonResponse
     {
-        return response()->json(['hiii']);
         $task = Task::create($request->validated());
         if ($request->filled('task_metas'))
             $task->taskMetas()->createMany($request->get('task_metas'));
@@ -70,6 +70,10 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task) : JsonResponse
     {
+        //check if the stage is being updated to set a log
+        if (array_key_exists('stage_ref_id' , $request->validated()))
+            TaskLog::stageChangeLog($task,$request);
+
         $task->update($request->validated());
         if ($request->filled('task_metas')) {
             $task->taskMetas()->delete();
