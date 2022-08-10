@@ -18,14 +18,14 @@ class Entity extends Model
     /**
      * @return MorphToMany
      */
-    public function users(): MorphToMany
+    public function roles(): MorphToMany
     {
         return $this->morphToMany(
-            User::class ,
+            Role::class ,
             'permissible',
             'permissibles',
             'permissible_id',
-            'user_ref_id'
+            'role_ref_id'
         )->withPivot(['id']);
     }
 }

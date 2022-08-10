@@ -8,6 +8,7 @@ use App\Http\Traits\MainPropertySetter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
@@ -25,6 +26,20 @@ class Company extends Model
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class,'company_ref_id');
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function watchers(): MorphToMany
+    {
+        return $this->morphToMany(
+            User::class ,
+            'watchable',
+            'watchers' ,
+            'watchable_id',
+            'user_ref_id'
+        );
     }
 
 }

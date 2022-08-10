@@ -5,9 +5,6 @@ namespace App\Models;
 use App\Http\Traits\FilterRecords;
 use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
-use App\Models\Permissions\Permission;
-use App\Models\Permissions\Role;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -22,11 +19,11 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable,FilterRecords,SoftDeletes,MainPropertySetter,MainPropertyGetter;
+    use HasApiTokens, HasFactory, Notifiable, FilterRecords, SoftDeletes, MainPropertySetter, MainPropertyGetter;
 
     protected $primaryKey = 'user_id';
     public array $filters = [
-        'first_name' , 'last_name' , 'phone' , 'email' , 'username' , 'status'
+        'first_name', 'last_name', 'phone', 'email', 'username', 'status'
     ];
     /**
      * The attributes that are mass assignable.
@@ -34,7 +31,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $fillable = [
-        'first_name', 'last_name' , 'phone', 'username', 'email', 'password',
+        'first_name', 'last_name', 'phone', 'username', 'email', 'password',
     ];
 
     /**
@@ -47,14 +44,83 @@ class User extends Authenticatable implements JWTSubject
         'verify_code',
     ];
 
+    /**
+     * @return BelongsToMany
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Role::class,
+            'role_user',
+            'user_ref_id',
+            'role_ref_id'
+        );
+    }
 
+    // watching entities are listed here below
+
+    /**
+     * @return MorphToMany
+     */
+    public function watchingCompanies(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Company::class ,
+            'watchable' ,
+            'watchers' ,
+            'user_ref_id' ,
+            'watchable_id'
+        );
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function watchingProjects(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Project::class ,
+            'watchable',
+            'watchers' ,
+            'user_ref_id' ,
+            'watchable_id'
+        );
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function watchingTeams(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Team::class ,
+            'watchable',
+            'watchers' ,
+            'user_ref_id' ,
+            'watchable_id'
+        );
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function watchingTasks(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Task::class ,
+            'watchable',
+            'watchers' ,
+            'user_ref_id' ,
+            'watchable_id'
+        );
+    }
 
     /**
      * @return HasMany
      */
     public function tasks(): HasMany
     {
-        return $this->hasMany(Task::class,'user_ref_id');
+        return $this->hasMany(Task::class, 'user_ref_id');
     }
 
     /**
@@ -62,7 +128,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function schedules(): HasMany
     {
-        return $this->hasMany(Schedule::class , 'user_ref_id');
+        return $this->hasMany(Schedule::class, 'user_ref_id');
     }
 
     /**
@@ -70,47 +136,16 @@ class User extends Authenticatable implements JWTSubject
      */
     public function leaves(): HasMany
     {
-        return $this->hasMany(Leave::class , 'user_ref_id');
+        return $this->hasMany(Leave::class, 'user_ref_id');
     }
-
-    /*
-     * --------- polymorphic permissions defined here with MorphedByMany return type -------------------
-     */
-
-    /**
-     * @return MorphToMany
-     */
-    public function fields(): MorphToMany
-    {
-        return $this->morphedByMany(
-            Field::class ,
-            'permissible' ,
-            'permissibles' ,
-            'user_ref_id'
-        )->withPivot(['id','parent_id']);
-    }
-
-    /**
-     * @return MorphToMany
-     */
-    public function entities(): MorphToMany
-    {
-        return $this->morphedByMany(
-            Entity::class ,
-            'permissible' ,
-            'permissibles' ,
-            'user_ref_id'
-        )->withPivot(['id']);
-    }
-
 
 
     /**
      * @return Attribute
      */
-    protected function password() : Attribute
+    protected function password(): Attribute
     {
-        return Attribute::set( fn($value) => Hash::make($value));
+        return Attribute::set(fn($value) => Hash::make($value));
     }
 
     /**
@@ -127,7 +162,7 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [
-          'phone' => $this->phone
+            'phone' => $this->phone
         ];
     }
 }

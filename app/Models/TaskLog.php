@@ -35,7 +35,8 @@ class TaskLog extends Model
             'update_request' => $request->validated() ,
             'time' => time()
         ];
-        static::create([
+        return
+            static::create([
             'name' => 'تغییر استیج تسک' ,
             'description' => sprintf(" تسک از استیج  %s به استیج %s انتقال یافت",$beforeStage,$afterStage)  ,
             'tags' => 'stage,task' ,

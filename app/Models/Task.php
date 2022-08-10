@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Task extends Model
@@ -85,6 +86,20 @@ class Task extends Model
     public function taskLogs(): HasMany
     {
         return $this->hasMany(TaskLog::class, 'task_id', 'task_id');
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function watchers(): MorphToMany
+    {
+        return $this->morphToMany(
+            User::class ,
+            'watchable',
+            'watchers' ,
+            'watchable_id',
+            'user_ref_id'
+        );
     }
 
     public function mergeMeta($relationship)

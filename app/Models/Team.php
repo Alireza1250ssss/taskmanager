@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Team extends Model
@@ -34,5 +35,19 @@ class Team extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class , 'team_ref_id');
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function watchers(): MorphToMany
+    {
+        return $this->morphToMany(
+            User::class ,
+            'watchable',
+            'watchers' ,
+            'watchable_id',
+            'user_ref_id'
+        );
     }
 }

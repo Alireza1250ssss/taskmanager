@@ -7,9 +7,11 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Entity;
 use App\Models\Task;
 use App\Models\TaskLog;
+use App\Notifications\TaskWatcherNotification;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
@@ -70,9 +72,11 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task) : JsonResponse
     {
-        //check if the stage is being updated to set a log
-        if (array_key_exists('stage_ref_id' , $request->validated()))
-            TaskLog::stageChangeLog($task,$request);
+        //check if the stage is being updated to set a log and send notification to its watchers
+        if (array_key_exists('stage_ref_id' , $request->validated())) {
+            $taskLog = TaskLog::stageChangeLog($task, $request);
+            Notification::send($task->watchers , new TaskWatcherNotification($taskLog));
+        }
 
         $task->update($request->validated());
         if ($request->filled('task_metas')) {

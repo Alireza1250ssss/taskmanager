@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
@@ -33,5 +34,19 @@ class Project extends Model
     public function teams(): HasMany
     {
         return $this->hasMany(Team::class, 'project_ref_id');
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function watchers(): MorphToMany
+    {
+        return $this->morphToMany(
+            User::class ,
+            'watchable',
+            'watchers' ,
+            'watchable_id',
+            'user_ref_id'
+        );
     }
 }
