@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\EntityController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ProjectController;
@@ -34,6 +35,11 @@ Route::middleware('jwt_auth')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// routes to work and control database seeding & migrations
+Route::get('/migrate/status',[DatabaseController::class,'migrateStatus']);
+Route::get('/migrate/fresh',[DatabaseController::class,'migrateFresh']);
+Route::get('/db/seed',[DatabaseController::class,'dbSeed']);
+
 Route::middleware('jwt_auth')->get('/logout', function (Request $request) {
     JWTAuth::parseToken()->invalidate();
     return response()->json([
@@ -53,6 +59,7 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::delete('/notifications',[AccountController::class , 'deleteNotifications'])->name('delete-notifications');
     Route::put('/notifications/mark-as-read',[AccountController::class , 'markAsRead'])->name('mark-as-read-notifications');
     Route::post('set-watcher/{model}/{modelId}',[AccountController::class ,'setWatcher'])->name('set-watcher');
+    Route::get('/get-watcher/{model}/{modelId}',[AccountController::class,'getWatchers'])->name('get-watchers');
 
     Route::post('/users/{user}/permissions/{type}',[ResolvePermissionController::class , 'setPermissions'])
         ->where('type',"(fields)|(entities)")

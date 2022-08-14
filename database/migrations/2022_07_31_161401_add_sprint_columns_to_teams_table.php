@@ -14,7 +14,7 @@ class AddSprintColumnsToTeamsTable extends Migration
     public function up()
     {
         Schema::table('teams', function (Blueprint $table) {
-            $table->string('sprint_day')->nullable();
+            $table->string('sprint_start_date')->nullable();
             $table->string('sprint_period')->nullable();
         });
     }

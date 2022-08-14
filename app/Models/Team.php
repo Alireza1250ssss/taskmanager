@@ -18,8 +18,8 @@ class Team extends Model
     use HasFactory,SoftDeletes,FilterRecords,MainPropertyGetter,MainPropertySetter;
 
     protected $primaryKey = 'team_id';
-    protected $fillable = ['name','project_ref_id','sprint_day','sprint_period','git_repo'];
-    public array $filters = ['name','project_ref_id','sprint_day','sprint_period'];
+    protected $fillable = ['name','project_ref_id','sprint_start_date','sprint_period','git_repo'];
+    public array $filters = ['name','project_ref_id','sprint_start_date','sprint_period'];
 
     /**
      * @return BelongsTo

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Http\Traits\FilterRecords;
+use App\Http\Traits\MainPropertyGetter;
+use App\Http\Traits\MainPropertySetter;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Leave extends Model
 {
-    use HasFactory,FilterRecords,SoftDeletes;
+    use HasFactory,FilterRecords,SoftDeletes,MainPropertyGetter,MainPropertySetter;
 
     protected $primaryKey = 'leave_id';
     protected $fillable = ['user_ref_id','time_from','time_to','type','status','params','description'];

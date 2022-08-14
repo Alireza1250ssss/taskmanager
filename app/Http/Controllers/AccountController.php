@@ -58,6 +58,12 @@ class AccountController extends Controller
         return response()->json($response, $response['statusCode']);
     }
 
+    /**
+     * @param $model
+     * @param $modelId
+     * @param UserAssignViewRequest $request
+     * @return JsonResponse
+     */
     public function setWatcher($model, $modelId, UserAssignViewRequest $request): JsonResponse
     {
         if (!in_array($model, array_keys(ResolvePermissionController::$models))) {
@@ -73,6 +79,27 @@ class AccountController extends Controller
             $modelInstance->watchers()->attach($users->pluck('user_id')->toArray());
 
         $response = $this->getResponse('واچر ها با موفقیت افزوده شدند');
+        return response()->json($response,$response['statusCode']);
+    }
+
+
+    /**
+     * @param $model
+     * @param $modelId
+     * @return JsonResponse
+     */
+    public function getWatchers($model,$modelId): JsonResponse
+    {
+        if (!in_array($model, array_keys(ResolvePermissionController::$models))) {
+            $response = $this->getError('برای موجودیت انتخابی واچر تعیین نمی شود');
+            return response()->json($response, $response['statusCode']);
+        }
+        // company or project or team or task
+        $modelInstance = ResolvePermissionController::$models[$model]['class']::find($modelId);
+
+        $response = $this->getResponse(__('apiResponse.index',['resource' => 'واچر']) , [
+            $modelInstance->load('watchers')
+        ]);
         return response()->json($response,$response['statusCode']);
     }
 

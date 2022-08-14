@@ -28,6 +28,9 @@ class TaskFactory extends Factory
             'team_ref_id' => $this->faker->randomElement($teams) ,
             'status_ref_id' => $this->faker->randomElement($statuses) ,
             'stage_ref_id' => $this->faker->randomElement($stages) ,
+            'real_time' => $this->faker->time("H:i") ,
+            "estimate_time" => $this->faker->time("H:i") ,
+            'due_date' => $this->faker->date() ,
         ];
     }
 }
