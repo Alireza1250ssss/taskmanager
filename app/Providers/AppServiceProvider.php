@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // setting macro for github Authorization token and base uri (to be used in getting commit message)
+        Http::macro('navaxGithub' , function (){
+            return Http::withToken(env('GITHUB_ACCESS_TOKEN'))
+                ->baseUrl('https://api.github.com/repos/'.env('GITHUB_USERNAME'));
+        });
     }
 }

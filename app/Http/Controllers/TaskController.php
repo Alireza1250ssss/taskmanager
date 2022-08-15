@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CommitIDSentEvent;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Entity;
@@ -78,12 +79,20 @@ class TaskController extends Controller
             Notification::send($task->watchers , new TaskWatcherNotification($taskLog));
         }
 
+
         $task->update($request->validated());
         if ($request->filled('task_metas')) {
             $task->taskMetas()->delete();
             $task->taskMetas()->createMany($request->get('task_metas'));
         }
         $task->mergeMeta('taskMetas');
+
+        if (!empty($task->commit_id) && empty($task->commit_messge)) {
+            //send event to get and fill the commit message automatically
+            CommitIDSentEvent::dispatch($task);
+        }
+
+
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'تسک']), [
             'task' => $task->load('team','status','stage')
         ]);

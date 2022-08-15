@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\CommitIDSentEvent;
 use App\Events\ModelRetrievedEvent;
 use App\Events\PermissionAdded;
 use App\Listeners\CheckRetrieveModel;
+use App\Listeners\SetCommitMessage;
 use App\Listeners\SetParentsReadPermission;
 use App\Models\Company;
 use App\Models\Leave;
@@ -34,6 +36,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         PermissionAdded::class => [
           SetParentsReadPermission::class
+        ],
+        CommitIDSentEvent::class => [
+          SetCommitMessage::class
         ],
     ];
 
