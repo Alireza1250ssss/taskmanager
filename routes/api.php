@@ -37,6 +37,7 @@ Route::middleware('jwt_auth')->get('/user', function (Request $request) {
 
 // routes to work and control database seeding & migrations
 Route::get('/migrate/status',[DatabaseController::class,'migrateStatus']);
+Route::get('/migrate/run',[DatabaseController::class,'migrateRun']);
 Route::get('/migrate/fresh',[DatabaseController::class,'migrateFresh']);
 Route::get('/db/seed',[DatabaseController::class,'dbSeed']);
 

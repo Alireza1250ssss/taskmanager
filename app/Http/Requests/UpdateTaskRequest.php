@@ -68,6 +68,7 @@ class UpdateTaskRequest extends FormRequest
             'description' => 'string',
             'labels' => 'string',
             'due_date' => 'string',
+            'order' => 'array' ,
             'task_metas' => 'array',
             'task_metas.*.task_key' => 'required|distinct',
             'task_metas.*.task_value' => 'required',

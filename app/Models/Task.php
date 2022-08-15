@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Http\Traits\FilterRecords;
 use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,15 +20,16 @@ class Task extends Model
     protected $primaryKey = 'task_id';
     protected $fillable = [
         'title', 'description', 'user_ref_id', 'parent_id', 'team_ref_id', 'stage_ref_id', 'status_ref_id',
-        'priority', 'labels', 'real_time', 'estimate_time', 'due_date'
+        'priority', 'labels', 'real_time', 'estimate_time', 'due_date', 'order'
     ];
     public array $filters = [
         'title', 'description', 'user_ref_id', 'parent_id', 'team_ref_id', 'stage_ref_id', 'status_ref_id',
         'priority', 'labels', 'real_time', 'estimate_time', 'due_date'
     ];
     protected $hidden = ['taskMetas'];
-    protected $casts =[
-      'real_time' => 'array'
+    protected $casts = [
+        'real_time' => 'array',
+        'order' => 'array'
     ];
 
     /**
@@ -94,9 +94,9 @@ class Task extends Model
     public function watchers(): MorphToMany
     {
         return $this->morphToMany(
-            User::class ,
+            User::class,
             'watchable',
-            'watchers' ,
+            'watchers',
             'watchable_id',
             'user_ref_id'
         );
