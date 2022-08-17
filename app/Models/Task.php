@@ -28,7 +28,7 @@ class Task extends Model
     ];
     protected $hidden = ['taskMetas'];
     protected $casts = [
-        'real_time' => 'array', 'order' => 'array' ,
+        'real_time' => 'array',
         'done_at' => 'datetime' , 'reviewed_at' => 'datetime'
     ];
 
@@ -113,6 +113,13 @@ class Task extends Model
     public function setDoneAt()
     {
         $this->done_at = now();
+        $this->save();
+    }
+
+    public function setLastOrderInStage()
+    {
+        $lastOrder = static::query()->where('stage_ref_id',$this->stage_ref_id)->max('order');
+        $this->order = (int)$lastOrder + 1000;
         $this->save();
     }
 }

@@ -41,6 +41,7 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request) : JsonResponse
     {
         $task = Task::create($request->validated());
+        $task->setLastOrderInStage();
         if ($request->filled('task_metas'))
             $task->taskMetas()->createMany($request->get('task_metas'));
         $task->mergeMeta('taskMetas');
@@ -60,7 +61,7 @@ class TaskController extends Controller
     {
         $task->mergeMeta('taskMetas');
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'تسک']), [
-            'task' => $task->load('team.project.company','status','stage','comments')
+            'task' => $task->load('team.project.company','status','stage','comments','watchers')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -76,6 +77,7 @@ class TaskController extends Controller
     {
         //check if the stage is being updated to set a log and send notification to its watchers
         if (array_key_exists('stage_ref_id' , $request->validated())) {
+            $task->setLastOrderInStage();
             $taskLog = TaskLog::stageChangeLog($task, $request);
             Notification::send($task->watchers , new TaskWatcherNotification($taskLog));
         }
@@ -97,7 +99,7 @@ class TaskController extends Controller
 
 
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'تسک']), [
-            'task' => $task->load('team','status','stage')
+            'task' => $task->load('team','status','stage','watchers')
         ]);
 
         return response()->json($response, $response['statusCode']);
@@ -129,6 +131,29 @@ class TaskController extends Controller
            'user_ref_id' => auth()->user()->user_id
         ]);
         $response = $this->getResponse('تسک با به شما موفقیت اختصاص داده شد');
+        return response()->json($response,$response['statusCode']);
+    }
+
+    /**
+     * @param Request $request
+     * @param Task $task
+     * @return JsonResponse
+     */
+    public function taskReorder(Request $request,Task $task): JsonResponse
+    {
+        $request->validate([
+            'previous_task_order' => 'required|numeric' ,
+            'next_task_order' => 'required|numeric' ,
+        ]);
+
+        $orderInStage =  getFloatBetween($request->get('previous_task_order') ,$request->get('next_task_order'));
+
+        $task->order = $orderInStage;
+        $task->save();
+
+        $response = $this->getResponse("ترتیب با موفقیت تغییر یافت",[
+            'task' => $task
+        ]);
         return response()->json($response,$response['statusCode']);
     }
 }
