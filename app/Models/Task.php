@@ -20,7 +20,7 @@ class Task extends Model
     protected $primaryKey = 'task_id';
     protected $fillable = [
         'title', 'description', 'user_ref_id', 'parent_id', 'team_ref_id', 'stage_ref_id', 'status_ref_id',
-        'priority', 'labels', 'real_time', 'estimate_time', 'due_date', 'order'
+        'priority', 'labels', 'real_time', 'estimate_time', 'due_date', 'order' , 'reviewed_at'
     ];
     public array $filters = [
         'title', 'description', 'user_ref_id', 'parent_id', 'team_ref_id', 'stage_ref_id', 'status_ref_id',
@@ -28,8 +28,8 @@ class Task extends Model
     ];
     protected $hidden = ['taskMetas'];
     protected $casts = [
-        'real_time' => 'array',
-        'order' => 'array'
+        'real_time' => 'array', 'order' => 'array' ,
+        'done_at' => 'datetime' , 'reviewed_at' => 'datetime'
     ];
 
     /**
@@ -110,5 +110,9 @@ class Task extends Model
         });
     }
 
-
+    public function setDoneAt()
+    {
+        $this->done_at = now();
+        $this->save();
+    }
 }

@@ -6,6 +6,7 @@ use App\Events\CommitIDSentEvent;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Entity;
+use App\Models\Stage;
 use App\Models\Task;
 use App\Models\TaskLog;
 use App\Notifications\TaskWatcherNotification;
@@ -91,6 +92,8 @@ class TaskController extends Controller
             //send event to get and fill the commit message automatically
             CommitIDSentEvent::dispatch($task);
         }
+        if ($task->stage->name === 'review')
+            $task->setDoneAt();
 
 
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'تسک']), [
