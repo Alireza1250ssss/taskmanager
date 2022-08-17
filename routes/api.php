@@ -9,6 +9,7 @@ use App\Http\Controllers\EntityController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResolvePermissionController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StageController;
 use App\Http\Controllers\StatusController;
@@ -40,6 +41,7 @@ Route::get('/migrate/status',[DatabaseController::class,'migrateStatus']);
 Route::get('/migrate/run',[DatabaseController::class,'migrateRun']);
 Route::get('/migrate/fresh',[DatabaseController::class,'migrateFresh']);
 Route::get('/db/seed',[DatabaseController::class,'dbSeed']);
+Route::get('/composer/autoload',[DatabaseController::class,'dumpAutoload']);
 
 Route::middleware('jwt_auth')->get('/logout', function (Request $request) {
     JWTAuth::parseToken()->invalidate();
@@ -78,6 +80,8 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::get('/tasks/take/{task}',[TaskController::class , 'takeTask'])->name('tasks.take-task');
     Route::put('/tasks/{task}/change-order',[TaskController::class , 'taskReorder'])->name('tasks.reorder');
 
+    Route::put('/roles/assign/{user}',[RoleController::class ,'setRolesForUser'])->name('roles.assign');
+
     Route::apiResources([
         'companies' => CompanyController::class ,
         'projects' => ProjectController::class ,
@@ -86,6 +90,7 @@ Route::middleware(['jwt_auth'])->group(function(){
         'tasks' => TaskController::class ,
         'schedules' => ScheduleController::class ,
         'leave' => LeaveController::class ,
+        'roles' => RoleController::class ,
         ]);
 
 

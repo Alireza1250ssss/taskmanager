@@ -13,3 +13,14 @@ function getFloatBetween(float $num1 , float $num2) : float
     $max = ($num2 * $exponent - 1);
     return rand($min,$max)/$exponent;
 }
+
+function execPrint($command) {
+
+    $result = array();
+    exec($command, $result);
+    print("<pre>");
+    foreach ($result as $line) {
+        print($line . "\n");
+    }
+    print("</pre>");
+}

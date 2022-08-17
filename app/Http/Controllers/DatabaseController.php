@@ -29,4 +29,9 @@ class DatabaseController extends Controller
         Artisan::call("db:seed");
         return Artisan::output();
     }
+
+    public function dumpAutoload()
+    {
+        execPrint("composer dump-autoload");
+    }
 }
