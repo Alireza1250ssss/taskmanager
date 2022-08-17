@@ -6,6 +6,7 @@ use App\Http\Traits\FilterRecords;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Role extends Model
@@ -29,34 +30,12 @@ class Role extends Model
         );
     }
 
-    /*
-     * --------- polymorphic permissions defined here with MorphedByMany return type -------------------
-     */
-
-
     /**
-     * @return MorphToMany
+     * @return HasMany
      */
-    public function entities(): MorphToMany
+    public function permissions(): HasMany
     {
-        return $this->morphedByMany(
-            Entity::class ,
-            'permissible' ,
-            'permissibles' ,
-            'role_ref_id'
-        )->withPivot(['id']);
+        return $this->hasMany(Permission::class, 'role_ref_id');
     }
 
-    /**
-     * @return MorphToMany
-     */
-    public function fields(): MorphToMany
-    {
-        return $this->morphedByMany(
-            Field::class ,
-            'permissible' ,
-            'permissibles' ,
-            'role_ref_id'
-        )->withPivot(['id','parent_id']);
-    }
 }
