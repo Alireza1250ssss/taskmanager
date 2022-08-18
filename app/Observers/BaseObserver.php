@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Entity;
 use App\Models\Field;
+use App\Models\Permission;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\Team;
@@ -30,7 +31,6 @@ class BaseObserver extends Controller
             else
                 $this->noAuth = true;
         } catch (\Exception $e) {
-//            if (!in_array('jwt_auth', Route::current()->gatherMiddleware()))
             $this->noAuth = true;
         }
     }
@@ -47,16 +47,15 @@ class BaseObserver extends Controller
         if ($this->noAuth === true)
             return;
         $modelId = $modelItem->{$modelItem->getPrimaryKey()};
-        $class = get_class($modelItem);
+        $modelName = get_class($modelItem);
         $userId = auth()->user()->user_id;
         // check permission for entity
 
-        $entityPermission = Entity::query()->where([
-            'key' => $class,
+        $rolesHavingPermission = Permission::query()->where([
             'action' => 'read',
-            'model_id' => $modelId
-        ])->with('users')->first();
-        if (empty($entityPermission))
+            'model' => $modelName
+        ])->get();
+        if ($rolesHavingPermission->isEmpty())
             return;
         // check if permission found
 

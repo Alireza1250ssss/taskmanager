@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AssignRoleRequest;
 use App\Http\Requests\StoreRoleRequest;
+use App\Models\Project;
 use App\Models\Role;
+use App\Models\RoleUser;
+use App\Models\Task;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,12 +21,12 @@ class RoleController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function index(Request $request) : JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $response = $this->getResponse(__('apiResponse.index',['resource'=>'نقش']),[
+        $response = $this->getResponse(__('apiResponse.index', ['resource' => 'نقش']), [
             Role::getRecords($request->toArray())->get()
         ]);
-        return response()->json($response,$response['statusCode']);
+        return response()->json($response, $response['statusCode']);
     }
 
     /**
@@ -31,12 +35,12 @@ class RoleController extends Controller
      * @param StoreRoleRequest $request
      * @return JsonResponse
      */
-    public function store(StoreRoleRequest $request) : JsonResponse
+    public function store(StoreRoleRequest $request): JsonResponse
     {
         $role = Role::create($request->validated());
         if ($request->filled('permissions'))
             $role->permissions()->createMany($request->get('permissions'));
-        $response = $this->getResponse(__('apiResponse.store',['resource'=>'نقش']), [
+        $response = $this->getResponse(__('apiResponse.store', ['resource' => 'نقش']), [
             'role' => $role->load('permissions')
         ]);
         return response()->json($response, $response['statusCode']);
@@ -48,9 +52,9 @@ class RoleController extends Controller
      * @param Role $role
      * @return JsonResponse
      */
-    public function show(Role $role) : JsonResponse
+    public function show(Role $role): JsonResponse
     {
-        $response = $this->getResponse(__('apiResponse.show',['resource'=>'نقش']), [
+        $response = $this->getResponse(__('apiResponse.show', ['resource' => 'نقش']), [
             'role' => $role->load('permissions')
         ]);
         return response()->json($response, $response['statusCode']);
@@ -63,14 +67,14 @@ class RoleController extends Controller
      * @param Role $role
      * @return JsonResponse
      */
-    public function update(StoreRoleRequest $request, Role $role) : JsonResponse
+    public function update(StoreRoleRequest $request, Role $role): JsonResponse
     {
         $role->update($request->validated());
-        if ($request->filled('permissions')){
+        if ($request->filled('permissions')) {
             $role->permissions()->delete();
             $role->permissions()->createMany($request->get('permissions'));
         }
-        $response = $this->getResponse(__('apiResponse.update',['resource'=>'نقش']), [
+        $response = $this->getResponse(__('apiResponse.update', ['resource' => 'نقش']), [
             'role' => $role->load('permissions')
         ]);
 
@@ -80,29 +84,60 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  string  $role
+     * @param string $role
      * @return JsonResponse
      */
-    public function destroy($role) : JsonResponse
+    public function destroy($role): JsonResponse
     {
-        $count = Role::destroy(explode(',',$role));
-        $response = $this->getResponse(__('apiResponse.destroy',['items'=>$count]));
+        $count = Role::destroy(explode(',', $role));
+        $response = $this->getResponse(__('apiResponse.destroy', ['items' => $count]));
         return response()->json($response, $response['statusCode']);
     }
 
-    public function setRolesForUser(AssignRoleRequest $request,User $user)
+    /**
+     * @param AssignRoleRequest $request
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function setRolesForUser(AssignRoleRequest $request, User $user): JsonResponse
     {
-        foreach ($request['roles'] as  $itemForThisRole) {
-            $roleId = $itemForThisRole['role_id'];
-            unset($itemForThisRole['role_id']);
-            $user->roles()->attach([
-                $roleId => $itemForThisRole
+        //inserting role user items for selected user (without considering parent_id field)
+        foreach ($request['roles'] as $itemForThisRole) {
+            $roleUserInsertedItems[] = RoleUser::create([
+                'role_ref_id' => $itemForThisRole['role_id'],
+                'rolable_type' => ResolvePermissionController::$models[$itemForThisRole['rolable_type']]['class'],
+                'rolable_id' => $itemForThisRole['rolable_id'],
+                'user_ref_id' => $user->user_id
             ]);
         }
 
-        $response = $this->getResponse("نقش ها با موفقیت اختصاص یافتند",[
+        // figure out and set parent for role user permissions
+        foreach ($roleUserInsertedItems as $roleUserItem) {
+            $modelItem = $roleUserItem['rolable_type']::find($roleUserItem['rolable_id']);
+            $parentModelItem = static::getParentModel($modelItem);
+            $parentRoleUser = collect($roleUserInsertedItems)
+                ->where('rolable_type', get_class($parentModelItem))
+                ->where('rolable_id', $parentModelItem->{$parentModelItem->getPrimaryKey()})->first();
+            if (!empty($parentRoleUser)) {
+                RoleUser::query()->where('id',$roleUserItem->id)->update(['parent_id'=>$parentRoleUser->id]);
+            }
+        }
+
+        $response = $this->getResponse("نقش ها با موفقیت اختصاص یافتند", [
             $user->load('roles')
         ]);
-        return response()->json($response,$response['statusCode']);
+        return response()->json($response, $response['statusCode']);
+    }
+
+    protected static function getParentModel($model)
+    {
+        if ($model instanceof Project)
+            return $model->company;
+        elseif ($model instanceof Team)
+            return $model->project;
+        elseif ($model instanceof Task)
+            return $model->team;
+        else
+            return null;
     }
 }
