@@ -14,7 +14,8 @@ class AddTypeAndIdToRoleUserTable extends Migration
     public function up()
     {
         Schema::table('role_user', function (Blueprint $table) {
-            $table->morphs('rolable');
+            $table->string('rolable_type');
+            $table->string('rolabe_id');
         });
     }
 
@@ -26,7 +27,7 @@ class AddTypeAndIdToRoleUserTable extends Migration
     public function down()
     {
         Schema::table('role_user', function (Blueprint $table) {
-            $table->dropMorphs('rolable');
+            $table->dropColumn(['rolable_type','rolable_id']);
         });
     }
 }

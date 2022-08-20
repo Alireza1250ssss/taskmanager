@@ -4,10 +4,10 @@ namespace App\Observers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
-use App\Models\Entity;
 use App\Models\Field;
 use App\Models\Permission;
 use App\Models\Project;
+use App\Models\RoleUser;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
@@ -23,11 +23,11 @@ class BaseObserver extends Controller
 
     public function __construct()
     {
-
         try {
             $user = JWTAuth::parseToken()->authenticate();
-            if (!empty($user))
+            if (!empty($user)){
                 $this->user = $user;
+            }
             else
                 $this->noAuth = true;
         } catch (\Exception $e) {
@@ -42,51 +42,15 @@ class BaseObserver extends Controller
      */
     public function retrieved($modelItem)
     {
-
-        //if app (this route) does not need authentication check
         if ($this->noAuth === true)
-            return;
-        $modelId = $modelItem->{$modelItem->getPrimaryKey()};
-        $modelName = get_class($modelItem);
-        $userId = auth()->user()->user_id;
-        // check permission for entity
+            return ;
 
-        $rolesHavingPermission = Permission::query()->where([
-            'action' => 'read',
-            'model' => $modelName
-        ])->get();
-        if ($rolesHavingPermission->isEmpty())
-            return;
-        // check if permission found
-
-        // check the permission on user
-        if (!in_array($entityPermission->entity_id, auth()->user()->entities->pluck('entity_id')->toArray())) {
+        $isAllowed = $this->checkIfAllowed(auth()->user()->user_id,$modelItem,'read');
+        //check if the authenticated user is among the allowed users or not
+        if (!$isAllowed) {
             $modelItem->setAttributes([]);
             return;
         }
-
-
-        //check permissions for fields
-        $fieldPermission = Field::query()->where('model', $class)->with('users')->get();
-
-        $notAllowedFields = [];
-//        dd($entityPermission);
-        $parentEntity = $entityPermission->users()->where('user_id', $userId)->first()->pivot->id;
-        $userFields = auth()->user()->fields()->wherePivot('parent_id', $parentEntity)->get()->pluck('field_id')->toArray();
-//    dd($userFields,$fieldPermission->pluck('field_id')->toArray());
-        $fieldPermission->each(function ($item, $key) use (&$notAllowedFields, $entityPermission, $userFields) {
-            if (!in_array($item->field_id, $userFields))
-                $notAllowedFields[] = $item;
-        });
-//        dd($notAllowedFields);
-        if (!empty($notAllowedFields)) {
-            $modelAttributes = $modelItem->getAttributes();
-            collect($notAllowedFields)->each(function ($item, $key) use (&$modelAttributes) {
-                unset($modelAttributes[$item->name]);
-            });
-            $modelItem->setAttributes($modelAttributes);
-        }
-
     }
 
     /**
@@ -98,25 +62,16 @@ class BaseObserver extends Controller
     public function updating($modelItem)
     {
         if ($this->noAuth === true)
-            return;
-        $modelId = $modelItem->{$modelItem->getPrimaryKey()};
-        $class = get_class($modelItem);
-        $userId = auth()->user()->user_id;
+            return ;
 
-        $entityPermission = Entity::query()->where([
-            'key' => $class,
-            'action' => 'update',
-            'model_id' => $modelId
-        ])->with('users')->first();
-        if (empty($entityPermission))
-            return;
-        // check if permission found
+        $isAllowed = $this->checkIfAllowed(auth()->user()->user_id , $modelItem,'update');
 
-        // check the permission on user
-        if (!in_array($entityPermission->entity_id, auth()->user()->entities->pluck('entity_id')->toArray())) {
+        // throw exception if not allowed !
+        if (!$isAllowed) {
             throw new AuthorizationException();
         }
     }
+
 
     /**
      * This observer method is called when a model record is in the process of creation,
@@ -126,129 +81,81 @@ class BaseObserver extends Controller
      */
     public function creating($modelItem)
     {
-
         if ($this->noAuth === true)
             return;
 
-        $class = get_class($modelItem);
+        $isAllowed = $this->checkIfAllowedForCreation(auth()->user()->user_id,$modelItem);
 
-        if ($class == Company::class && env("MULTIPLE_COMPANY_CREATE") == 'allowed')
-            return;
-
-
-        $entityPermission = Entity::query()->where([
-            'key' => $class,
-            'action' => 'create',
-            'model_id' => null
-        ])->with('users')->first();
-
-        if (empty($entityPermission))
-            return;
-        // check if permission found
-
-        // check the permission on user
-        if (!in_array($entityPermission->entity_id, auth()->user()->entities->pluck('entity_id')->toArray())) {
+        //throw exception if not allowed !
+        if (!$isAllowed) {
             throw new AuthorizationException();
         }
     }
 
-    public function created($model)
+
+    /**
+     * This observer method is called when a model record is in the deletion process,
+     * at this point, the record has not yet been deleted from the database,
+     * and using its id to retrieve it from the database will return appropriate data.
+     * @param $modelItem
+     * @throws AuthorizationException
+     */
+    public function deleting($modelItem)
     {
-        $class = get_class($model);
-        $modelId = $model->{$model->getPrimaryKey()};
-        Entity::query()->upsert([
-            ['key' => $class, 'action' => 'read', 'model_id' => $modelId],
-            ['key' => $class, 'action' => 'update', 'model_id' => $modelId],
-            ['key' => $class, 'action' => 'delete', 'model_id' => $modelId],
-            ['key' => $class, 'action' => 'owner', 'model_id' => $modelId],
+        if ($this->noAuth === true)
+            return ;
 
-        ], ['key', 'action', 'model_id']);
+        $isAllowed = $this->checkIfAllowed(auth()->user()->user_id,$modelItem,'delete');
 
-        Entity::query()->updateOrInsert([
-            'key' => $class,
-            'action' => 'create'
-        ], ['action' => 'create']);
-
-        $entities = Entity::query()->where([
-            'key' => $class,
-            'action' => 'create'
-        ])->orWhere(function (Builder $builder) use ($class, $modelId) {
-            $builder->where('key', $class)->where('model_id', $modelId);
-        })->get()->pluck('entity_id')->toArray();
-
-        auth()->user()->entities()->syncWithoutDetaching($entities);
-        $this->setOwnersPermissions($model);
+        // throw exception if not allowed !
+        if (!$isAllowed) {
+            throw new AuthorizationException();
+        }
     }
 
 
-    protected function setOwnersPermissions($childModel)
+    //private methods to check if the user is among the allowed user to do that action (used in crud permission check methods)
+
+    private function checkIfAllowed($userId, $modelItem,$action): bool
     {
-        $modelId = $childModel->{$childModel->getPrimaryKey()};
-        $classKey = get_class($childModel);
+        $modelId = $modelItem->{$modelItem->getPrimaryKey()};
+        $modelName = get_class($modelItem);
 
-        $entitiesToGive = Entity::query()->where('key', $classKey)
-            ->where('model_id', $modelId)->orWhere(function ($query) use ($classKey) {
-                $query->where('key', $classKey)->where('action', 'create');
+
+        // get roles relating to that permission
+        $rolesHavingPermission = Permission::query()->where([
+            'action' => $action,
+            'model' => $modelName
+        ])->get();
+        if ($rolesHavingPermission->isEmpty())
+            return true;
+
+        // get users having that permission on the model retrieved via his role
+        $allowedUsers = RoleUser::query()->where('rolable_type',$modelName)
+            ->where(function ($query) use ($modelId){
+                $query->where('rolable_id',$modelId)->orWhere('rolable_id','*');
             })
-            ->get()->pluck('entity_id')->toArray();
+            ->whereIn('role_ref_id',$rolesHavingPermission->pluck('role_ref_id')->toArray())
+            ->get()->pluck('user_ref_id')->toArray();
+        return in_array($userId,$allowedUsers);
+    }
 
-        $owners = collect([]);
-        if ($classKey == Project::class){
-            $relatedEntities = Entity::query()->where([
-                'key' => Company::class ,
-                'model_id' => $childModel->company->company_id ,
-                'action' => 'owner'
-            ])->get();
-            foreach ($relatedEntities as $entityItem)
-                $owners = $owners->merge($entityItem->users);
-        }
-        elseif ($classKey == Team::class){
-            $relatedEntities = Entity::query()->where([
-                'key' => Company::class ,
-                'model_id' => $childModel->project->company->company_id ,
-                'action' => 'owner'
-            ])->orWhere(function($query) use ($childModel){
-                $query->where([
-                    'key' => Project::class ,
-                    'model_id' => $childModel->project->project_id ,
-                    'action' => 'owner'
-                ]);
-            })
-                ->get();
+    private function checkIfAllowedForCreation($userId, $modelItem): bool
+    {
+        $modelName = get_class($modelItem);
 
-            foreach ($relatedEntities as $entityItem)
-                $owners = $owners->merge($entityItem->users);
-        }
-        elseif ($classKey == Task::class)
-        {
-            $relatedEntities = Entity::query()->where([
-                'key' => Company::class ,
-                'model_id' => $childModel->team->project->company->company_id ,
-                'action' => 'owner'
-            ])->orWhere(function($query) use ($childModel){
-                $query->where([
-                    'key' => Project::class ,
-                    'model_id' => $childModel->team->project->project_id ,
-                    'action' => 'owner'
-                ]);
-            })->orWhere(function($query) use ($childModel){
-                $query->where([
-                    'key' => Team::class ,
-                    'model_id' => $childModel->team->team_id ,
-                    'action' => 'owner'
-                ]);
-            })
-                ->get();
+        // get roles relating to that permission
+        $rolesHavingPermission = Permission::query()->where([
+            'action' => 'create',
+            'model' => $modelName
+        ])->get();
+        if ($rolesHavingPermission->isEmpty())
+            return true;
 
-            foreach ($relatedEntities as $entityItem)
-                $owners = $owners->merge($entityItem->users);
-        }
-
-
-        if ($owners->isNotEmpty()) {
-            $owners->each(function ($owner) use ($entitiesToGive) {
-                $owner->entities()->syncWithoutDetaching($entitiesToGive);
-            });
-        }
+        // get users having that permission on the model retrieved via his role
+        $allowedUsers = RoleUser::query()
+            ->whereIn('role_ref_id',$rolesHavingPermission->pluck('role_ref_id')->toArray())
+            ->get()->pluck('user_ref_id')->toArray();
+        return in_array($userId,$allowedUsers);
     }
 }
