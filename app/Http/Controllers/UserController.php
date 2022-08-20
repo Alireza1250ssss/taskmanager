@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Models\Entity;
+use App\Models\Permission;
+use App\Models\RoleUser;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 
 class UserController extends Controller
@@ -23,15 +22,12 @@ class UserController extends Controller
     public function index(Request $request): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'کاربر']), [
-            User::getRecords($request->toArray())->addConstraints(function ($query) use($request){
-                if ($request->filled('access_entity'))
-                    $query->whereHas('entities',function (Builder $builder) use($request){
-                        $key = ResolvePermissionController::$models[$request->get('access_entity')]['class'];
-                        $builder = $builder->where('key',$key)
-                            ->where('action',$request->get('access_entity_action'));
-                        if ($request->get('access_entity_action') !== 'create')
-                            $builder->where('model_id',$request->get('access_entity_id'));
-                    });
+            User::getRecords($request->toArray())->addConstraints(function ($query) use ($request) {
+                if ($request->filled('access_model')) {
+                    $modelName = ResolvePermissionController::$models[$request->get('access_model')]['class'];
+                    $allowedUsers = User::getAllowedUsersFor($modelName , $request->get('access_action') , $request->get('access_model_id',null));
+                    $query->whereIn('user_id',$allowedUsers);
+                }
             })->get()
         ]);
         return response()->json($response, $response['statusCode']);
