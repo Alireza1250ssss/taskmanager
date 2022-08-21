@@ -12,6 +12,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class RoleController extends Controller
 {
@@ -126,6 +127,25 @@ class RoleController extends Controller
         $response = $this->getResponse("نقش ها با موفقیت اختصاص یافتند", [
             $user->load('roles')
         ]);
+        return response()->json($response, $response['statusCode']);
+    }
+
+    /**
+     * @param Request $request
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function detachRoleFromUser(Request $request,User $user): JsonResponse
+    {
+        $request->validate([
+            'roles' => 'required|filled|array',
+            'roles.*' => ['required',Rule::exists('roles','role_id')]
+        ]);
+
+        $count = RoleUser::query()->where('user_ref_id',$user->user_id)
+            ->whereIn('role_ref_id',$request->get('roles'))->delete();
+
+        $response = $this->getResponse(__('apiResponse.destroy', ['items' => $count]));
         return response()->json($response, $response['statusCode']);
     }
 

@@ -211,5 +211,7 @@ return [
         'git_repo' => 'ریپازیتوری گیت' ,
         "permissions.*.model" => ':input مدل',
         "permissions.*.action" => 'عملیات',
+        "roles" => 'نقش ها',
+        "roles.*" => 'نقش' ,
     ],
 ];
