@@ -71,17 +71,19 @@ class AccountController extends Controller
             return response()->json($response, $response['statusCode']);
         }
         // company or project or team or task
-        $modelInstance = ResolvePermissionController::$models[$model]['class']::find($modelId);
+        $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
 
         $users = User::query()->whereIn('email', $request->get('users'))->get();
 //        dd($users->pluck('user_id')->toArray(),$relationWatcher[$model],$modelInstance);
         if ($users->isNotEmpty())
             $request->get('mode', 'attach') === 'detach' ?
-                $modelInstance->watchers()->dettach($users->pluck('user_id')->toArray())
+                $modelInstance->watchers()->detach($users->pluck('user_id')->toArray())
                 :
-                $modelInstance->watchers()->attach($users->pluck('user_id')->toArray());
+                $modelInstance->watchers()->syncWithoutDetaching($users->pluck('user_id')->toArray());
 
-        $response = $this->getResponse('واچر ها با موفقیت افزوده شدند');
+        $message = $request->get('mode', 'attach') === 'detach' ?
+            'واچر ها با موفقیت افزوده شدند' : 'واچر ها با موفقیت کاسته شدند';
+        $response = $this->getResponse($message);
         return response()->json($response, $response['statusCode']);
     }
 
