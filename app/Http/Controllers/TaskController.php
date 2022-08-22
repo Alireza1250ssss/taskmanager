@@ -27,7 +27,9 @@ class TaskController extends Controller
     public function index(Request $request) : JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'تسک']),[
-            Task::getRecords($request->toArray())->get()
+            Task::getRecords($request->toArray())->addConstraints(function ($query){
+                $query->with('watchers');
+            })->get()
         ]);
         return response()->json($response,$response['statusCode']);
     }
