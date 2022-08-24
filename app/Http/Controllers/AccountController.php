@@ -82,7 +82,7 @@ class AccountController extends Controller
                 $modelInstance->watchers()->syncWithoutDetaching($users->pluck('user_id')->toArray());
 
         $message = $request->get('mode', 'attach') === 'detach' ?
-            'واچر ها با موفقیت افزوده شدند' : 'واچر ها با موفقیت کاسته شدند';
+            ' واچر ها با موفقیت کاسته شدند': 'واچر ها با موفقیت افزوده شدند';
         $response = $this->getResponse($message);
         return response()->json($response, $response['statusCode']);
     }

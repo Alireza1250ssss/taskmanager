@@ -27,6 +27,10 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(200);
+        $this->assertDatabaseHas('users',[
+           'email' => 'ab@gmail.com',
+            'phone' => '09135553233',
+        ]);
     }
 
     public function test_email_repeat_error()

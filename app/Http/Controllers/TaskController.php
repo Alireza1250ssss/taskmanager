@@ -46,9 +46,11 @@ class TaskController extends Controller
         $task->setLastOrderInStage();
         if ($request->filled('task_metas'))
             $task->taskMetas()->createMany($request->get('task_metas'));
+        if ($request->filled('watchers'))
+            $task->watchers()->sync($request->get('watchers'));
         $task->mergeMeta('taskMetas');
         $response = $this->getResponse(__('apiResponse.store',['resource'=>'تسک']), [
-            'task' => $task->load('team','stage','status')
+            'task' => $task->load('team','stage','status','watchers')
         ]);
         return response()->json($response, $response['statusCode']);
     }

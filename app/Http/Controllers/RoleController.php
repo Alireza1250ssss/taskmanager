@@ -102,7 +102,7 @@ class RoleController extends Controller
      */
     public function setRolesForUser(AssignRoleRequest $request, User $user): JsonResponse
     {
-        //inserting role user items for selected user (without considering parent_id field)
+        // inserting role user items for selected user (without considering parent_id field)
         foreach ($request['roles'] as $itemForThisRole) {
             $roleUserInsertedItems[] = RoleUser::create([
                 'role_ref_id' => $itemForThisRole['role_id'],

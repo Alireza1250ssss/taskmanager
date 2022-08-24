@@ -45,6 +45,8 @@ class StoreTaskRequest extends FormRequest
             'task_metas' => 'array' ,
             'task_metas.*.task_key' => 'required|distinct',
             'task_metas.*.task_value' => 'required',
+            'watchers' => 'array' ,
+            'watchers.*' => [Rule::exists('users', 'user_id')->withoutTrashed()]
         ];
     }
 }
