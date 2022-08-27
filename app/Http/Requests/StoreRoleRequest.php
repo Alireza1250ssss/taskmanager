@@ -27,8 +27,7 @@ class StoreRoleRequest extends FormRequest
         return [
             'name' => $this->isMethod('POST') ? 'required' : 'string' ,
             'permissions' => 'array' ,
-            'permissions.*.action' => ['required',Rule::in(['read','create','update','delete'])] ,
-            'permissions.*.model' => ['required' , Rule::in(['company','project','team','task'])]
+            'permissions.*' => ['required',Rule::exists('permissions','permission_id')] ,
         ];
     }
 }

@@ -16,23 +16,20 @@ class Permission extends Model
     use HasFactory,FilterRecords;
 
     protected $primaryKey = 'permission_id';
-    protected $fillable = ['model','action','role_ref_id'];
-    public array $filters = ['model','action'];
+    protected $fillable = ['key','title','description','category'];
+    public array $filters = ['key','title','description','category'];
 
     /**
-     * @return BelongsTo
+     * @return BelongsToMany
      */
-    public function role(): BelongsTo
+    public function role(): BelongsToMany
     {
-        return $this->belongsTo(Role::class, 'permission_ref_id', 'role_ref_id');
+        return $this->belongsToMany(
+            Role::class,
+            'permission_role',
+            'permission_ref_id',
+            'role_ref_id'
+        );
     }
 
-    /**
-     * set qualified namespace name of the model (replace this with the model string coming from request)
-     * @return Attribute
-     */
-    protected function model(): Attribute
-    {
-        return Attribute::set(fn($value) => ResolvePermissionController::$models[$value]['class']);
-    }
 }

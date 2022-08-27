@@ -55,6 +55,64 @@ class User extends Authenticatable implements JWTSubject
             'role_user',
             'user_ref_id',
             'role_ref_id'
+        )->withPivot(['rolable_type','rolable_id','']);
+    }
+
+    // participating entities defined here
+
+    /**
+     * @return MorphToMany
+     */
+    public function tasksJoined(): MorphToMany
+    {
+        return $this->morphedByMany(
+          Task::class ,
+          'memberable' ,
+          'members' ,
+          'user_ref_id' ,
+          'memberable_id'
+        );
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function teamsJoined(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Team::class ,
+            'memberable' ,
+            'members' ,
+            'user_ref_id' ,
+            'memberable_id'
+        );
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function projectsJoined(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Project::class ,
+            'memberable' ,
+            'members' ,
+            'user_ref_id' ,
+            'memberable_id'
+        );
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function companiesJoined(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Company::class ,
+            'memberable' ,
+            'members' ,
+            'user_ref_id' ,
+            'memberable_id'
         );
     }
 
@@ -186,7 +244,7 @@ class User extends Authenticatable implements JWTSubject
         return RoleUser::query()->where('rolable_type', $modelName)
             ->when($action !== 'create',function ($query)use ($modelId){
                 $query->where(function ($query) use ($modelId) {
-                    $query->where('rolable_id', $modelId)->orWhere('rolable_id', '*');
+                    $query->where('rolable_id', $modelId)->orWhere('rolable_id', 0);
                 });
             })
             ->whereIn('role_ref_id', $rolesHavingPermission->pluck('role_ref_id')->toArray())

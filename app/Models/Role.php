@@ -31,11 +31,16 @@ class Role extends Model
     }
 
     /**
-     * @return HasMany
+     * @return BelongsToMany
      */
-    public function permissions(): HasMany
+    public function permissions(): BelongsToMany
     {
-        return $this->hasMany(Permission::class, 'role_ref_id');
+        return $this->belongsToMany(
+            Permission::class,
+            'permission_role',
+        'role_ref_id' ,
+            'permission_ref_id',
+        );
     }
 
 }

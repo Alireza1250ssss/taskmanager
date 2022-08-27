@@ -40,7 +40,7 @@ class RoleController extends Controller
     {
         $role = Role::create($request->validated());
         if ($request->filled('permissions'))
-            $role->permissions()->createMany($request->get('permissions'));
+            $role->permissions()->sync($request->get('permissions'));
         $response = $this->getResponse(__('apiResponse.store', ['resource' => 'نقش']), [
             'role' => $role->load('permissions')
         ]);
@@ -72,8 +72,7 @@ class RoleController extends Controller
     {
         $role->update($request->validated());
         if ($request->filled('permissions')) {
-            $role->permissions()->delete();
-            $role->permissions()->createMany($request->get('permissions'));
+            $role->permissions()->sync($request->get('permissions'));
         }
         $response = $this->getResponse(__('apiResponse.update', ['resource' => 'نقش']), [
             'role' => $role->load('permissions')
@@ -97,32 +96,19 @@ class RoleController extends Controller
 
     /**
      * @param AssignRoleRequest $request
-     * @param User $user
      * @return JsonResponse
      */
-    public function setRolesForUser(AssignRoleRequest $request, User $user): JsonResponse
+    public function setRolesForUser(AssignRoleRequest $request): JsonResponse
     {
-        // inserting role user items for selected user (without considering parent_id field)
-        foreach ($request['roles'] as $itemForThisRole) {
-            $roleUserInsertedItems[] = RoleUser::create([
-                'role_ref_id' => $itemForThisRole['role_id'],
-                'rolable_type' => ResolvePermissionController::$models[$itemForThisRole['rolable_type']]['class'],
-                'rolable_id' => $itemForThisRole['rolable_id'],
-                'user_ref_id' => $user->user_id
-            ]);
-        }
+        $user = User::query()->where('email',$request->get('email'))->first();
 
-        // figure out and set parent for role user permissions
-        foreach ($roleUserInsertedItems as $roleUserItem) {
-            $modelItem = $roleUserItem['rolable_type']::find($roleUserItem['rolable_id']);
-            $parentModelItem = static::getParentModel($modelItem);
-            $parentRoleUser = collect($roleUserInsertedItems)
-                ->where('rolable_type', get_class($parentModelItem))
-                ->where('rolable_id', $parentModelItem->{$parentModelItem->getPrimaryKey()})->first();
-            if (!empty($parentRoleUser)) {
-                RoleUser::query()->where('id',$roleUserItem->id)->update(['parent_id'=>$parentRoleUser->id]);
-            }
-        }
+        $data = $request->only(['role_ref_id','rolable_type','rolable_id']);
+        $data = array_merge(['user_ref_id' => $user->user_id],$data);
+
+        $record = RoleUser::query()->where($data)->first();
+        if (empty($record))
+            RoleUser::query()->create($data);
+
 
         $response = $this->getResponse("نقش ها با موفقیت اختصاص یافتند", [
             $user->load('roles')
@@ -132,11 +118,11 @@ class RoleController extends Controller
 
     /**
      * @param Request $request
-     * @param User $user
      * @return JsonResponse
      */
-    public function detachRoleFromUser(Request $request,User $user): JsonResponse
+    public function detachRoleFromUser(Request $request): JsonResponse
     {
+        $user = User::query()->where('email',$request->get('email'))->first();
         $request->validate([
             'roles' => 'required|filled|array',
             'roles.*' => ['required',Rule::exists('roles','role_id')]
@@ -149,7 +135,7 @@ class RoleController extends Controller
         return response()->json($response, $response['statusCode']);
     }
 
-    protected static function getParentModel($model)
+    public static function getParentModel($model)
     {
         if ($model instanceof Project)
             return $model->company;

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Traits\FilterRecords;
+use App\Http\Traits\HasMembers;
 use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Team extends Model
 {
-    use HasFactory,SoftDeletes,FilterRecords,MainPropertyGetter,MainPropertySetter;
+    use HasFactory,SoftDeletes,FilterRecords,MainPropertyGetter,MainPropertySetter,HasMembers;
 
     protected $primaryKey = 'team_id';
     protected $fillable = ['name','project_ref_id','sprint_start_date','sprint_period','git_repo'];

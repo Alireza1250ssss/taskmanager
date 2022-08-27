@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Traits\FilterRecords;
+use App\Http\Traits\HasMembers;
 use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
 {
-    use HasFactory,SoftDeletes,FilterRecords,MainPropertyGetter,MainPropertySetter;
+    use HasFactory,SoftDeletes,FilterRecords,MainPropertyGetter,MainPropertySetter,HasMembers;
 
     protected $fillable = ['name'];
     protected $primaryKey = 'company_id';

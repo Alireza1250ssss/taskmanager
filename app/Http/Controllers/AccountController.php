@@ -44,7 +44,7 @@ class AccountController extends Controller
 
     /**
      * mark selected notifications as read
-     * @param Request $request
+     * @param SelectNotificationRequest $request
      * @return JsonResponse
      */
     public function markAsRead(SelectNotificationRequest $request): JsonResponse

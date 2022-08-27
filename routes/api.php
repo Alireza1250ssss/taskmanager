@@ -80,8 +80,8 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::get('/tasks/take/{task}',[TaskController::class , 'takeTask'])->name('tasks.take-task');
     Route::put('/tasks/{task}/change-order',[TaskController::class , 'taskReorder'])->name('tasks.reorder');
 
-    Route::put('/roles/assign/{user}',[RoleController::class ,'setRolesForUser'])->name('roles.assign');
-    Route::put('/roles/detach/{user}',[RoleController::class ,'detachRoleFromUser'])->name('roles.detach');
+    Route::put('/roles/assign',[RoleController::class ,'setRolesForUser'])->name('roles.assign');
+    Route::put('/roles/detach',[RoleController::class ,'detachRoleFromUser'])->name('roles.detach');
 
     Route::apiResources([
         'companies' => CompanyController::class ,

@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class RoleUser extends Pivot
 {
-    protected $fillable = ['rolable_type' , 'rolable_id' , 'role_ref_id' , 'user_ref_id' , 'parent_id'];
+    protected $fillable = ['rolable_type' , 'rolable_id' , 'role_ref_id' , 'user_ref_id' ];
     public $incrementing = true;
 }

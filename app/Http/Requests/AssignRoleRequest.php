@@ -25,10 +25,10 @@ class AssignRoleRequest extends FormRequest
     public function rules()
     {
         return [
-            'roles' => 'array',
-            'roles.*.role_id' => ['required',Rule::exists('roles','role_id')],
-            'roles.*.rolable_type' => ['required',Rule::in(['company','project','team','task'])] ,
-            'roles.*.rolable_id'  => 'required'
+            'email' => ['required',Rule::exists('users','email')->withoutTrashed()],
+            'role_ref_id' => ['required',Rule::exists('roles','role_id')],
+            'rolable_type' => ['required',Rule::in(['company','project','team','task'])] ,
+            'rolable_id'  => 'required'
         ];
     }
 }

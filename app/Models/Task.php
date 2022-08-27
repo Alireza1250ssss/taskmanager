@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Traits\FilterRecords;
+use App\Http\Traits\HasMembers;
 use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Task extends Model
 {
-    use HasFactory, FilterRecords, SoftDeletes, MainPropertyGetter, MainPropertySetter;
+    use HasFactory, FilterRecords, SoftDeletes, MainPropertyGetter, MainPropertySetter,HasMembers;
 
     protected $primaryKey = 'task_id';
     protected $fillable = [
