@@ -151,7 +151,7 @@ class AccountController extends Controller
             return response()->json($response, $response['statusCode']);
         }
         // company or project or team or task
-        $modelInstance = ResolvePermissionController::$models[$model]['class']::find($modelId);
+        $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
 
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'عضو']), [
             $modelInstance->load('members')
