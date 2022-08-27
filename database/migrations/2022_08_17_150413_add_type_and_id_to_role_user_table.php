@@ -15,7 +15,7 @@ class AddTypeAndIdToRoleUserTable extends Migration
     {
         Schema::table('role_user', function (Blueprint $table) {
             $table->string('rolable_type');
-            $table->string('rolabe_id');
+            $table->string('rolable_id');
         });
     }
 
