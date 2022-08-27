@@ -100,14 +100,12 @@ class RoleController extends Controller
      */
     public function setRolesForUser(AssignRoleRequest $request): JsonResponse
     {
-        $user = User::query()->where('email',$request->get('email'))->first();
+        $user = User::query()->where('email', $request->get('email'))->first();
 
-        $data = $request->only(['role_ref_id','rolable_type','rolable_id']);
-        $data = array_merge(['user_ref_id' => $user->user_id],$data);
+        $data = $request->only(['role_ref_id', 'rolable_type', 'rolable_id']);
+        $data = array_merge(['user_ref_id' => $user->user_id], $data);
 
-        $record = RoleUser::query()->where($data)->first();
-        if (empty($record))
-            RoleUser::query()->create($data);
+        RoleUser::query()->upsert($data, array_keys($data));
 
 
         $response = $this->getResponse("نقش ها با موفقیت اختصاص یافتند", [
@@ -122,14 +120,14 @@ class RoleController extends Controller
      */
     public function detachRoleFromUser(Request $request): JsonResponse
     {
-        $user = User::query()->where('email',$request->get('email'))->first();
+        $user = User::query()->where('email', $request->get('email'))->first();
         $request->validate([
             'roles' => 'required|filled|array',
-            'roles.*' => ['required',Rule::exists('roles','role_id')]
+            'roles.*' => ['required', Rule::exists('roles', 'role_id')]
         ]);
 
-        $count = RoleUser::query()->where('user_ref_id',$user->user_id)
-            ->whereIn('role_ref_id',$request->get('roles'))->delete();
+        $count = RoleUser::query()->where('user_ref_id', $user->user_id)
+            ->whereIn('role_ref_id', $request->get('roles'))->delete();
 
         $response = $this->getResponse(__('apiResponse.destroy', ['items' => $count]));
         return response()->json($response, $response['statusCode']);

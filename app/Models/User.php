@@ -55,7 +55,7 @@ class User extends Authenticatable implements JWTSubject
             'role_user',
             'user_ref_id',
             'role_ref_id'
-        )->withPivot(['rolable_type','rolable_id','']);
+        )->withPivot(['rolable_type','rolable_id']);
     }
 
     // participating entities defined here
