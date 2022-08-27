@@ -76,6 +76,7 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::apiResource('stages', StageController::class)->only(['index']);
     Route::apiResource('statuses', StatusController::class)->only(['index']);
     Route::apiResource('entities' , EntityController::class)->only(['index','show','destroy']);
+    Route::get('permissions',[RoleController::class , 'getPermissions'])->name('permissions.index');
     Route::put('/companies/{company}/assign',[CompanyController::class,'addAssign'])->name('companies.add-viewer');
     Route::put('/projects/{project}/assign',[ProjectController::class,'addAssign'])->name('projects.add-viewer');
     Route::put('/teams/{team}/assign',[TeamController::class,'addAssign'])->name('teams.add-viewer');

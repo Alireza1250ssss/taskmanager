@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AssignRoleRequest;
 use App\Http\Requests\StoreRoleRequest;
+use App\Models\Permission;
 use App\Models\Project;
 use App\Models\Role;
 use App\Models\RoleUser;
@@ -143,5 +144,13 @@ class RoleController extends Controller
             return $model->team;
         else
             return null;
+    }
+
+    public function getPermissions(): JsonResponse
+    {
+        $response = $this->getResponse(__('apiResponse.index',['resource' => 'دسترسی ها']) , [
+           Permission::all()
+        ]);
+        return response()->json($response,$response['statusCode']);
     }
 }

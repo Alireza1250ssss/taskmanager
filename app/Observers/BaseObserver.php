@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Field;
 use App\Models\Permission;
 use App\Models\Project;
+use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\Task;
 use App\Models\Team;
@@ -21,6 +22,12 @@ class BaseObserver extends Controller
     public ?User $user;
     public bool $noAuth = false;
     public array $userRoles = [];
+    public array $models = [
+      Company::class => "company"  ,
+      Project::class => "project"  ,
+      Team::class => "team"  ,
+      Task::class => "task"  ,
+    ];
 
 
     public function __construct()
@@ -130,13 +137,14 @@ class BaseObserver extends Controller
     {
         $modelId = $modelItem->{$modelItem->getPrimaryKey()};
         $modelName = get_class($modelItem);
+        $modelName = $this->models[$modelName];
 
+        $keyPermission = "can_".$action."_$modelName";
 
         // get roles relating to that permission
-        $rolesHavingPermission = Permission::query()->where([
-            'action' => $action,
-            'model' => $modelName
-        ])->get();
+        $rolesHavingPermission = Role::query()->whereHas('permissions',function (Builder $builder) use ($keyPermission){
+            $builder->where('key',$keyPermission);
+        })->get();
         if ($rolesHavingPermission->isEmpty())
             return true;
 
