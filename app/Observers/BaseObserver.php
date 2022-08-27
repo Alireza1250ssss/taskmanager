@@ -13,12 +13,14 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class BaseObserver extends Controller
 {
     public ?User $user;
     public bool $noAuth = false;
+    public array $userRoles = [];
 
 
     public function __construct()
@@ -27,6 +29,13 @@ class BaseObserver extends Controller
             $user = JWTAuth::parseToken()->authenticate();
             if (!empty($user)){
                 $this->user = $user;
+
+                // set cache time to a week
+                $timeToStore = 60*60*24*7;
+                $keyCache = 'user-'.$user->user_id.'-roles';
+                $this->userRoles = Cache::remember($keyCache,$timeToStore,function () use ($user){
+                    return $user->roles->pluck('role_id')->toArray();
+                });
             }
             else
                 $this->noAuth = true;
@@ -45,7 +54,8 @@ class BaseObserver extends Controller
         if ($this->noAuth === true)
             return ;
 
-        $isAllowed = $this->checkIfAllowed(auth()->user()->user_id,$modelItem,'read');
+        $isAllowed = in_array($this->user->user_id , $modelItem->members->pluck('user_id')->toArray());
+
         //check if the authenticated user is among the allowed users or not
         if (!$isAllowed) {
             $modelItem->setAttributes([]);
@@ -133,7 +143,7 @@ class BaseObserver extends Controller
         // get users having that permission on the model retrieved via his role
         $allowedUsers = RoleUser::query()->where('rolable_type',$modelName)
             ->where(function ($query) use ($modelId){
-                $query->where('rolable_id',$modelId)->orWhere('rolable_id','*');
+                $query->where('rolable_id',$modelId)->orWhere('rolable_id',0);
             })
             ->whereIn('role_ref_id',$rolesHavingPermission->pluck('role_ref_id')->toArray())
             ->get()->pluck('user_ref_id')->toArray();

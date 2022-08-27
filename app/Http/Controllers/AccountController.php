@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SelectNotificationRequest;
 use App\Http\Requests\UserAssignViewRequest;
+use App\Models\Company;
+use App\Models\Project;
+use App\Models\Task;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,7 +32,7 @@ class AccountController extends Controller
 
     /**
      * delete notifications
-     * @param Request $request
+     * @param SelectNotificationRequest $request
      * @return JsonResponse
      */
     public function deleteNotifications(SelectNotificationRequest $request): JsonResponse
@@ -74,7 +78,6 @@ class AccountController extends Controller
         $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
 
         $users = User::query()->whereIn('email', $request->get('users'))->get();
-//        dd($users->pluck('user_id')->toArray(),$relationWatcher[$model],$modelInstance);
         if ($users->isNotEmpty())
             $request->get('mode', 'attach') === 'detach' ?
                 $modelInstance->watchers()->detach($users->pluck('user_id')->toArray())
@@ -106,6 +109,78 @@ class AccountController extends Controller
             $modelInstance->load('watchers')
         ]);
         return response()->json($response, $response['statusCode']);
+    }
+
+    /**
+     * @param $model
+     * @param $modelId
+     * @param UserAssignViewRequest $request
+     * @return JsonResponse
+     */
+    public function setMember($model, $modelId, UserAssignViewRequest $request): JsonResponse
+    {
+        if (!in_array($model, array_keys(ResolvePermissionController::$models))) {
+            $response = $this->getError('برای موجودیت انتخابی عضو تعیین نمی شود');
+            return response()->json($response, $response['statusCode']);
+        }
+        // company or project or team or task
+        $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
+
+        $users = User::query()->whereIn('email', $request->get('users'))->get();
+        if ($users->isNotEmpty())
+            $request->get('mode', 'attach') === 'detach' ?
+                $modelInstance->members()->detach($users->pluck('user_id')->toArray())
+                :
+                $this->setMembersRecursive($modelInstance,$users->pluck('user_id')->toArray());
+
+        $message = $request->get('mode', 'attach') === 'detach' ?
+            ' اعضا با موفقیت کاسته شدند': 'اعضا با موفقیت افزوده شدند';
+        $response = $this->getResponse($message);
+        return response()->json($response, $response['statusCode']);
+    }
+
+    /**
+     * @param $model
+     * @param $modelId
+     * @return JsonResponse
+     */
+    public function getMembers($model, $modelId): JsonResponse
+    {
+        if (!in_array($model, array_keys(ResolvePermissionController::$models))) {
+            $response = $this->getError('برای موجودیت انتخابی عضو تعیین نمی شود');
+            return response()->json($response, $response['statusCode']);
+        }
+        // company or project or team or task
+        $modelInstance = ResolvePermissionController::$models[$model]['class']::find($modelId);
+
+        $response = $this->getResponse(__('apiResponse.index', ['resource' => 'عضو']), [
+            $modelInstance->load('members')
+        ]);
+        return response()->json($response, $response['statusCode']);
+    }
+
+    /**
+     * set members on entities recursively. ex : member of a team will be member of the team's project as well
+     * @param array $users
+     * @param $model
+     */
+    protected function setMembersRecursive($model ,array $users)
+    {
+        if ($model instanceof Company){
+            $model->members()->syncWithoutDetaching($users);
+            }
+        elseif ($model instanceof Project){
+            $model->members()->syncWithoutDetaching($users);
+            $this->setMembersRecursive($model->company,$users);
+        }
+        elseif ($model instanceof Team){
+            $model->members()->syncWithoutDetaching($users);
+            $this->setMembersRecursive($model->project,$users);
+        }
+        elseif ($model instanceof Task){
+            $model->members()->syncWithoutDetaching($users);
+            $this->setMembersRecursive($model->team , $users);
+        }
     }
 
 }

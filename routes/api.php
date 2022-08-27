@@ -62,7 +62,9 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::delete('/notifications',[AccountController::class , 'deleteNotifications'])->name('delete-notifications');
     Route::put('/notifications/mark-as-read',[AccountController::class , 'markAsRead'])->name('mark-as-read-notifications');
     Route::post('set-watcher/{model}/{modelId}',[AccountController::class ,'setWatcher'])->name('set-watcher');
+    Route::post('set-member/{model}/{modelId}',[AccountController::class ,'setMember'])->name('set-member');
     Route::get('/get-watcher/{model}/{modelId}',[AccountController::class,'getWatchers'])->name('get-watchers');
+    Route::get('/get-member/{model}/{modelId}',[AccountController::class,'getMembers'])->name('get-members');
 
     Route::post('/users/{user}/permissions/{type}',[ResolvePermissionController::class , 'setPermissions'])
         ->where('type',"(fields)|(entities)")
