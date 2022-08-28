@@ -74,15 +74,20 @@ class AccountController extends Controller
             $response = $this->getError('برای موجودیت انتخابی واچر تعیین نمی شود');
             return response()->json($response, $response['statusCode']);
         }
-        // company or project or team or task
-        $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
 
-        $users = User::query()->whereIn('email', $request->get('users'))->get();
-        if ($users->isNotEmpty())
-            $request->get('mode', 'attach') === 'detach' ?
-                $modelInstance->watchers()->detach($users->pluck('user_id')->toArray())
-                :
-                $modelInstance->watchers()->syncWithoutDetaching($users->pluck('user_id')->toArray());
+        try {
+            // company or project or team or task
+            $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
+            $users = User::query()->whereIn('email', $request->get('users'))->get();
+            if ($users->isNotEmpty())
+                $request->get('mode', 'attach') === 'detach' ?
+                    $modelInstance->watchers()->detach($users->pluck('user_id')->toArray())
+                    :
+                    $modelInstance->watchers()->syncWithoutDetaching($users->pluck('user_id')->toArray());
+        } catch (\Exception $e) {
+            $response = $this->getError(__('apiResponse.forbidden'));
+            return response()->json($response,$response['statusCode']);
+        }
 
         $message = $request->get('mode', 'attach') === 'detach' ?
             ' واچر ها با موفقیت کاسته شدند': 'واچر ها با موفقیت افزوده شدند';
@@ -123,15 +128,20 @@ class AccountController extends Controller
             $response = $this->getError('برای موجودیت انتخابی عضو تعیین نمی شود');
             return response()->json($response, $response['statusCode']);
         }
-        // company or project or team or task
-        $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
 
-        $users = User::query()->whereIn('email', $request->get('users'))->get();
-        if ($users->isNotEmpty())
-            $request->get('mode', 'attach') === 'detach' ?
-                $modelInstance->members()->detach($users->pluck('user_id')->toArray())
-                :
-                $this->setMembersRecursive($modelInstance,$users->pluck('user_id')->toArray());
+        try {
+            // company or project or team or task
+            $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
+            $users = User::query()->whereIn('email', $request->get('users'))->get();
+            if ($users->isNotEmpty())
+                $request->get('mode', 'attach') === 'detach' ?
+                    $modelInstance->members()->detach($users->pluck('user_id')->toArray())
+                    :
+                    $this->setMembersRecursive($modelInstance, $users->pluck('user_id')->toArray());
+        } catch (\Exception $e) {
+            $response = $this->getError(__('apiResponse.forbidden'));
+            return response()->json($response,$response['statusCode']);
+        }
 
         $message = $request->get('mode', 'attach') === 'detach' ?
             ' اعضا با موفقیت کاسته شدند': 'اعضا با موفقیت افزوده شدند';
