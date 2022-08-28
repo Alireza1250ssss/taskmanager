@@ -133,7 +133,7 @@ class BaseObserver extends Controller
 
     //private methods to check if the user is among the allowed user to do that action (used in crud permission check methods)
 
-    private function checkIfAllowed($userId, $modelItem, $action): bool
+    protected function checkIfAllowed($userId, $modelItem, $action): bool
     {
         // first check if it is allowed by more broad permission defined on a parent model
         $allowedByParents = $this->checkIfAllowedByParents($userId,$modelItem,$action);
@@ -190,6 +190,7 @@ class BaseObserver extends Controller
 
     private function checkIfAllowedByParents($userId, $modelItem, $action) : bool
     {
+
         $modelName = get_class($modelItem);
         $modelName = $this->models[$modelName] . "_in";
 
@@ -208,9 +209,10 @@ class BaseObserver extends Controller
             return false;
 
         foreach ($rolePermissionRecordForUser as $rolePermission) {
-            $parentItem = ResolvePermissionController::$models[$rolePermission->rolable_type]['class']::find($rolePermission->rolabel_id);
+            $parentItem = ResolvePermissionController::$models[$rolePermission->rolable_type]['class']::find($rolePermission->rolable_id);
             if (empty($parentItem)) continue;
-            $correctType = $parentItem instanceof Company or $parentItem instanceof Project or $parentItem instanceof Team;
+
+            $correctType = in_array(get_class($parentItem),[Company::class , Project::class , Team::class]);
             if ($correctType && $parentItem->isParentOf($modelItem))
                 return true;
         }

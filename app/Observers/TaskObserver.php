@@ -35,5 +35,17 @@ class TaskObserver extends BaseObserver
 
     }
 
+    public function updating($task)
+    {
+        if ($this->noAuth === true)
+            return;
 
+        $isAllowed = $this->checkIfAllowed(auth()->user()->user_id, $task, 'update');
+
+        $isTaskAssignee = $task->user_ref_id == auth()->user()->user_id;
+        // throw exception if not allowed !
+        if (!$isAllowed && !$isTaskAssignee) {
+            throw new AuthorizationException();
+        }
+    }
 }
