@@ -18,6 +18,7 @@ class Permission extends Model
     protected $primaryKey = 'permission_id';
     protected $fillable = ['key','title','description','category'];
     public array $filters = ['key','title','description','category'];
+    public $timestamps = false;
 
     /**
      * @return BelongsToMany

@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\PermissionAdded;
 use App\Models\Company;
 use App\Models\Entity;
-use App\Models\Field;
+use App\Models\Permission;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\Team;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class ResolvePermissionController extends Controller
 {
@@ -22,5 +18,22 @@ class ResolvePermissionController extends Controller
         'team' => ['class' => Team::class, 'table' => 'teams', 'primaryKey' => 'team_id'],
         'task' => ['class' => Task::class, 'table' => 'tasks', 'primaryKey' => 'task_id'],
     ];
+
+    public function insertKeys(): JsonResponse
+    {
+        $categories = config('permission-keys');
+        foreach ($categories as $catName => $permissionKeys)
+            foreach ($permissionKeys as $keyTitle => $key) {
+                Permission::query()->updateOrCreate(
+                    ['key' => $key, 'category' => $catName],
+                    ['title' => $keyTitle]
+                );
+            }
+
+        $response = $this->getResponse(__('apiResponse.index',['resource' => 'دسترسی']));
+        return response()->json($response,$response['statusCode']);
+    }
+
+
 
 }

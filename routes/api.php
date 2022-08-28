@@ -58,6 +58,8 @@ Route::post('/login',[AuthController::class,'login'])->name('login');
 
 Route::middleware(['jwt_auth'])->group(function(){
 
+    Route::get('/permissions/insert',[ResolvePermissionController::class,'insertKeys'])->name('permissions.insert-keys');
+
     Route::get('/notifications',[AccountController::class ,'getNotifications'])->name('get-notifications');
     Route::delete('/notifications',[AccountController::class , 'deleteNotifications'])->name('delete-notifications');
     Route::put('/notifications/mark-as-read',[AccountController::class , 'markAsRead'])->name('mark-as-read-notifications');
