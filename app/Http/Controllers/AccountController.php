@@ -79,18 +79,22 @@ class AccountController extends Controller
             // company or project or team or task
             $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
             $users = User::query()->whereIn('email', $request->get('users'))->get();
-            if ($users->isNotEmpty())
-                $request->get('mode', 'attach') === 'detach' ?
-                    $modelInstance->watchers()->detach($users->pluck('user_id')->toArray())
-                    :
+            if ($users->isNotEmpty()) {
+                if ($request->get('mode', 'attach') === 'detach')
+                    $modelInstance->watchers()->detach($users->pluck('user_id')->toArray());
+                else {
                     $modelInstance->watchers()->syncWithoutDetaching($users->pluck('user_id')->toArray());
+                    // watchers would also be members
+                    $this->setMembersRecursive($modelInstance,$users->pluck('user_id')->toArray());
+                }
+            }
         } catch (\Exception $e) {
             $response = $this->getError(__('apiResponse.forbidden'));
-            return response()->json($response,$response['statusCode']);
+            return response()->json($response, $response['statusCode']);
         }
 
         $message = $request->get('mode', 'attach') === 'detach' ?
-            ' واچر ها با موفقیت کاسته شدند': 'واچر ها با موفقیت افزوده شدند';
+            ' واچر ها با موفقیت کاسته شدند' : 'واچر ها با موفقیت افزوده شدند';
         $response = $this->getResponse($message);
         return response()->json($response, $response['statusCode']);
     }
@@ -140,11 +144,11 @@ class AccountController extends Controller
                     $this->setMembersRecursive($modelInstance, $users->pluck('user_id')->toArray());
         } catch (\Exception $e) {
             $response = $this->getError(__('apiResponse.forbidden'));
-            return response()->json($response,$response['statusCode']);
+            return response()->json($response, $response['statusCode']);
         }
 
         $message = $request->get('mode', 'attach') === 'detach' ?
-            ' اعضا با موفقیت کاسته شدند': 'اعضا با موفقیت افزوده شدند';
+            ' اعضا با موفقیت کاسته شدند' : 'اعضا با موفقیت افزوده شدند';
         $response = $this->getResponse($message);
         return response()->json($response, $response['statusCode']);
     }
@@ -174,22 +178,19 @@ class AccountController extends Controller
      * @param array $users
      * @param $model
      */
-    protected function setMembersRecursive($model ,array $users)
+    protected function setMembersRecursive($model, array $users)
     {
-        if ($model instanceof Company){
+        if ($model instanceof Company) {
             $model->members()->syncWithoutDetaching($users);
-            }
-        elseif ($model instanceof Project){
+        } elseif ($model instanceof Project) {
             $model->members()->syncWithoutDetaching($users);
-            $this->setMembersRecursive($model->company,$users);
-        }
-        elseif ($model instanceof Team){
+            $this->setMembersRecursive($model->company, $users);
+        } elseif ($model instanceof Team) {
             $model->members()->syncWithoutDetaching($users);
-            $this->setMembersRecursive($model->project,$users);
-        }
-        elseif ($model instanceof Task){
+            $this->setMembersRecursive($model->project, $users);
+        } elseif ($model instanceof Task) {
             $model->members()->syncWithoutDetaching($users);
-            $this->setMembersRecursive($model->team , $users);
+            $this->setMembersRecursive($model->team, $users);
         }
     }
 

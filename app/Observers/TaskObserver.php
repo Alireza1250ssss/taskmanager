@@ -12,36 +12,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class TaskObserver
+class TaskObserver extends BaseObserver
 {
-    public ?User $user;
-    public bool $noAuth = false;
-    public array $userRoles = [];
 
 
-    public function __construct()
-    {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-            if (!empty($user)){
-                $this->user = $user;
-
-                // set cache time to a week
-                $timeToStore = 60*60*24*7;
-                $keyCache = 'user-'.$user->user_id.'-roles';
-                $this->userRoles = Cache::remember($keyCache,$timeToStore,function () use ($user){
-                    return $user->roles->pluck('role_id')->toArray();
-                });
-            }
-            else
-                $this->noAuth = true;
-        } catch (\Exception $e) {
-            $this->noAuth = true;
-        }
-    }
-
-
-    public function retrieved(Task $task)
+    public function retrieved($task)
     {
         //if app (this route) does not need authentication check
         if ($this->noAuth === true)
@@ -61,9 +36,4 @@ class TaskObserver
     }
 
 
-
-    public function created(Task $task)
-    {
-        $task->members()->syncWithoutDetaching(auth()->user());
-    }
 }

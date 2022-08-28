@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Contracts\Hierarchy;
 use App\Http\Traits\FilterRecords;
 use App\Http\Traits\HasMembers;
 use App\Http\Traits\MainPropertyGetter;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Team extends Model
+class Team extends Model implements Hierarchy
 {
     use HasFactory,SoftDeletes,FilterRecords,MainPropertyGetter,MainPropertySetter,HasMembers;
 
@@ -50,5 +51,12 @@ class Team extends Model
             'watchable_id',
             'user_ref_id'
         );
+    }
+
+    public function IsParentOf(Model $model): bool
+    {
+        if ($model instanceof Task)
+            return $this->team_id == $model->team->team_id;
+        return false;
     }
 }

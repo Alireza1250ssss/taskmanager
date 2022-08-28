@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Contracts\Hierarchy;
 use App\Http\Traits\FilterRecords;
 use App\Http\Traits\HasMembers;
 use App\Http\Traits\MainPropertyGetter;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Company extends Model
+class Company extends Model implements Hierarchy
 {
     use HasFactory,SoftDeletes,FilterRecords,MainPropertyGetter,MainPropertySetter,HasMembers;
 
@@ -43,4 +44,14 @@ class Company extends Model
         );
     }
 
+    public function IsParentOf(Model $model): bool
+    {
+        if ($model instanceof Task)
+            return $this->company_id == $model->team->project->company->company_id;
+        elseif ($model instanceof Team)
+            return $this->company_id == $model->project->company->company_id;
+        elseif ($model instanceof Project)
+            return $this->company_id == $model->company->company_id;
+        return false;
+    }
 }
