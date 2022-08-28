@@ -55,7 +55,7 @@ class EventServiceProvider extends ServiceProvider
 //        Company::observe([BaseObserver::class]);
 //        Project::observe([BaseObserver::class]);
 //        Team::observe([BaseObserver::class]);
-//        Task::observe([BaseObserver::class]);
+        Task::observe([TaskObserver::class]);
 //        User::observe([BaseObserver::class]); !!!!!!!!!!!!!!!!!!!!! DO NOT UNCOMMENT THIS !!!!!!!!!!!!!
 
     }

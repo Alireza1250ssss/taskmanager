@@ -14,6 +14,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -56,7 +57,7 @@ class BaseObserver extends Controller
      * This observer method is called when a model record is retrieved
      * @param $modelItem
      */
-    public function retrieved($modelItem)
+    public function retrieved(Model $modelItem)
     {
         if ($this->noAuth === true)
             return ;
@@ -175,5 +176,10 @@ class BaseObserver extends Controller
             ->whereIn('role_ref_id',$rolesHavingPermission->pluck('role_ref_id')->toArray())
             ->get()->pluck('user_ref_id')->toArray();
         return in_array($userId,$allowedUsers);
+    }
+
+    public function created($modelItem)
+    {
+        $modelItem->members()->syncWithoutDetaching(auth()->user());
     }
 }
