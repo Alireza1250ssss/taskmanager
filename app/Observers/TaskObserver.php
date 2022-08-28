@@ -3,7 +3,6 @@
 namespace App\Observers;
 
 use App\Models\Company;
-use App\Models\Entity;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\Team;
@@ -50,7 +49,7 @@ class TaskObserver
 
         $userId = auth()->user()->user_id;
         $isAllowed = empty($task->user_ref_id) ?
-            in_array($userId,$task->team->members->pluck('user_id')->toArray())
+            (in_array($userId,$task->team->members->pluck('user_id')->toArray()) || in_array($userId,$task->members->pluck('user_id')->toArray()))
             :
             ($userId == $task->user_ref_id || in_array($userId , $task->members->pluck('user_id')->toArray()));
 
