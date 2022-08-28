@@ -26,7 +26,9 @@ class RoleController extends Controller
     public function index(Request $request): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'نقش']), [
-            Role::getRecords($request->toArray())->get()
+            Role::getRecords($request->toArray())->addConstraints(function ($query){
+                $query->with('permissions');
+            })->get()
         ]);
         return response()->json($response, $response['statusCode']);
     }
