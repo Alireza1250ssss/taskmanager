@@ -25,7 +25,9 @@ class UserAssignViewRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'users.*' => [Rule::exists('users', 'email')->withoutTrashed()]
+            'users.*' => [Rule::exists('users', 'email')->withoutTrashed()],
+            'roles' => 'array' ,
+            'roles.*' => [Rule::exists('roles','role_id')]
         ];
     }
 

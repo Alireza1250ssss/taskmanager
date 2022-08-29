@@ -6,6 +6,7 @@ use App\Http\Requests\SelectNotificationRequest;
 use App\Http\Requests\UserAssignViewRequest;
 use App\Models\Company;
 use App\Models\Project;
+use App\Models\RoleUser;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
@@ -141,15 +142,28 @@ class AccountController extends Controller
             // company or project or team or task
             $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
             $users = User::query()->whereIn('email', $request->get('users'))->get();
+
             if ($users->isNotEmpty())
                 if ($request->get('mode', 'attach') === 'detach')
                     $modelInstance->members()->detach($users->pluck('user_id')->toArray());
                 else {
-                    if ($modelInstance->members()->whereIn('user_id',$users->pluck('user_id')->toArray())->get()->isNotEmpty()){
-                        $response = $this->getError('عضو تکراری انتخاب شده است');
+                    if ($modelInstance->members()->whereIn('user_id',$users->pluck('user_id')->toArray())->get()->isNotEmpty()
+                    or !$request->filled('roles')){
+                        $response = $this->getError('عضو تکراری انتخاب شده است یا نقشی انتخاب نشده است');
                         return response()->json($response,$response['statusCode']);
                     }
                     $this->setMembersRecursive($modelInstance, $users->pluck('user_id')->toArray());
+                    foreach ($users as $user){
+                        foreach ($request->get('roles') as $roleItem){
+                            $data = [
+                                'user_ref_id' => $user->user_id ,
+                                'role_ref_id' => $roleItem ,
+                                'rolable_type' => $model ,
+                                'rolable_id' => $modelId
+                            ];
+                            RoleUser::query()->upsert($data, array_keys($data));
+                        }
+                    }
                 }
         } catch (\Exception $e) {
             $response = $this->getError(__('apiResponse.forbidden'));
