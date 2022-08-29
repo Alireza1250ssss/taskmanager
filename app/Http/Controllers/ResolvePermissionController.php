@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\Entity;
 use App\Models\Permission;
 use App\Models\Project;
+use App\Models\Role;
 use App\Models\Task;
 use App\Models\Team;
 use Illuminate\Http\JsonResponse;
@@ -30,10 +31,13 @@ class ResolvePermissionController extends Controller
                 );
             }
 
-        $response = $this->getResponse(__('apiResponse.index',['resource' => 'دسترسی']));
-        return response()->json($response,$response['statusCode']);
+        $baseRole = Role::query()->firstOrCreate([
+            'name' => 'base-role'
+        ]);
+        $baseRole->permissions()->attach(Permission::all()->pluck('permission_id')->toArray());
+        $response = $this->getResponse(__('apiResponse.index', ['resource' => 'دسترسی']));
+        return response()->json($response, $response['statusCode']);
     }
-
 
 
 }

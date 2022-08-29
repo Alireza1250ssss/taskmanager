@@ -14,7 +14,7 @@ class Role extends Model
     use HasFactory,FilterRecords;
 
     protected $primaryKey = 'role_id';
-    protected $fillable = ['name'];
+    protected $fillable = ['name','user_ref_id'];
     public array $filters = ['name'];
 
     /**
@@ -40,7 +40,7 @@ class Role extends Model
             'permission_role',
         'role_ref_id' ,
             'permission_ref_id',
-        );
+        )->withPivot(['condition_params']);
     }
 
 }
