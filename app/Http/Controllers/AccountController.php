@@ -83,9 +83,13 @@ class AccountController extends Controller
                 if ($request->get('mode', 'attach') === 'detach')
                     $modelInstance->watchers()->detach($users->pluck('user_id')->toArray());
                 else {
+                    if ($modelInstance->watchers()->whereIn('user_id', $users->pluck('user_id')->toArray())->get()->isNotEmpty()) {
+                        $response = $this->getError('واچر تکراری انتخاب شده است');
+                        return response()->json($response, $response['statusCode']);
+                    }
                     $modelInstance->watchers()->syncWithoutDetaching($users->pluck('user_id')->toArray());
                     // watchers would also be members
-                    $this->setMembersRecursive($modelInstance,$users->pluck('user_id')->toArray());
+                    $this->setMembersRecursive($modelInstance, $users->pluck('user_id')->toArray());
                 }
             }
         } catch (\Exception $e) {
@@ -138,10 +142,15 @@ class AccountController extends Controller
             $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
             $users = User::query()->whereIn('email', $request->get('users'))->get();
             if ($users->isNotEmpty())
-                $request->get('mode', 'attach') === 'detach' ?
-                    $modelInstance->members()->detach($users->pluck('user_id')->toArray())
-                    :
+                if ($request->get('mode', 'attach') === 'detach')
+                    $modelInstance->members()->detach($users->pluck('user_id')->toArray());
+                else {
+                    if ($modelInstance->members()->whereIn('user_id',$users->pluck('user_id')->toArray())->get()->isNotEmpty()){
+                        $response = $this->getError('عضو تکراری انتخاب شده است');
+                        return response()->json($response,$response['statusCode']);
+                    }
                     $this->setMembersRecursive($modelInstance, $users->pluck('user_id')->toArray());
+                }
         } catch (\Exception $e) {
             $response = $this->getError(__('apiResponse.forbidden'));
             return response()->json($response, $response['statusCode']);
