@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UserAssignViewRequest extends FormRequest
+class UserAssignWatcherRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,16 +26,13 @@ class UserAssignViewRequest extends FormRequest
     {
         return [
             'users.*' => [Rule::exists('users', 'email')->withoutTrashed()],
-            'roles' => 'required|array|filled' ,
-            'roles.*' => [Rule::exists('roles','role_id')]
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'users.*' => 'کاربر',
-            'roles' => 'نقش'
+            'users.*' => 'کاربر'
         ];
     }
 }

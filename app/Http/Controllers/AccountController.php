@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SelectNotificationRequest;
 use App\Http\Requests\UserAssignViewRequest;
+use App\Http\Requests\UserAssignWatcherRequest;
 use App\Models\Company;
 use App\Models\Project;
 use App\Models\RoleUser;
@@ -66,10 +67,10 @@ class AccountController extends Controller
     /**
      * @param $model
      * @param $modelId
-     * @param UserAssignViewRequest $request
+     * @param UserAssignWatcherRequest $request
      * @return JsonResponse
      */
-    public function setWatcher($model, $modelId, UserAssignViewRequest $request): JsonResponse
+    public function setWatcher($model, $modelId, UserAssignWatcherRequest $request): JsonResponse
     {
         if (!in_array($model, array_keys(ResolvePermissionController::$models))) {
             $response = $this->getError('برای موجودیت انتخابی واچر تعیین نمی شود');
@@ -147,9 +148,8 @@ class AccountController extends Controller
                 if ($request->get('mode', 'attach') === 'detach')
                     $modelInstance->members()->detach($users->pluck('user_id')->toArray());
                 else {
-                    if ($modelInstance->members()->whereIn('user_id',$users->pluck('user_id')->toArray())->get()->isNotEmpty()
-                    or !$request->filled('roles')){
-                        $response = $this->getError('عضو تکراری انتخاب شده است یا نقشی انتخاب نشده است');
+                    if ($modelInstance->members()->whereIn('user_id',$users->pluck('user_id')->toArray())->get()->isNotEmpty()){
+                        $response = $this->getError('عضو تکراری انتخاب شده است');
                         return response()->json($response,$response['statusCode']);
                     }
                     $this->setMembersRecursive($modelInstance, $users->pluck('user_id')->toArray());
