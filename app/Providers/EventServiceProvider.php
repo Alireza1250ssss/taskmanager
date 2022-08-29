@@ -16,6 +16,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Observers\BaseObserver;
 use App\Observers\CompanyObserver;
+use App\Observers\OwnerObserver;
 use App\Observers\SetLeaveScheduleObserver;
 use App\Observers\TaskObserver;
 use Illuminate\Auth\Events\Registered;
@@ -52,9 +53,9 @@ class EventServiceProvider extends ServiceProvider
 
 
 //        Leave::observe([SetLeaveScheduleObserver::class,BaseObserver::class]);
-        Company::observe([BaseObserver::class]);
-        Project::observe([BaseObserver::class]);
-        Team::observe([BaseObserver::class]);
+        Company::observe([BaseObserver::class,OwnerObserver::class]);
+        Project::observe([BaseObserver::class,OwnerObserver::class]);
+        Team::observe([BaseObserver::class , OwnerObserver::class]);
         Task::observe([TaskObserver::class]);
 //        User::observe([BaseObserver::class]); !!!!!!!!!!!!!!!!!!!!! DO NOT UNCOMMENT THIS !!!!!!!!!!!!!
 
