@@ -17,6 +17,13 @@ class StoreRoleRequest extends FormRequest
         return true;
     }
 
+    public function prepareForValidation()
+    {
+        $this->merge([
+           'user_ref_id' => auth()->user()->user_id
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -28,6 +35,7 @@ class StoreRoleRequest extends FormRequest
             'name' => $this->isMethod('POST') ? 'required' : 'string' ,
             'permissions' => 'array' ,
             'permissions.*' => ['required',Rule::exists('permissions','permission_id')] ,
+            'user_ref_id' => 'required'
         ];
     }
 }

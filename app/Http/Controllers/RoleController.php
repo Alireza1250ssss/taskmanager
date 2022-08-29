@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AssignRoleRequest;
+use App\Http\Requests\AttachConditionRequest;
 use App\Http\Requests\StoreRoleRequest;
+use App\Models\Condition;
 use App\Models\Permission;
 use App\Models\Project;
 use App\Models\Role;
@@ -26,8 +28,9 @@ class RoleController extends Controller
     public function index(Request $request): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'نقش']), [
-            Role::getRecords($request->toArray())->addConstraints(function ($query){
+            Role::getRecords($request->toArray())->addConstraints(function ($query) {
                 $query->with('permissions');
+                $query->where('user_ref_id',auth()->user()->user_id);
             })->get()
         ]);
         return response()->json($response, $response['statusCode']);
@@ -48,6 +51,35 @@ class RoleController extends Controller
             'role' => $role->load('permissions')
         ]);
         return response()->json($response, $response['statusCode']);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getConditions(Request $request): JsonResponse
+    {
+        $response = $this->getResponse(__('apiResponse.index', ['resource' => 'شرط']), [
+            Condition::all()
+        ]);
+        return response()->json($response, $response['statusCode']);
+    }
+
+    /**
+     * @param AttachConditionRequest $request
+     * @param Role $role
+     * @return JsonResponse
+     */
+    public function addCondition(AttachConditionRequest $request, Role $role): JsonResponse
+    {
+        $role->permissions()->updateExistingPivot($request->get('permission_id'), [
+            'condition_params' => json_encode($request->get('conditions'))
+        ]);
+
+        $response = $this->getResponse('شرط ها با موفقیت اعمال شدند',[
+            $role->load('permissions')
+        ]);
+        return response()->json($response,$response['statusCode']);
     }
 
     /**
@@ -150,9 +182,9 @@ class RoleController extends Controller
 
     public function getPermissions(): JsonResponse
     {
-        $response = $this->getResponse(__('apiResponse.index',['resource' => 'دسترسی ها']) , [
-           Permission::all()
+        $response = $this->getResponse(__('apiResponse.index', ['resource' => 'دسترسی ها']), [
+            Permission::all()
         ]);
-        return response()->json($response,$response['statusCode']);
+        return response()->json($response, $response['statusCode']);
     }
 }
