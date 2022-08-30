@@ -41,7 +41,7 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request) : JsonResponse
     {
         $task = Task::create($request->validated());
-//        $task->setLastOrderInStage();
+        $task->setLastOrderInStage();
         if ($request->filled('task_metas'))
             $task->taskMetas()->createMany($request->get('task_metas'));
         if ($request->filled('watchers'))
