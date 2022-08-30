@@ -119,7 +119,9 @@ class Task extends Model
 
     public function setLastOrderInStage()
     {
-        $lastOrder = static::query()->where('stage_ref_id',$this->stage_ref_id)->max('order');
+        $lastOrder = static::withoutEvents(function (){
+           return static::query()->where('stage_ref_id',$this->stage_ref_id)->max('order');
+        });
         $this->order = (int)$lastOrder + 1000;
         $this->save();
     }
