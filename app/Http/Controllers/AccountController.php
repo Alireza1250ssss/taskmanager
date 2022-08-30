@@ -148,10 +148,6 @@ class AccountController extends Controller
                 if ($request->get('mode', 'attach') === 'detach')
                     $modelInstance->members()->detach($users->pluck('user_id')->toArray());
                 else {
-                    if ($modelInstance->members()->whereIn('user_id',$users->pluck('user_id')->toArray())->get()->isNotEmpty()){
-                        $response = $this->getError('عضو تکراری انتخاب شده است');
-                        return response()->json($response,$response['statusCode']);
-                    }
                     $this->setMembersRecursive($modelInstance, $users->pluck('user_id')->toArray());
                     foreach ($users as $user){
                         foreach ($request->get('roles') as $roleItem){
