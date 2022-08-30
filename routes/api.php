@@ -87,6 +87,8 @@ Route::middleware(['jwt_auth'])->group(function(){
 
     Route::put('/roles/assign',[RoleController::class ,'setRolesForUser'])->name('roles.assign');
     Route::put('/roles/detach',[RoleController::class ,'detachRoleFromUser'])->name('roles.detach');
+    Route::put('/roles/{role}/permissions/attach-condition',[RoleController::class , 'addCondition'])->name('roles.permissions.attach-condition');
+    Route::get('/conditions' , [RoleController::class , 'getConditions'])->name('conditions.index');
 
     Route::apiResources([
         'companies' => CompanyController::class ,
