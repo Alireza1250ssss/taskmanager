@@ -11,9 +11,11 @@ use App\Models\RoleUser;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
 {
@@ -140,28 +142,30 @@ class AccountController extends Controller
         }
 
         try {
-            // company or project or team or task
-            $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
-            $users = User::query()->whereIn('email', $request->get('users'))->get();
+            DB::transaction(function () use ($request,$model,$modelId){
+                // company or project or team or task
+                $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
+                $users = User::query()->whereIn('email', $request->get('users'))->get();
 
-            if ($users->isNotEmpty())
-                if ($request->get('mode', 'attach') === 'detach')
-                    $modelInstance->members()->detach($users->pluck('user_id')->toArray());
-                else {
-                    $this->setMembersRecursive($modelInstance, $users->pluck('user_id')->toArray());
-                    foreach ($users as $user){
-                        foreach ($request->get('roles') as $roleItem){
-                            $data = [
-                                'user_ref_id' => $user->user_id ,
-                                'role_ref_id' => $roleItem ,
-                                'rolable_type' => $model ,
-                                'rolable_id' => $modelId
-                            ];
-                            RoleUser::query()->upsert($data, array_keys($data));
+                if ($users->isNotEmpty())
+                    if ($request->get('mode', 'attach') === 'detach')
+                        $modelInstance->members()->detach($users->pluck('user_id')->toArray());
+                    else {
+                        $this->setMembersRecursive($modelInstance, $users->pluck('user_id')->toArray());
+                        foreach ($users as $user){
+                            foreach ($request->get('roles') as $roleItem){
+                                $data = [
+                                    'user_ref_id' => $user->user_id ,
+                                    'role_ref_id' => $roleItem ,
+                                    'rolable_type' => $model ,
+                                    'rolable_id' => $modelId
+                                ];
+                                RoleUser::query()->upsert($data, array_keys($data));
+                            }
                         }
                     }
-                }
-        } catch (\Exception $e) {
+            });
+        } catch (\Throwable $e){
             $response = $this->getError(__('apiResponse.forbidden'));
             return response()->json($response, $response['statusCode']);
         }
