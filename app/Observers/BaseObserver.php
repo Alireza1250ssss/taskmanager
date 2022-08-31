@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ResolvePermissionController;
+use App\Http\Controllers\RoleController;
 use App\Models\Company;
 use App\Models\Permission;
 use App\Models\Project;
@@ -63,9 +64,18 @@ class BaseObserver extends Controller
             return;
 
         $isAllowed = in_array($this->user->user_id, $modelItem->members->pluck('user_id')->toArray());
-
+        $isAllowedByParents = false;
+        $parent = RoleController::getParentModel($modelItem);
+        while ($parent)
+        {
+            if (in_array($this->user->user_id, $parent->members->pluck('user_id')->toArray())){
+                $isAllowedByParents = true;
+                break;
+            }
+            $parent = RoleController::getParentModel($parent);
+        }
         //check if the authenticated user is among the allowed users or not
-        if (!$isAllowed) {
+        if (!$isAllowed && !$isAllowedByParents) {
             $modelItem->setAttributes([]);
             return;
         }
