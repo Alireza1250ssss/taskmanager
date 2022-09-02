@@ -243,9 +243,11 @@ class BaseObserver extends Controller
                 // check if is there any condition to check
                 $condition = Role::find($rolePermission->role_ref_id)->permissions()->where('key',$keyPermission)
                     ->wherePivot('condition_params','!=',null)->first();
-                $condition = json_decode($condition->pivot->condition_params);
-                if (!empty($condition))
-                    (new ConditionService($modelItem,$condition))->checkConditions();
+                if (!empty($condition)) {
+                    $condition = json_decode($condition->pivot->condition_params);
+                    if (!empty($condition))
+                        (new ConditionService($modelItem, $condition))->checkConditions();
+                }
 
                 return true;
             }
