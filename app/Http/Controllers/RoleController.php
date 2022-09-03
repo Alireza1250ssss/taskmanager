@@ -15,6 +15,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class RoleController extends Controller
@@ -30,7 +31,7 @@ class RoleController extends Controller
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'نقش']), [
             Role::getRecords($request->toArray())->addConstraints(function ($query) {
                 $query->with('permissions');
-                $query->where('user_ref_id',auth()->user()->user_id);
+                $query->where('user_ref_id', auth()->user()->user_id);
             })->get()
         ]);
         return response()->json($response, $response['statusCode']);
@@ -76,10 +77,25 @@ class RoleController extends Controller
             'condition_params' => json_encode($request->get('conditions'))
         ]);
 
-        $response = $this->getResponse('شرط ها با موفقیت اعمال شدند',[
+        $response = $this->getResponse('شرط ها با موفقیت اعمال شدند', [
             $role->load('permissions')
         ]);
-        return response()->json($response,$response['statusCode']);
+        return response()->json($response, $response['statusCode']);
+    }
+
+    public function getColumnsFor($model): JsonResponse
+    {
+
+        $model = new ResolvePermissionController::$models[$model]['class'];
+        $fillable = $model->getFillable();
+        $result = [];
+        foreach ($fillable as $col) {
+            $result[$col] = Schema::getColumnType($model->getTable(), $col);
+        }
+        $response = $this->getResponse(__("apiResponse.index", ['resource' => 'ستونها']), [
+            $result
+        ]);
+        return response()->json($response, $response['statusCode']);
     }
 
     /**

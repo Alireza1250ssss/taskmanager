@@ -68,11 +68,7 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::get('/get-watcher/{model}/{modelId}',[AccountController::class,'getWatchers'])->name('get-watchers');
     Route::get('/get-member/{model}/{modelId}',[AccountController::class,'getMembers'])->name('get-members');
 
-    Route::post('/users/{user}/permissions/{type}',[ResolvePermissionController::class , 'setPermissions'])
-        ->where('type',"(fields)|(entities)")
-        ->name('set-permissions');
 
-    Route::post("/permissions/resolve",[ResolvePermissionController::class ,'resolvePermission'])->name('permissions.resolve');
     Route::apiResource('tasks.comments', CommentController::class)->shallow();
 
     Route::apiResource('stages', StageController::class)->only(['index']);
@@ -89,6 +85,8 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::put('/roles/detach',[RoleController::class ,'detachRoleFromUser'])->name('roles.detach');
     Route::put('/roles/{role}/permissions/attach-condition',[RoleController::class , 'addCondition'])->name('roles.permissions.attach-condition');
     Route::get('/conditions' , [RoleController::class , 'getConditions'])->name('conditions.index');
+    Route::get('/columns/{model}',[RoleController::class , 'getColumnsFor'])->name('columns.show')
+        ->where('model', '(company)|(project)|(team)|(task)');
 
     Route::apiResources([
         'companies' => CompanyController::class ,
