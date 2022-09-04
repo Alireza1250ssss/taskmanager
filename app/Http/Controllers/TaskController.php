@@ -77,6 +77,8 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task) : JsonResponse
     {
+        $task->update($request->validated());
+
         //check if the stage is being updated to set a log and send notification to its watchers
         if (array_key_exists('stage_ref_id' , $request->validated())) {
             $task->setLastOrderInStage();
@@ -84,8 +86,6 @@ class TaskController extends Controller
             Notification::send($task->watchers , new TaskWatcherNotification($taskLog));
         }
 
-
-        $task->update($request->validated());
         if ($request->filled('task_metas')) {
             $task->taskMetas()->delete();
             $task->taskMetas()->createMany($request->get('task_metas'));

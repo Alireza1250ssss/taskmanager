@@ -114,7 +114,7 @@ class Task extends Model
     public function setDoneAt()
     {
         $this->done_at = now();
-        $this->save();
+        $this->saveQuietly();
     }
 
     public function setLastOrderInStage()
