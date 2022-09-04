@@ -30,7 +30,7 @@ class AttachConditionRequest extends FormRequest
                 Rule::exists('permission_role','permission_ref_id')->where('role_ref_id',$this->route('role')->role_id)
             ],
             'conditions' => 'required|array|filled',
-            'conditions.relation' => ['required', 'boolean'],
+            'conditions.relation' => ['required', Rule::in('AND','OR')],
         ];
     }
 
