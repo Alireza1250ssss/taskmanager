@@ -30,8 +30,7 @@ class AttachConditionRequest extends FormRequest
                 Rule::exists('permission_role','permission_ref_id')->where('role_ref_id',$this->route('role')->role_id)
             ],
             'conditions' => 'required|array|filled',
-            'conditions.*.condition_id' => ['required', Rule::exists('conditions', 'id')],
-            'conditions.*.params' => ['array']
+            'conditions.relation' => ['required', 'boolean'],
         ];
     }
 
@@ -42,11 +41,4 @@ class AttachConditionRequest extends FormRequest
         ];
     }
 
-    public function attributes(): array
-    {
-        return [
-          'conditions.*.condition_id' => "شماره شرط"  ,
-          'conditions.*.params' => "محتوای شرط"
-        ];
-    }
 }
