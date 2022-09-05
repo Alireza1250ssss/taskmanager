@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AssignRoleRequest;
 use App\Http\Requests\AttachConditionRequest;
 use App\Http\Requests\StoreRoleRequest;
-use App\Models\Condition;
 use App\Models\Permission;
 use App\Models\Project;
 use App\Models\Role;
@@ -54,17 +53,7 @@ class RoleController extends Controller
         return response()->json($response, $response['statusCode']);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function getConditions(Request $request): JsonResponse
-    {
-        $response = $this->getResponse(__('apiResponse.index', ['resource' => 'شرط']), [
-            Condition::all()
-        ]);
-        return response()->json($response, $response['statusCode']);
-    }
+
 
     /**
      * @param AttachConditionRequest $request
