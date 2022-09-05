@@ -73,10 +73,12 @@ class RoleController extends Controller
      */
     public function addCondition(AttachConditionRequest $request, Role $role): JsonResponse
     {
-        $role = Role::query()->where('role_id',$role->role_id)
-            ->where('user_ref_id',auth()->user()->user_id)->firstOrFail();
+        $role = Role::query()->where('role_id', $role->role_id)
+            ->where('user_ref_id', auth()->user()->user_id)->firstOrFail();
+
+
         $role->permissions()->updateExistingPivot($request->get('permission_id'), [
-            'condition_params' => json_encode($request->get('conditions'))
+            'condition_params' => json_encode($request->get('conditions')) ?? null
         ]);
 
         $response = $this->getResponse('شرط ها با موفقیت اعمال شدند', [
