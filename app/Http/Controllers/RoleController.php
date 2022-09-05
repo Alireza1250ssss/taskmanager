@@ -76,9 +76,11 @@ class RoleController extends Controller
         $role = Role::query()->where('role_id', $role->role_id)
             ->where('user_ref_id', auth()->user()->user_id)->firstOrFail();
 
-
         $role->permissions()->updateExistingPivot($request->get('permission_id'), [
-            'condition_params' => json_encode($request->get('conditions')) ?? null
+            'condition_params' => json_encode([
+                    'conditions' => $request->get('conditions',[]),
+                    'actions' => $request->get('actions',[]),
+                ]) ?? null
         ]);
 
         $response = $this->getResponse('شرط ها با موفقیت اعمال شدند', [

@@ -35,7 +35,7 @@ class AttachConditionRequest extends FormRequest
                 Rule::in('AND', 'OR')
             ],
             'conditions' => ['array', new ConditionCheckRule($this->get('conditions'))],
-            'conditions.actions' => [
+            'actions' => [
                 Rule::requiredIf(fn() => !empty($this->get('conditions'))),
                 'array'
             ],
