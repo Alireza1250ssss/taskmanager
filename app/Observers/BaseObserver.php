@@ -235,18 +235,21 @@ class BaseObserver extends Controller
         if ($rolePermissionRecordForUser->isEmpty())
             return false;
         foreach ($rolePermissionRecordForUser as $rolePermission) {
+
             $parentItem = ResolvePermissionController::$models[$rolePermission->rolable_type]['class']::find($rolePermission->rolable_id);
             if (empty($parentItem)) continue;
-
             $correctType = in_array(get_class($parentItem),[Company::class , Project::class , Team::class]);
+
             if ($correctType && $parentItem->isParentOf($modelItem)) {
                 // check if is there any condition to check
                 $condition = Role::find($rolePermission->role_ref_id)->permissions()->where('key',$keyPermission)
                     ->wherePivot('condition_params','!=',null)->first();
+
                 if (!empty($condition)) {
+                    $access = $condition->pivot->access;
                     $condition = json_decode($condition->pivot->condition_params);
                     if (!empty($condition))
-                        (new ConditionService($modelItem, $condition))->checkConditions();
+                        (new ConditionService($modelItem, $condition , $access))->checkConditions();
                 }
 
                 return true;

@@ -4,36 +4,38 @@
 namespace App\Services;
 
 
-use App\Exceptions\MethodArgumentsException;
-use App\Models\Condition;
-use App\Models\User;
-
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Validation\ValidationException;
 
 class ConditionService
 {
     public $conditions;
-    public static bool $forValidator = false ;
+    private string $access;
+    private array $allowedFields = [];
     public $model;
     public $actions;
     private array $results;
 
 
-    public function __construct($model, $conditions)
+    public function __construct($model, $conditions, $access = 'accept')
     {
         $this->conditions = $conditions->conditions;
         $this->actions = $conditions->actions;
+        $this->access = $access;
         $this->model = $model;
     }
 
+    /**
+     * @param null $passedConditions
+     * @return bool|void
+     * @throws AuthorizationException
+     */
     public function checkConditions($passedConditions = null)
     {
         if (empty($this->conditions)) return;
 
         $conditions = $passedConditions ?? $this->conditions;
-        $relation = $conditions->relation ;
+        $relation = $conditions->relation;
         $this->results[] = $relation;
 
         $finalResult = $relation === 'AND';
@@ -53,11 +55,10 @@ class ConditionService
 
             if ($result === null) continue;
 
-            if ($relation === 'AND' && $result === false){
+            if ($relation === 'AND' && $result === false) {
                 $finalResult = false;
                 break;
-            }
-            elseif ($relation !== 'AND' && $result ===true){
+            } elseif ($relation !== 'AND' && $result === true) {
                 $finalResult = true;
                 break;
             }
@@ -68,6 +69,9 @@ class ConditionService
 
         if ($finalResult)
             (new ActionOnConditionService($this->actions))->callActions();
+
+        if ($this->access === 'reject')
+            $this->CheckOnlyForReject();
     }
 
 
@@ -80,6 +84,7 @@ class ConditionService
 
         // prepare parameters
         $field = $args['field'];
+        $this->allowedFields[] = $field;
         $values = $args['values'];
         $can = $args['can'] ?? true;
 
@@ -88,13 +93,14 @@ class ConditionService
         if (empty($fieldValue))
             return null;
         if (!$can)
-            return !in_array($fieldValue,$values);
-        return in_array($fieldValue,$values);
+            return !in_array($fieldValue, $values);
+        return in_array($fieldValue, $values);
     }
 
-    protected function jump(array $args) : ?bool
+    protected function jump(array $args): ?bool
     {
         $field = $args['field'];
+        $this->allowedFields[] = $field;
         $from = $args['from'];
         $to = $args['to'];
         $can = $args['can'] ?? true;
@@ -106,7 +112,7 @@ class ConditionService
         $fieldValueBefore = $modelBefore->{$field};
         if ($fieldValueBefore == $fieldValue)
             return null;
-        if ($fieldValueBefore == $from && $fieldValue == $to && $can )
+        if ($fieldValueBefore == $from && $fieldValue == $to && $can)
             return true;
         return false;
     }
@@ -114,7 +120,35 @@ class ConditionService
     protected function requirement(array $args): ?bool
     {
         $field = $args['field'];
+        $this->allowedFields[] = $field;
 
         return !empty($this->model->{$field});
+    }
+
+    protected function only(array $args = []): ?bool
+    {
+        $fields = $args['fields'] ?? $this->allowedFields;
+        $can = $args['can'] ?? true;
+
+        if (!array_diff(array_keys($this->model->getDirty()), $fields) && $can)
+            return true;
+        return false;
+    }
+
+
+    // helper methods
+
+    /**
+     * @throws AuthorizationException
+     */
+    protected function CheckOnlyForReject()
+    {
+        if (!$this->only())
+            throw new AuthorizationException('فیلد هایی غیر از فیلد های مجاز وارد کرده اید');
+        /*$conditions = (array) $this->conditions;
+        $conditions[] = (object) [
+            'type' => 'only'
+        ];
+        $this->conditions = (object) $conditions;*/
     }
 }

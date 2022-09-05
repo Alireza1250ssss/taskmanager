@@ -40,7 +40,7 @@ class Role extends Model
             'permission_role',
         'role_ref_id' ,
             'permission_ref_id',
-        )->withPivot(['condition_params']);
+        )->withPivot(['condition_params','access']);
     }
 
 }

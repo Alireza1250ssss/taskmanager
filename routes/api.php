@@ -43,7 +43,7 @@ Route::get('/migrate/fresh',[DatabaseController::class,'migrateFresh']);
 Route::get('/db/seed',[DatabaseController::class,'dbSeed']);
 Route::get('/composer/autoload',[DatabaseController::class,'dumpAutoload']);
 
-Route::middleware('jwt_auth')->get('/logout', function (Request $request) {
+Route::middleware('jwt_auth')->post('/logout', function (Request $request) {
     JWTAuth::parseToken()->invalidate();
     return response()->json([
         'status' => true,
