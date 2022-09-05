@@ -39,7 +39,7 @@ class AttachConditionRequest extends FormRequest
                 Rule::requiredIf(fn() => !empty($this->get('conditions'))),
                 'array'
             ],
-            'conditions.actions.*.type' => ['required', Rule::in(['permission'])]
+            'actions.*.type' => ['required', Rule::in(['permission'])]
         ];
     }
 
