@@ -57,6 +57,8 @@ class Team extends Model implements Hierarchy
     {
         if ($model instanceof Task)
             return $this->team_id == $model->team->team_id;
+        elseif ($model instanceof Team)
+            return $this->team_id == $model->team_id;
         return false;
     }
 }

@@ -52,6 +52,8 @@ class Company extends Model implements Hierarchy
             return $this->company_id == $model->project->company->company_id;
         elseif ($model instanceof Project)
             return $this->company_id == $model->company->company_id;
+        elseif ($model instanceof Company)
+            return $this->company_id == $model->company_id;
         return false;
     }
 }

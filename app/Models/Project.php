@@ -58,6 +58,8 @@ class Project extends Model implements Hierarchy
             return $this->project_id == $model->team->project->project_id;
         elseif ($model instanceof Team)
             return $this->project_id == $model->project->project_id;
+        elseif ($model instanceof Project)
+            return $this->project_id == $model->project_id;
         return false;
     }
 }
