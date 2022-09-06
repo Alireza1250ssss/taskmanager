@@ -45,8 +45,13 @@ class RoleController extends Controller
     public function store(StoreRoleRequest $request): JsonResponse
     {
         $role = Role::create($request->validated());
-        if ($request->filled('permissions'))
-            $role->permissions()->sync($request->get('permissions'));
+        if ($request->filled('permissions')) {
+            $permissions = collect($request->get('permissions'))
+                ->keyBy('permission_id')
+                ->transform(fn($val) => ['access' => $val['access']])
+                ->all();
+            $role->permissions()->sync($permissions);
+        }
         $response = $this->getResponse(__('apiResponse.store', ['resource' => 'نقش']), [
             'role' => $role->load('permissions')
         ]);
@@ -118,7 +123,11 @@ class RoleController extends Controller
     {
         $role->update($request->validated());
         if ($request->filled('permissions')) {
-            $role->permissions()->sync($request->get('permissions'));
+            $permissions = collect($request->get('permissions'))
+                ->keyBy('permission_id')
+                ->transform(fn($val) => ['access' => $val['access']])
+                ->all();
+            $role->permissions()->sync($permissions);
         }
         $response = $this->getResponse(__('apiResponse.update', ['resource' => 'نقش']), [
             'role' => $role->load('permissions')

@@ -34,8 +34,17 @@ class StoreRoleRequest extends FormRequest
         return [
             'name' => $this->isMethod('POST') ? 'required' : 'string' ,
             'permissions' => 'array' ,
-            'permissions.*' => ['required',Rule::exists('permissions','permission_id')] ,
+            'permissions.*.permission_id' => ['required',Rule::exists('permissions','permission_id')] ,
+            'permissions.*.access' => ['required',Rule::in('accept','reject')],
             'user_ref_id' => 'required'
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'permissions.*.permission_id' => 'شماره دسترسی',
+            'permissions.*.access' => 'وضعیت'
         ];
     }
 }
