@@ -19,6 +19,14 @@ use Illuminate\Validation\Rule;
 
 class RoleController extends Controller
 {
+    public const LEVELS = [
+        'company' => 1,
+        'project' => 2,
+        'team' => 3,
+        'task' => 4
+    ];
+
+
     /**
      * Display a listing of the resource.
      *
@@ -28,9 +36,11 @@ class RoleController extends Controller
     public function index(Request $request): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'نقش']), [
-            Role::getRecords($request->toArray())->addConstraints(function ($query) {
+            Role::getRecords($request->toArray())->addConstraints(function ($query) use($request){
                 $query->with('permissions');
                 $query->where('user_ref_id', auth()->user()->user_id);
+                if ($request->filled('category') && in_array($request->get('category'),array_keys(self::LEVELS)))
+                    $query->where('category','>=',self::LEVELS[$request->get('category')]);
             })->get()
         ]);
         return response()->json($response, $response['statusCode']);
@@ -59,7 +69,6 @@ class RoleController extends Controller
     }
 
 
-
     /**
      * @param AttachConditionRequest $request
      * @param Role $role
@@ -72,8 +81,8 @@ class RoleController extends Controller
 
         $role->permissions()->updateExistingPivot($request->get('permission_id'), [
             'condition_params' => json_encode([
-                    'conditions' => $request->get('conditions',[]),
-                    'actions' => $request->get('actions',[]),
+                    'conditions' => $request->get('conditions', []),
+                    'actions' => $request->get('actions', []),
                 ]) ?? null
         ]);
 

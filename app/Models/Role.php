@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\RoleController;
 use App\Http\Traits\FilterRecords;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,7 +16,7 @@ class Role extends Model
     use HasFactory,FilterRecords;
 
     protected $primaryKey = 'role_id';
-    protected $fillable = ['name','user_ref_id'];
+    protected $fillable = ['name','user_ref_id','category'];
     public array $filters = ['name'];
 
     /**
@@ -41,6 +43,14 @@ class Role extends Model
         'role_ref_id' ,
             'permission_ref_id',
         )->withPivot(['condition_params','access']);
+    }
+
+    /**
+     * @return Attribute
+     */
+    protected function category(): Attribute
+    {
+        return Attribute::set(fn($value) => RoleController::LEVELS[$value]);
     }
 
 }

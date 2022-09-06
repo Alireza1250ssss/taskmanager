@@ -209,6 +209,7 @@ return [
         "estimate_time" => "زمان تخمینی" ,
         'real_time' => 'زمان واقعی' ,
         'git_repo' => 'ریپازیتوری گیت' ,
+        'category' => 'گروه بندی',
         "permissions.*.model" => ':input مدل',
         "permissions.*.action" => 'عملیات',
         "roles" => 'نقش ها',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Controllers\RoleController;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,10 +30,13 @@ class StoreRoleRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
+        $categories = array_keys(RoleController::LEVELS);
         return [
             'name' => $this->isMethod('POST') ? 'required' : 'string' ,
+            'category' => $this->isMethod('POST') ?
+                ['required',Rule::in($categories)] : [Rule::in($categories)] ,
             'permissions' => 'array' ,
             'permissions.*.permission_id' => ['required',Rule::exists('permissions','permission_id')] ,
             'permissions.*.access' => ['required',Rule::in('accept','reject')],
