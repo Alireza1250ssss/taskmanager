@@ -16,8 +16,8 @@ use App\Models\User;
 use App\Services\ConditionService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Throwable;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class BaseObserver extends Controller
@@ -31,6 +31,8 @@ class BaseObserver extends Controller
         Team::class => "team",
         Task::class => "task",
     ];
+
+    private ?Throwable $conException;
 
 
     public function __construct()
@@ -66,9 +68,8 @@ class BaseObserver extends Controller
         $isAllowed = in_array($this->user->user_id, $modelItem->members->pluck('user_id')->toArray());
         $isAllowedByParents = false;
         $parent = RoleController::getParentModel($modelItem);
-        while ($parent)
-        {
-            if (in_array($this->user->user_id, $parent->members->pluck('user_id')->toArray())){
+        while ($parent) {
+            if (in_array($this->user->user_id, $parent->members->pluck('user_id')->toArray())) {
                 $isAllowedByParents = true;
                 break;
             }
@@ -143,62 +144,41 @@ class BaseObserver extends Controller
 
     //private methods to check if the user is among the allowed user to do that action (used in crud permission check methods)
 
+    /**
+     * @param $userId
+     * @param $modelItem
+     * @param $action
+     * @return bool
+     * @throws Throwable
+     */
     protected function checkIfAllowed($userId, $modelItem, $action): bool
     {
         // first check if it is allowed by more broad permission defined on a parent model
-        $allowedByParents = $this->checkIfAllowedByParents($userId,$modelItem,$action);
-        if ($allowedByParents) return true;
-
-        $modelId = $modelItem->{$modelItem->getPrimaryKey()};
-        $modelName = get_class($modelItem);
-        $modelName = $this->models[$modelName];
-
-        $keyPermission = "can_" . $action . "_$modelName";
-
-        // get roles relating to that permission
-        $rolesHavingPermission = Role::query()->whereHas('permissions', function (Builder $builder) use ($keyPermission) {
-            $builder->where('key', $keyPermission);
-        })->get();
-
-
-        // get users having that permission on the model retrieved via his role
-        $allowedUsers = RoleUser::query()->where('rolable_type', $modelName)
-            ->where('rolable_id', $modelId)
-            ->whereIn('role_ref_id', $rolesHavingPermission->pluck('role_id')->toArray())
-            ->where('user_ref_id',$userId)
-            ->get();
-
-        $rolesAllowed = Role::query()->whereIn('role_id',$allowedUsers->pluck('role_ref_id')->toArray())->get();
-        $noCondition = true;
-        $rolesAllowed->load('permissions');
-        $allConditions = [];
-        foreach ($rolesAllowed as $role){
-            $conditions = $role->permissions()->where('key',$keyPermission)
-                ->wherePivot('condition_params','!=',null)->first();
-            if (empty($conditions) && $noCondition !== false){
-                $noCondition = true;
-                continue;
-            }
-            $noCondition = false;
-            $allConditions = array_merge($allConditions,json_decode($conditions->pivot->condition_params));
-        }
-        (new ConditionService($modelItem,$allConditions))->checkConditions();
-
-        return $allowedUsers->isNotEmpty();
+        $allowedByParents = $this->checkIfAllowedByParents($userId, $modelItem, $action);
+        if ($allowedByParents)
+            return true;
+        if (!empty($this->conException))
+            throw $this->conException;
+        return false;
     }
 
-    private function checkIfAllowedForCreation($userId, $modelItem): bool
+    /**
+     * @param $userId
+     * @param $modelItem
+     * @return bool
+     */
+    protected function checkIfAllowedForCreation($userId, $modelItem): bool
     {
         // first check if it is allowed by more broad permission defined on a parent model
-        if ($this->checkIfAllowedByParents($userId,$modelItem ,'create'))
+        if ($this->checkIfAllowedByParents($userId, $modelItem, 'create'))
             return true;
 
         $modelName = get_class($modelItem);
         $modelName = $this->models[$modelName];
 
-        $keyPermission = "can_create_".$modelName;
+        $keyPermission = "can_create_" . $modelName;
 
-        if (empty(Permission::query()->where('key',$keyPermission)->first()))
+        if (empty(Permission::query()->where('key', $keyPermission)->first()))
             return false;
 
         // get roles relating to that permission
@@ -210,12 +190,12 @@ class BaseObserver extends Controller
         // get users having that permission on the model retrieved via his role
         $allowedUsers = RoleUser::query()
             ->whereIn('role_ref_id', $rolesHavingPermission->pluck('role_id')->toArray())
-            ->where('user_ref_id',$userId)
+            ->where('user_ref_id', $userId)
             ->get();
         return $allowedUsers->isNotEmpty();
     }
 
-    private function checkIfAllowedByParents($userId, $modelItem, $action) : bool
+    private function checkIfAllowedByParents($userId, $modelItem, $action): bool
     {
 
         $modelName = get_class($modelItem);
@@ -238,22 +218,30 @@ class BaseObserver extends Controller
 
             $parentItem = ResolvePermissionController::$models[$rolePermission->rolable_type]['class']::find($rolePermission->rolable_id);
             if (empty($parentItem)) continue;
-            $correctType = in_array(get_class($parentItem),[Company::class , Project::class , Team::class]);
 
-            if ($correctType && $parentItem->isParentOf($modelItem)) {
+            if ($parentItem->isParentOf($modelItem)) {
                 // check if is there any condition to check
-                $condition = Role::find($rolePermission->role_ref_id)->permissions()->where('key',$keyPermission)
-                    ->wherePivot('condition_params','!=',null)->first();
+                $condition = Role::find($rolePermission->role_ref_id)->permissions()->where('key', $keyPermission)
+                    ->wherePivot('condition_params', '!=', null)->first();
 
                 if (!empty($condition)) {
                     $access = $condition->pivot->access;
                     $condition = json_decode($condition->pivot->condition_params);
-                    if (!empty($condition))
-                        (new ConditionService($modelItem, $condition , $access))->checkConditions();
+
+                    if (!empty($condition)) {
+                        try {
+                            (new ConditionService($modelItem, $condition, $access))->checkConditions();
+                        } catch (Throwable $throwable) {
+                            if (empty($conException))
+                                $this->conException = $throwable;
+                            continue;
+                        }
+                    }
                 }
 
                 return true;
             }
+
         }
         return false;
     }

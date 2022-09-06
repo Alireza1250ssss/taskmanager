@@ -19,7 +19,12 @@ class ConditionService
 
     public function __construct($model, $conditions, $access = 'accept')
     {
+
         $this->conditions = $conditions->conditions;
+        // prepare the way permissions must operate based on access field
+        foreach ($conditions->actions as &$action)
+            $action->value = ($action->type == 'permission' && $access == 'accept') ? false : true;
+
         $this->actions = $conditions->actions;
         $this->access = $access;
         $this->model = $model;
