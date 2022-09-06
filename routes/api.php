@@ -42,6 +42,8 @@ Route::get('/migrate/run',[DatabaseController::class,'migrateRun']);
 Route::get('/migrate/fresh',[DatabaseController::class,'migrateFresh']);
 Route::get('/db/seed',[DatabaseController::class,'dbSeed']);
 Route::get('/composer/autoload',[DatabaseController::class,'dumpAutoload']);
+Route::get('/permissions/insert',[ResolvePermissionController::class,'insertKeys'])->name('permissions.insert-keys');
+
 
 Route::middleware('jwt_auth')->post('/logout', function (Request $request) {
     JWTAuth::parseToken()->invalidate();
@@ -57,8 +59,6 @@ Route::post('/register',[AuthController::class,'register'])->name('register');
 Route::post('/login',[AuthController::class,'login'])->name('login');
 
 Route::middleware(['jwt_auth'])->group(function(){
-
-    Route::get('/permissions/insert',[ResolvePermissionController::class,'insertKeys'])->name('permissions.insert-keys');
 
     Route::get('/notifications',[AccountController::class ,'getNotifications'])->name('get-notifications');
     Route::delete('/notifications',[AccountController::class , 'deleteNotifications'])->name('delete-notifications');
