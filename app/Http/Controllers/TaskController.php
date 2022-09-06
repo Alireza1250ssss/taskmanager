@@ -92,7 +92,7 @@ class TaskController extends Controller
         }
         $task->mergeMeta('taskMetas');
 
-        if (!empty($task->commit_id) && empty($task->commit_messge)) {
+        if (!empty($task->commit_id) && empty($task->commit_message)) {
             //send event to get and fill the commit message automatically
             CommitIDSentEvent::dispatch($task);
         }
