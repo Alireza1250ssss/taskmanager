@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Controllers\ResolvePermissionController;
 use App\Http\Traits\FilterRecords;
+use App\Http\Traits\HasPermissions;
 use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -21,6 +22,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable, FilterRecords, SoftDeletes, MainPropertySetter, MainPropertyGetter;
+    use HasPermissions;
 
     protected $primaryKey = 'user_id';
     public array $filters = [
@@ -225,29 +227,5 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
-    /**
-     * get all users having access to the entity specified by parameters
-     * @param $modelName
-     * @param $action
-     * @param null $modelId
-     * @return array
-     */
-    public static function getAllowedUsersFor($modelName,$action,$modelId=null): array
-    {
-        $rolesHavingPermission = Permission::query()->where([
-            'action' => $action,
-            'model' => $modelName
-        ])->get();
-        if ($rolesHavingPermission->isEmpty())
-            return [];
 
-        return RoleUser::query()->where('rolable_type', $modelName)
-            ->when($action !== 'create',function ($query)use ($modelId){
-                $query->where(function ($query) use ($modelId) {
-                    $query->where('rolable_id', $modelId)->orWhere('rolable_id', 0);
-                });
-            })
-            ->whereIn('role_ref_id', $rolesHavingPermission->pluck('role_ref_id')->toArray())
-            ->get()->pluck('user_ref_id')->toArray();
-    }
 }

@@ -20,5 +20,11 @@ return [
         'ساخت کمپانی' => 'can_create_company',
         'ویرایش کمپانی' => 'can_update_company_in',
         'حذف کمپانی' => 'can_delete_company_in',
+    ],
+    'others' => [
+        'تغییر عضو (افزودن و کاستن اعضا)' => 'can_change_member_in',
+        'تغییر واچر (افزودن و کاستن واچر)' => 'can_change_watcher_in',
+        'دریافت واچر ها' => 'can_get_watchers_in' ,
+        'دریافت اعضا' => 'can_get_members_in' ,
     ]
 ];

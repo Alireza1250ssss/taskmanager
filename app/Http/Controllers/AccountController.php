@@ -82,6 +82,9 @@ class AccountController extends Controller
         try {
             // company or project or team or task
             $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
+
+            \auth()->user()->authorizeFor('can_change_watcher_in',$modelInstance);
+
             $users = User::query()->whereIn('email', $request->get('users'))->get();
             if ($users->isNotEmpty()) {
                 if ($request->get('mode', 'attach') === 'detach')
@@ -122,6 +125,8 @@ class AccountController extends Controller
         // company or project or team or task
         $modelInstance = ResolvePermissionController::$models[$model]['class']::find($modelId);
 
+        \auth()->user()->authorizeFor('can_get_watchers_in',$modelInstance);
+
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'واچر']), [
             $modelInstance->load('watchers')
         ]);
@@ -145,6 +150,9 @@ class AccountController extends Controller
             DB::transaction(function () use ($request,$model,$modelId){
                 // company or project or team or task
                 $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
+
+                \auth()->user()->authorizeFor('can_change_member_in',$modelInstance);
+
                 $users = User::query()->whereIn('email', $request->get('users'))->get();
 
                 if ($users->isNotEmpty())
@@ -189,6 +197,8 @@ class AccountController extends Controller
         }
         // company or project or team or task
         $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
+
+        \auth()->user()->authorizeFor('can_get_members_in',$modelInstance);
 
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'عضو']), [
             $modelInstance->load('members')

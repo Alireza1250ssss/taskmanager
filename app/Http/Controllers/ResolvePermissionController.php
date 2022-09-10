@@ -34,7 +34,7 @@ class ResolvePermissionController extends Controller
         $baseRole = Role::query()->firstOrCreate([
             'name' => 'base-role'
         ]);
-        $baseRole->permissions()->attach(Permission::all()->pluck('permission_id')->toArray());
+        $baseRole->permissions()->sync(Permission::all()->pluck('permission_id')->toArray());
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'دسترسی']));
         return response()->json($response, $response['statusCode']);
     }
