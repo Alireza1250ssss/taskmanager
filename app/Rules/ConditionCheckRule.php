@@ -25,18 +25,20 @@ class ConditionCheckRule implements Rule
      *
      * @param string $attribute
      * @param mixed $value
+     * @param array $passedConditions
      * @return bool
      */
-    public function passes($attribute, $value): bool
+    public function passes($attribute, $value, array $passedConditions = []): bool
     {
         $passed = true;
-        unset($this->conditions['relation']);
-        unset($this->conditions['actions']);
-        foreach ($this->conditions as $condition) {
+        $conditions = !empty($passedConditions) ? $passedConditions : $this->conditions;
+        unset($conditions['relation']);
+        unset($conditions['actions']);
+        foreach ($conditions as $condition) {
 
             if (empty($condition) or empty($condition['type'])){
-                $passed = false;
-                $this->message = 'ساختار شرط به درستی رعایت نشده است و یا خالی ست';
+                $passed = isset($condition['relation']) ? $this->passes($attribute,$value,$condition) : false;
+                $this->message = $this->message ?? 'ساختار شرط به درستی رعایت نشده است و یا خالی ست';
                 break;
             }
             if (!method_exists($this, $condition['type'])) {
