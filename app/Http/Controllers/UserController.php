@@ -22,13 +22,7 @@ class UserController extends Controller
     public function index(Request $request): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'کاربر']), [
-            User::getRecords($request->toArray())->addConstraints(function ($query) use ($request) {
-                if ($request->filled('access_model')) {
-                    $modelName = ResolvePermissionController::$models[$request->get('access_model')]['class'];
-                    $allowedUsers = User::getAllowedUsersFor($modelName , $request->get('access_action') , $request->get('access_model_id',null));
-                    $query->whereIn('user_id',$allowedUsers);
-                }
-            })->get()
+            User::getRecords($request->toArray())->get()
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -57,7 +51,7 @@ class UserController extends Controller
     public function show(User $user): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.show', ['resource' => 'کاربر']), [
-            'user' => $user
+            'user' => $user->load('roles')
         ]);
         return response()->json($response, $response['statusCode']);
     }
