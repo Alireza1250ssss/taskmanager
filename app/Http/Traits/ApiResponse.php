@@ -35,11 +35,11 @@ trait ApiResponse
         ];
     }
 
-    public function getForbidden(array $data = [])
+    public function getForbidden(string $message = null,array $data = [])
     {
         return [
             'status' => false,
-            'message' => __('apiResponse.forbidden'),
+            'message' => $message ?? __('apiResponse.forbidden'),
             'data' => $data,
             'statusCode' => self::$HTTP_FORBIDDEN
         ];

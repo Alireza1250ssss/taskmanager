@@ -12,6 +12,8 @@ use App\Models\RoleUser;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
+use App\Services\AccessToChangeRoleService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -177,12 +179,12 @@ class RoleController extends Controller
                     $modelId = $role['rolable_id'];
                     $modelInstance = ResolvePermissionController::$models[$type]['class']::findOrFail($modelId);
                     \auth()->user()->authorizeFor('can_change_member_in', $modelInstance);
-
+                    static::checkAccessOnRole($role['role_ref_id'], $modelInstance);
                     RoleUser::query()->upsert($data, array_keys($data));
                 }
             });
         } catch (\Throwable $e) {
-            $response = $this->getForbidden();
+            $response = $this->getForbidden($e->getMessage());
             return response()->json($response, $response['statusCode']);
         }
 
@@ -207,7 +209,7 @@ class RoleController extends Controller
                     $modelId = $roleUserRecord['rolable_id'];
                     $modelInstance = ResolvePermissionController::$models[$type]['class']::findOrFail($modelId);
                     \auth()->user()->authorizeFor('can_change_member_in', $modelInstance);
-
+                    static::checkAccessOnRole($roleUserRecord['role_ref_id'], $modelInstance);
                     RoleUser::query()->where([
                         'rolable_type' => $type ,
                         'rolable_id' => $modelId,
@@ -217,7 +219,7 @@ class RoleController extends Controller
                 }
             });
         } catch (\Throwable $e) {
-            $response = $this->getForbidden();
+            $response = $this->getForbidden($e->getMessage());
             return response()->json($response, $response['statusCode']);
         }
 
@@ -243,5 +245,16 @@ class RoleController extends Controller
             Permission::all()
         ]);
         return response()->json($response, $response['statusCode']);
+    }
+
+    /**
+     * @param $roleId
+     * @param $modelInstance
+     * @throws AuthorizationException
+     */
+    public static function checkAccessOnRole($roleId, $modelInstance): void
+    {
+        if (!AccessToChangeRoleService::isAbleFor($roleId, $modelInstance, auth()->user()->user_id))
+            throw new AuthorizationException('تمام دسترسی های نقش انتخاب شده را ندارید');
     }
 }

@@ -163,6 +163,7 @@ class AccountController extends Controller
                     $this->setMembersRecursive($modelInstance, $userIds);
                     foreach ($users as $user) {
                         foreach ($request->get('roles') as $roleItem) {
+                            RoleController::checkAccessOnRole($roleItem,$modelInstance);
                             $data = [
                                 'user_ref_id' => $user->user_id,
                                 'role_ref_id' => $roleItem,

@@ -10,9 +10,12 @@ use App\Models\RoleUser;
 use App\Services\ConditionService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
+use Throwable;
 
 trait HasPermissions
 {
+    private ?Throwable $conException;
+
     public function canDo($keyPermission,$modelItem,$userId): bool
     {
         $rolesHavingPermission = Role::query()->whereHas('permissions', function (Builder $builder) use ($keyPermission) {
@@ -44,5 +47,46 @@ trait HasPermissions
 
         if (!$this->canDo($keyPermission,$modelItem,$userId))
             throw new AuthorizationException();
+    }
+
+    public function canWithConditions($keyPermission , $modelItem): bool
+    {
+        $rolesHavingPermission = Role::query()->whereHas('permissions', function (Builder $builder) use ($keyPermission) {
+            $builder->where('key', $keyPermission);
+        })->get();
+
+        $rolePermissionRecordForUser = RoleUser::query()->where('user_ref_id', $userId)
+            ->whereIn('role_ref_id', $rolesHavingPermission->pluck('role_id')->toArray())
+            ->whereNotNull('rolable_type')->get();
+        if ($rolePermissionRecordForUser->isEmpty())
+            return false;
+
+        foreach ($rolePermissionRecordForUser as $rolePermission) {
+
+            $parentItem = ResolvePermissionController::$models[$rolePermission->rolable_type]['class']::find($rolePermission->rolable_id);
+            if (empty($parentItem)) continue;
+
+            if ($parentItem->isParentOf($modelItem)) {
+                $condition = Role::find($rolePermission->role_ref_id)->permissions()->where('key', $keyPermission)
+                    ->wherePivot('condition_params', '!=', null)->first();
+
+                if (!empty($condition)) {
+                    $access = $condition->pivot->access;
+                    $condition = json_decode($condition->pivot->condition_params);
+
+                    if (!empty($condition)) {
+                        try {
+                            (new ConditionService($modelItem, $condition, $access))->checkConditions();
+                        } catch (Throwable $throwable) {
+                            if (empty($conException))
+                                $this->conException = $throwable;
+                            continue;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
     }
 }
