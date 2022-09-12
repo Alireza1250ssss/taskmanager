@@ -14,7 +14,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class OwnerObserver
 {
-    public ?User $user;
+    public static ?User $user;
     public bool $noAuth = false;
     public array $userRoles = [];
     public array $models = [
@@ -27,9 +27,9 @@ class OwnerObserver
     public function __construct()
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
+            $user = self::$user ?? JWTAuth::parseToken()->authenticate();
             if (!empty($user)) {
-                $this->user = $user;
+                self::$user = $user;
 
                 // set cache time to a week
                 $timeToStore = 60 * 60 * 24 * 7;

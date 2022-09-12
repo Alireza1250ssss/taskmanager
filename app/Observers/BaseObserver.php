@@ -22,7 +22,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class BaseObserver extends Controller
 {
-    public ?User $user;
+    public static ?User $user;
+    public static array $cachedPermissions = [];
     public bool $noAuth = false;
     public array $userRoles = [];
     public array $models = [
@@ -38,9 +39,9 @@ class BaseObserver extends Controller
     public function __construct()
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
+            $user = self::$user ?? JWTAuth::parseToken()->authenticate();
             if (!empty($user)) {
-                $this->user = $user;
+                self::$user = $user;
 
                 // set cache time to a week
                 $timeToStore = 60 * 60 * 24 * 7;
@@ -65,15 +66,18 @@ class BaseObserver extends Controller
         if ($this->noAuth === true)
             return;
 
-        $isAllowed = in_array($this->user->user_id, $modelItem->members->pluck('user_id')->toArray());
+        $isAllowed = in_array(auth()->user()->user_id, $modelItem->members->pluck('user_id')->toArray());
         $isAllowedByParents = false;
-        $parent = RoleController::getParentModel($modelItem);
-        while ($parent) {
-            if (in_array($this->user->user_id, $parent->members->pluck('user_id')->toArray())) {
-                $isAllowedByParents = true;
-                break;
+
+        if (!$isAllowed) {
+            $parent = RoleController::getParentModel($modelItem);
+            while ($parent) {
+                if (!empty($parent->getAttributes())) {
+                    $isAllowedByParents = true;
+                    break;
+                }
+                $parent = RoleController::getParentModel($parent);
             }
-            $parent = RoleController::getParentModel($parent);
         }
         //check if the authenticated user is among the allowed users or not
         if (!$isAllowed && !$isAllowedByParents) {
@@ -86,7 +90,7 @@ class BaseObserver extends Controller
      * This observer method is called when a model record is in the updating process,
      * at this point, the updates has not yet been persisted to the database.
      * @param $modelItem
-     * @throws AuthorizationException
+     * @throws AuthorizationException|Throwable
      */
     public function updating($modelItem)
     {
@@ -126,7 +130,7 @@ class BaseObserver extends Controller
      * at this point, the record has not yet been deleted from the database,
      * and using its id to retrieve it from the database will return appropriate data.
      * @param $modelItem
-     * @throws AuthorizationException
+     * @throws AuthorizationException|Throwable
      */
     public function deleting($modelItem)
     {
