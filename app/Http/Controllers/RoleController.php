@@ -14,6 +14,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
@@ -36,11 +37,11 @@ class RoleController extends Controller
     public function index(Request $request): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'نقش']), [
-            Role::getRecords($request->toArray())->addConstraints(function ($query) use($request){
+            Role::getRecords($request->toArray())->addConstraints(function ($query) use ($request) {
                 $query->with('permissions');
                 $query->where('user_ref_id', auth()->user()->user_id);
-                if ($request->filled('category') && in_array($request->get('category'),array_keys(self::LEVELS)))
-                    $query->where('category','>=',self::LEVELS[$request->get('category')]);
+                if ($request->filled('category') && in_array($request->get('category'), array_keys(self::LEVELS)))
+                    $query->where('category', '>=', self::LEVELS[$request->get('category')]);
             })->get()
         ]);
         return response()->json($response, $response['statusCode']);
@@ -166,11 +167,24 @@ class RoleController extends Controller
     {
         $user = User::query()->where('email', $request->get('email'))->first();
 
-        $data = $request->only(['role_ref_id', 'rolable_type', 'rolable_id']);
-        $data = array_merge(['user_ref_id' => $user->user_id], $data);
 
-        RoleUser::query()->upsert($data, array_keys($data));
+        try {
+            DB::transaction(function () use ($request,$user){
+                foreach ($request->get('roles') as $role) {
+                    $data = array_merge(['user_ref_id' => $user->user_id], $role);
 
+                    $type = $role['rolable_type'];
+                    $modelId = $role['rolable_id'];
+                    $modelInstance = ResolvePermissionController::$models[$type]['class']::findOrFail($modelId);
+                    \auth()->user()->authorizeFor('can_change_member_in', $modelInstance);
+
+                    RoleUser::query()->upsert($data, array_keys($data));
+                }
+            });
+        } catch (\Throwable $e) {
+            $response = $this->getForbidden();
+            return response()->json($response, $response['statusCode']);
+        }
 
         $response = $this->getResponse("نقش ها با موفقیت اختصاص یافتند", [
             $user->load('roles')
@@ -179,21 +193,35 @@ class RoleController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param AssignRoleRequest $request
      * @return JsonResponse
      */
-    public function detachRoleFromUser(Request $request): JsonResponse
+    public function detachRoleFromUser(AssignRoleRequest $request): JsonResponse
     {
         $user = User::query()->where('email', $request->get('email'))->first();
-        $request->validate([
-            'roles' => 'required|filled|array',
-            'roles.*' => ['required', Rule::exists('roles', 'role_id')]
-        ]);
 
-        $count = RoleUser::query()->where('user_ref_id', $user->user_id)
-            ->whereIn('role_ref_id', $request->get('roles'))->delete();
+        try {
+            DB::transaction(function () use ($request,$user){
+                foreach ($request->get('roles') as $roleUserRecord) {
+                    $type = $roleUserRecord['rolable_type'];
+                    $modelId = $roleUserRecord['rolable_id'];
+                    $modelInstance = ResolvePermissionController::$models[$type]['class']::findOrFail($modelId);
+                    \auth()->user()->authorizeFor('can_change_member_in', $modelInstance);
 
-        $response = $this->getResponse(__('apiResponse.destroy', ['items' => $count]));
+                    RoleUser::query()->where([
+                        'rolable_type' => $type ,
+                        'rolable_id' => $modelId,
+                        'role_ref_id' => $roleUserRecord['role_ref_id'],
+                        'user_ref_id' => $user->user_id
+                    ])->delete();
+                }
+            });
+        } catch (\Throwable $e) {
+            $response = $this->getForbidden();
+            return response()->json($response, $response['statusCode']);
+        }
+
+        $response = $this->getResponse(__('apiResponse.destroy', ['items' => count($request->get('roles'))]));
         return response()->json($response, $response['statusCode']);
     }
 
