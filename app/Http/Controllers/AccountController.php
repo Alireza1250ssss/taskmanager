@@ -7,11 +7,12 @@ use App\Http\Requests\UserAssignViewRequest;
 use App\Http\Requests\UserAssignWatcherRequest;
 use App\Models\Company;
 use App\Models\Project;
+use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Database\QueryException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -83,7 +84,7 @@ class AccountController extends Controller
             // company or project or team or task
             $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
 
-            \auth()->user()->authorizeFor('can_change_watcher_in',$modelInstance);
+            \auth()->user()->authorizeFor('can_change_watcher_in', $modelInstance);
 
             $users = User::query()->whereIn('email', $request->get('users'))->get();
             if ($users->isNotEmpty()) {
@@ -125,7 +126,7 @@ class AccountController extends Controller
         // company or project or team or task
         $modelInstance = ResolvePermissionController::$models[$model]['class']::find($modelId);
 
-        \auth()->user()->authorizeFor('can_get_watchers_in',$modelInstance);
+        \auth()->user()->authorizeFor('can_get_watchers_in', $modelInstance);
 
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'واچر']), [
             $modelInstance->load('watchers')
@@ -147,33 +148,33 @@ class AccountController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($request,$model,$modelId){
+            DB::transaction(function () use ($request, $model, $modelId) {
                 // company or project or team or task
                 $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
-
-                \auth()->user()->authorizeFor('can_change_member_in',$modelInstance);
+                \auth()->user()->authorizeFor('can_change_member_in', $modelInstance);
 
                 $users = User::query()->whereIn('email', $request->get('users'))->get();
 
-                if ($users->isNotEmpty())
-                    if ($request->get('mode', 'attach') === 'detach')
-                        $modelInstance->members()->detach($users->pluck('user_id')->toArray());
-                    else {
-                        $this->setMembersRecursive($modelInstance, $users->pluck('user_id')->toArray());
-                        foreach ($users as $user){
-                            foreach ($request->get('roles') as $roleItem){
-                                $data = [
-                                    'user_ref_id' => $user->user_id ,
-                                    'role_ref_id' => $roleItem ,
-                                    'rolable_type' => $model ,
-                                    'rolable_id' => $modelId
-                                ];
-                                RoleUser::query()->upsert($data, array_keys($data));
-                            }
+                $userIds = $users->pluck('user_id')->toArray();
+                if ($request->get('mode', 'attach') === 'detach') {
+                    $this->NotAllowOwner($modelInstance, $userIds);
+                    $modelInstance->members()->detach($userIds);
+                } else {
+                    $this->setMembersRecursive($modelInstance, $userIds);
+                    foreach ($users as $user) {
+                        foreach ($request->get('roles') as $roleItem) {
+                            $data = [
+                                'user_ref_id' => $user->user_id,
+                                'role_ref_id' => $roleItem,
+                                'rolable_type' => $model,
+                                'rolable_id' => $modelId
+                            ];
+                            RoleUser::query()->upsert($data, array_keys($data));
                         }
                     }
+                }
             });
-        } catch (\Throwable $e){
+        } catch (\Throwable $e) {
             $response = $this->getError(__('apiResponse.forbidden'));
             return response()->json($response, $response['statusCode']);
         }
@@ -198,7 +199,7 @@ class AccountController extends Controller
         // company or project or team or task
         $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
 
-        \auth()->user()->authorizeFor('can_get_members_in',$modelInstance);
+        \auth()->user()->authorizeFor('can_get_members_in', $modelInstance);
 
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'عضو']), [
             $modelInstance->load('members')
@@ -227,4 +228,20 @@ class AccountController extends Controller
         }
     }
 
+    protected function NotAllowOwner($modelInstance, $userIds)
+    {
+        $res = false;
+
+        foreach ($userIds as $userId) {
+            do {
+                if (Role::hasBaseRoleOn($modelInstance, $userId)) {
+                    $res = true;
+                    break;
+                }
+            } while ($modelInstance = RoleController::getParentModel($modelInstance));
+            if ($res) break;
+        }
+        if ($res)
+            throw new AuthorizationException('امکان حذف مالک را ندارید');
+    }
 }
