@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AccessToChangeRoleService
 {
-    public static ?User $user;
+    public static ?User $user = null;
 
     public static function isAbleFor($roleId, $modelInstance, $userId , $cacheUser = true): bool
     {

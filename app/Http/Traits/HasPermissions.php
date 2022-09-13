@@ -55,7 +55,7 @@ trait HasPermissions
             $builder->where('key', $keyPermission);
         })->get();
 
-        $rolePermissionRecordForUser = RoleUser::query()->where('user_ref_id', $userId)
+        $rolePermissionRecordForUser = RoleUser::query()->where('user_ref_id', $this->user_id)
             ->whereIn('role_ref_id', $rolesHavingPermission->pluck('role_id')->toArray())
             ->whereNotNull('rolable_type')->get();
         if ($rolePermissionRecordForUser->isEmpty())
