@@ -81,6 +81,8 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::get('/tasks/take/{task}',[TaskController::class , 'takeTask'])->name('tasks.take-task');
     Route::put('/tasks/{task}/change-order',[TaskController::class , 'taskReorder'])->name('tasks.reorder');
 
+    Route::get('/users/{user}/roles',[UserController::class,'getRolesOfUser'])->name('users.roles.index');
+
     Route::put('/roles/assign',[RoleController::class ,'setRolesForUser'])->name('roles.assign');
     Route::put('/roles/detach',[RoleController::class ,'detachRoleFromUser'])->name('roles.detach');
     Route::put('/roles/{role}/permissions/attach-condition',[RoleController::class , 'addCondition'])->name('roles.permissions.attach-condition');

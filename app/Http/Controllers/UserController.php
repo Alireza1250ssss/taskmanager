@@ -51,7 +51,7 @@ class UserController extends Controller
     public function show(User $user): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.show', ['resource' => 'کاربر']), [
-            'user' => $user->load('roles')
+            'user' => $user
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -84,6 +84,23 @@ class UserController extends Controller
         $count = User::destroy(explode(',', $user));
         $response = $this->getResponse(__('apiResponse.destroy', ['items' => $count]));
         return response()->json($response, $response['statusCode']);
+    }
+
+    public function getRolesOfUser(Request $request,User $user): JsonResponse
+    {
+        ['type' => $type , 'type_id' => $typeId] = $request->only(['type','type_id']);
+
+        $modelInstance = ResolvePermissionController::$models[$type]['class']::findOrFail($typeId);
+        \auth()->user()->authorizeFor('can_get_members_in', $modelInstance);
+
+        $response = $this->getResponse(__('apiResponse.show',['resource' => 'نقش های کاربر']),[
+           $user->load(['roles' => function($query) use($type,$typeId){
+               $query->where('name','!=','base-role');
+               $query->wherePivot('rolable_type',$type);
+               $query->wherePivot('rolable_id',$typeId);
+           }])
+        ]);
+        return response()->json($response,$response['statusCode']);
     }
 
 }
