@@ -88,6 +88,11 @@ class UserController extends Controller
 
     public function getRolesOfUser(Request $request,User $user): JsonResponse
     {
+        $request->validate([
+           'type' => 'required|in:company,project,team',
+           'type_id' => 'required'
+        ]);
+
         ['type' => $type , 'type_id' => $typeId] = $request->only(['type','type_id']);
 
         $modelInstance = ResolvePermissionController::$models[$type]['class']::findOrFail($typeId);
