@@ -68,11 +68,16 @@ class ConditionService
                 break;
             }
         }
-//        dd($finalResult,$this->results);
+//        dd($finalResult, $this->results, $this->access, $this->actions);
         if ($passedConditions)
             return $finalResult;
 
-        if ($finalResult)
+        if (!$finalResult and $this->access == 'reject') {
+            foreach ($this->actions as &$action)
+                if (($action->type == 'permission'))
+                    $action->value =   false ;
+            (new ActionOnConditionService($this->actions))->callActions();
+        } elseif ($finalResult and $this->access == 'accept')
             (new ActionOnConditionService($this->actions))->callActions();
 
         if ($this->access === 'reject')
