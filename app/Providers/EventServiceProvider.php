@@ -35,9 +35,6 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        PermissionAdded::class => [
-          SetParentsReadPermission::class
-        ],
         CommitIDSentEvent::class => [
           SetCommitMessage::class
         ],

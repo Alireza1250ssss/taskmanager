@@ -2,7 +2,6 @@
 
 namespace App\Observers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\ResolvePermissionController;
 use App\Http\Controllers\RoleController;
 use App\Models\Company;
@@ -20,7 +19,7 @@ use Illuminate\Support\Facades\Cache;
 use Throwable;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class BaseObserver extends Controller
+class BaseObserver
 {
     public static ?User $user;
     public static array $cachedPermissions = [];
