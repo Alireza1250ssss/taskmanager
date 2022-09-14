@@ -37,10 +37,17 @@ class ConditionService
      */
     public function checkConditions($passedConditions = null)
     {
-        if (empty($this->conditions)) return;
+        if (empty($this->conditions)){
+            foreach ($this->actions as &$action)
+                if (($action->type == 'permission'))
+                    $action->value =   false ;
+            (new ActionOnConditionService($this->actions))->callActions();
+            return;
+        }
 
         $conditions = $passedConditions ?? $this->conditions;
         $relation = $conditions->relation;
+
         $this->results[] = $relation;
 
         $finalResult = $relation === 'AND';
