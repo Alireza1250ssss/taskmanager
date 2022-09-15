@@ -71,7 +71,7 @@ class BaseObserver
         if (!$isAllowed) {
             $parent = RoleController::getParentModel($modelItem);
             while ($parent) {
-                if (!empty($parent->getAttributes())) {
+                if (!empty($parent->getAttributes()) && Role::hasAnyRoleOn($modelItem,auth()->user()->user_id)) {
                     $isAllowedByParents = true;
                     break;
                 }

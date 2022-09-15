@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Role extends Model
 {
@@ -66,6 +64,18 @@ class Role extends Model
             'role_ref_id' => $baseRole->role_id ,
             'rolable_type' => $type ,
             'rolable_id' => $modelId
+        ])->first();
+    }
+
+    public static function hasAnyRoleOn($model , $userId): bool
+    {
+        $type = (new OwnerObserver())->models[get_class($model)];
+        $modelId = $model->{$model->getPrimaryKey()};
+
+        return (bool)RoleUser::query()->where([
+            'rolable_type' => $type ,
+            'rolable_id' => $modelId,
+            'user_ref_id' => $userId
         ])->first();
     }
 
