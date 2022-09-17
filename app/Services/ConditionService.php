@@ -41,7 +41,7 @@ class ConditionService
             foreach ($this->actions as &$action)
                 if (($action->type == 'permission'))
                     $action->value =   false ;
-            (new ActionOnConditionService($this->actions))->callActions();
+            (new ActionsService($this->actions))->callActions();
             return;
         }
 
@@ -83,9 +83,9 @@ class ConditionService
             foreach ($this->actions as &$action)
                 if (($action->type == 'permission'))
                     $action->value =   false ;
-            (new ActionOnConditionService($this->actions))->callActions();
+            (new ActionsService($this->actions))->callActions();
         } elseif ($finalResult and $this->access == 'accept')
-            (new ActionOnConditionService($this->actions))->callActions();
+            (new ActionsService($this->actions))->callActions();
 
         if ($this->access === 'reject')
             $this->CheckOnlyForReject();
@@ -139,6 +139,20 @@ class ConditionService
         $field = $args['field'];
         $this->allowedFields[] = $field;
 
+        return !empty($this->model->{$field});
+    }
+
+    protected function edit(array $args): bool
+    {
+        $field = $args['field'];
+        $this->allowedFields[] = $field;
+        return in_array($field,array_keys($this->model->getDirty()));
+    }
+
+    protected function set(array $args): bool
+    {
+        $field = $args['field'];
+        $this->allowedFields[] = $field;
         return !empty($this->model->{$field});
     }
 

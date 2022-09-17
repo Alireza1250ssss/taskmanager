@@ -6,7 +6,7 @@ namespace App\Services;
 
 use Illuminate\Auth\Access\AuthorizationException;
 
-class ActionOnConditionService
+class ActionsService
 {
     public ?array $actions;
 
