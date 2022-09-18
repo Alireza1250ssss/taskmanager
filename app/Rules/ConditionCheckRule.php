@@ -107,4 +107,18 @@ class ConditionCheckRule implements Rule
                 'can' => 'boolean'
             ];
     }
+
+    protected function edit(): array
+    {
+        return [
+          'field' => 'required'
+        ];
+    }
+
+    protected function set(): array
+    {
+        return [
+            'field' => 'required'
+        ];
+    }
 }
