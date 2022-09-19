@@ -126,10 +126,12 @@ class AccountController extends Controller
         // company or project or team or task
         $modelInstance = ResolvePermissionController::$models[$model]['class']::find($modelId);
 
-        \auth()->user()->authorizeFor('can_get_watchers_in', $modelInstance);
+        $access = \auth()->user()->canDo('can_get_watchers_in', $modelInstance, \auth()->user()->user_id);
+        //unset the relations possibly loaded when checking permission
+        $modelInstance = $modelInstance->withoutRelations();
 
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'واچر']), [
-            $modelInstance->load('watchers')
+            $access ? $modelInstance->load('watchers') : $modelInstance
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -163,7 +165,7 @@ class AccountController extends Controller
                     $this->setMembersRecursive($modelInstance, $userIds);
                     foreach ($users as $user) {
                         foreach ($request->get('roles') as $roleItem) {
-                            RoleController::checkAccessOnRole($roleItem,$modelInstance);
+                            RoleController::checkAccessOnRole($roleItem, $modelInstance);
                             $data = [
                                 'user_ref_id' => $user->user_id,
                                 'role_ref_id' => $roleItem,
@@ -200,10 +202,12 @@ class AccountController extends Controller
         // company or project or team or task
         $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
 
-        \auth()->user()->authorizeFor('can_get_members_in', $modelInstance);
+        $access = \auth()->user()->canDo('can_get_members_in', $modelInstance, \auth()->user()->user_id);
+        //unset the relations possibly loaded when checking permission
+        $modelInstance = $modelInstance->withoutRelations();
 
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'عضو']), [
-            $modelInstance->load('members')
+            $access ? $modelInstance->load('members') : $modelInstance
         ]);
         return response()->json($response, $response['statusCode']);
     }
