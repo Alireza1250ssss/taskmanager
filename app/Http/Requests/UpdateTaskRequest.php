@@ -25,10 +25,7 @@ class UpdateTaskRequest extends FormRequest
                 'user_ref_id' => auth()->user()->user_id
             ]);
         }
-        if (!empty($this->route('task')->estimate_time))
-            $this->merge([
-                'allow_estimate' => true
-            ]);
+
         if ($this->filled('real_time')) {
             $beforeRealTime = $this->route('task')->real_time;
 
@@ -48,21 +45,15 @@ class UpdateTaskRequest extends FormRequest
      */
     public function rules()
     {
-        $needRealTime = empty($this->route('task')->real_time)
-            && $this->filled('stage_ref_id')
-            && in_array($this->get('stage_ref_id'), Stage::query()->whereNotIn('name', ['backlog', 'todo', 'doing'])->get()->pluck('stage_id')->toArray());
+
         return [
             'user_ref_id' => ['nullable', Rule::exists('users', 'user_id')->withoutTrashed()],
             'parent_id' => Rule::exists('tasks', 'task_id')->withoutTrashed(),
             'team_ref_id' => [Rule::exists('teams', 'team_id')->withoutTrashed()],
-            'stage_ref_id' => [
-                (!$this->filled('allow_estimate') && !$this->filled('estimate_time')) ?
-                    Rule::exists('stages', 'stage_id')->whereIn('name', ['backlog', 'todo'])->withoutTrashed() :
-                    Rule::exists('stages', 'stage_id')->withoutTrashed()
-            ],
+            'stage_ref_id' => [Rule::exists('stages', 'stage_id')->withoutTrashed()],
             'status_ref_id' => Rule::exists('statuses', 'status_id')->withoutTrashed(),
-            'real_time' => [Rule::requiredIf(fn() => $needRealTime),'array'],
-            'estimate_time' => 'prohibited_if:allow_estimate,true',
+            'real_time' => ['array'],
+            'estimate_time' => 'string',
             'priority' => 'string',
             'title' => 'string',
             'description' => 'string',

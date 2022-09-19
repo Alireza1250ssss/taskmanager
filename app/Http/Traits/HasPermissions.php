@@ -7,6 +7,7 @@ namespace App\Http\Traits;
 use App\Http\Controllers\ResolvePermissionController;
 use App\Models\Role;
 use App\Models\RoleUser;
+use App\Services\ConditionCheckService;
 use App\Services\ConditionService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,20 +71,9 @@ trait HasPermissions
                 $condition = Role::find($rolePermission->role_ref_id)->permissions()->where('key', $keyPermission)
                     ->wherePivot('condition_params', '!=', null)->first();
 
-                if (!empty($condition)) {
-                    $access = $condition->pivot->access;
-                    $condition = json_decode($condition->pivot->condition_params);
+                if (!ConditionCheckService::checkForConditions($condition,$modelItem))
+                    continue;
 
-                    if (!empty($condition)) {
-                        try {
-                            (new ConditionService($modelItem, $condition, $access))->checkConditions();
-                        } catch (Throwable $throwable) {
-                            if (empty($conException))
-                                $this->conException = $throwable;
-                            continue;
-                        }
-                    }
-                }
                 return true;
             }
         }
