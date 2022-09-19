@@ -147,11 +147,11 @@ class TaskController extends Controller
             'previous_task_order' => 'required|numeric' ,
             'next_task_order' => 'required|numeric' ,
         ]);
-
+        \auth()->user()->authorizeFor('can_reorder_task_in', $task);
         $orderInStage =  getFloatBetween($request->get('previous_task_order') ,$request->get('next_task_order'));
 
         $task->order = $orderInStage;
-        $task->save();
+        $task->saveQuietly();
 
         $response = $this->getResponse("ترتیب با موفقیت تغییر یافت",[
             'task' => $task

@@ -2,19 +2,20 @@
 
 return [
     'task' => [
-        'ساخت تسک در (تیم،پروژه،کمپانی)' => 'can_create_task_in',
-        'ویرایش تسک در (تیم،پروژه،کمپانی)' => 'can_update_task_in',
-        'حذف تسک در (تیم،پروژه،کمپانی)' => 'can_delete_task_in',
+        'ساخت تسک' => 'can_create_task_in',
+        'ویرایش تسک' => 'can_update_task_in',
+        'حذف تسک' => 'can_delete_task_in',
+        'مرتب سازی تسک' => 'can_reorder_task_in'
     ],
     'team' => [
-        'ساخت تیم در (پروژه،کمپانی)' => 'can_create_team_in',
-        'ویرایش تیم در (پروژه،کمپانی)' => 'can_update_team_in',
-        'حذف تیم در (پروژه،کمپانی)' => 'can_delete_team_in',
+        'ساخت تیم' => 'can_create_team_in',
+        'ویرایش تیم' => 'can_update_team_in',
+        'حذف تیم' => 'can_delete_team_in',
     ],
     'project' => [
-        'ساخت پروژه در (کمپانی)' => 'can_create_project_in',
-        'ویرایش پروژه در (کمپانی)' => 'can_update_project_in',
-        'حذف پروژه در (کمپانی)' => 'can_delete_project_in',
+        'ساخت پروژه' => 'can_create_project_in',
+        'ویرایش پروژه' => 'can_update_project_in',
+        'حذف پروژه' => 'can_delete_project_in',
     ],
     'company' => [
         'ساخت کمپانی' => 'can_create_company',
