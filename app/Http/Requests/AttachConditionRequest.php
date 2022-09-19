@@ -26,29 +26,21 @@ class AttachConditionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'permission_id' => [
-                'required',
-                Rule::exists('permission_role', 'permission_ref_id')->where('role_ref_id', $this->route('role')->role_id)
-            ],
+            'permission_id' => 'required',
             'conditions.relation' => [
-                Rule::requiredIf(fn() => !empty($this->get('conditions'))),
+                Rule::requiredIf(fn() => $this->filled('conditions')),
                 Rule::in('AND', 'OR')
             ],
-            'conditions' => ['required','filled','array', new ConditionCheckRule($this->get('conditions'))],
+            'conditions' => ['array', new ConditionCheckRule($this->get('conditions'))],
             'actions' => [
-                Rule::requiredIf(fn() => !empty($this->get('conditions'))),
+                Rule::requiredIf(fn() => $this->filled('conditions')),
                 'array'
             ],
             'actions.*.type' => ['required', Rule::in(['permission'])]
         ];
     }
 
-    public function messages(): array
-    {
-        return [
-            'permission_id.exists' => 'دسترسی انتخاب شده در نقش مورد نظر موجود نمی باشد'
-        ];
-    }
+
 
     public function attributes()
     {

@@ -18,7 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class RoleController extends Controller
 {
@@ -76,18 +76,29 @@ class RoleController extends Controller
      * @param AttachConditionRequest $request
      * @param Role $role
      * @return JsonResponse
+     * @throws ValidationException
      */
     public function addCondition(AttachConditionRequest $request, Role $role): JsonResponse
     {
         $role = Role::query()->where('role_id', $role->role_id)
-            ->where('user_ref_id', auth()->user()->user_id)->firstOrFail();
+            ->where('user_ref_id', auth()->user()->user_id)->with('permissions')->firstOrFail();
 
-        $role->permissions()->updateExistingPivot($request->get('permission_id'), [
-            'condition_params' => json_encode([
-                    'conditions' => $request->get('conditions', []),
-                    'actions' => $request->get('actions', []),
-                ]) ?? null
-        ]);
+        $permission = $role->permissions->find($request->get('permission_id'));
+        if (empty($permission))
+            throw ValidationException::withMessages(['permission_id' => 'دسترسی انتخاب شده در نقش مورد نظر موجود نمی باشد']);
+
+        $conditionParams = $request->filled('conditions') ?
+            json_encode([
+                'conditions' => $request->get('conditions', []),
+                'actions' => $request->get('actions', []),
+            ]) : null;
+        if (empty($conditionParams) && $permission->pivot->access === 'reject')
+            $role->permissions()->detach($permission->permission_id);
+        else {
+            $role->permissions()->updateExistingPivot($request->get('permission_id'), [
+                'condition_params' => $conditionParams
+            ]);
+        }
 
         $response = $this->getResponse('شرط ها با موفقیت اعمال شدند', [
             $role->load('permissions')
@@ -171,7 +182,7 @@ class RoleController extends Controller
 
 
         try {
-            DB::transaction(function () use ($request,$user){
+            DB::transaction(function () use ($request, $user) {
                 foreach ($request->get('roles') as $role) {
                     $data = array_merge(['user_ref_id' => $user->user_id], $role);
 
@@ -203,7 +214,7 @@ class RoleController extends Controller
         $user = User::query()->where('email', $request->get('email'))->first();
 
         try {
-            DB::transaction(function () use ($request,$user){
+            DB::transaction(function () use ($request, $user) {
                 foreach ($request->get('roles') as $roleUserRecord) {
                     $type = $roleUserRecord['rolable_type'];
                     $modelId = $roleUserRecord['rolable_id'];
@@ -211,7 +222,7 @@ class RoleController extends Controller
                     \auth()->user()->authorizeFor('can_change_member_in', $modelInstance);
                     static::checkAccessOnRole($roleUserRecord['role_ref_id'], $modelInstance);
                     RoleUser::query()->where([
-                        'rolable_type' => $type ,
+                        'rolable_type' => $type,
                         'rolable_id' => $modelId,
                         'role_ref_id' => $roleUserRecord['role_ref_id'],
                         'user_ref_id' => $user->user_id
