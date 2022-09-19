@@ -10,23 +10,15 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class ConditionService
 {
     public $conditions;
-    private string $access;
-    private array $allowedFields = [];
+    public array $allowedFields = [];
     public $model;
-    public $actions;
-    private array $results;
+    public array $results;
+    public static array $messages = [];
 
 
-    public function __construct($model, $conditions, $access = 'accept')
+    public function __construct($model, $conditions)
     {
-
-        $this->conditions = $conditions->conditions;
-        // prepare the way permissions must operate based on access field
-        foreach ($conditions->actions as &$action)
-            $action->value = ($action->type == 'permission' && $access == 'accept') ? false : true;
-
-        $this->actions = $conditions->actions;
-        $this->access = $access;
+        $this->conditions = $conditions;
         $this->model = $model;
     }
 
@@ -37,14 +29,6 @@ class ConditionService
      */
     public function checkConditions($passedConditions = null)
     {
-        if (empty($this->conditions)){
-            foreach ($this->actions as &$action)
-                if (($action->type == 'permission'))
-                    $action->value =   false ;
-            (new ActionsService($this->actions))->callActions();
-            return;
-        }
-
         $conditions = $passedConditions ?? $this->conditions;
         $relation = $conditions->relation;
 
@@ -75,30 +59,15 @@ class ConditionService
                 break;
             }
         }
-//        dd($finalResult, $this->results, $this->access, $this->actions);
-        if ($passedConditions)
-            return $finalResult;
+//        dd($finalResult, $this->results, self::$messages, $this->actions);
+//        if ($passedConditions)
+        return $finalResult;
 
-        if (!$finalResult and $this->access == 'reject') {
-            foreach ($this->actions as &$action)
-                if (($action->type == 'permission'))
-                    $action->value =   false ;
-            (new ActionsService($this->actions))->callActions();
-        } elseif ($finalResult and $this->access == 'accept')
-            (new ActionsService($this->actions))->callActions();
-
-        if ($this->access === 'reject')
-            $this->CheckOnlyForReject();
     }
 
 
     protected function IN(array $args): ?bool
     {
-
-//        $relatingParams = ['field','values'];
-//        if (self::$forValidator && $diff = array_diff($relatingParams,$args))
-//            throw new MethodArgumentsException(sprintf("پارامتر های %s موجود نیستند !",implode(',',$diff)));
-
         // prepare parameters
         $field = $args['field'];
         $this->allowedFields[] = $field;
@@ -110,8 +79,16 @@ class ConditionService
         if (empty($fieldValue))
             return null;
         if (!$can)
-            return !in_array($fieldValue, $values);
-        return in_array($fieldValue, $values);
+            $result = !in_array($fieldValue, $values);
+        else
+            $result = in_array($fieldValue, $values);
+
+        $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
+            'field' => $field,
+            'values' => implode(',', $values)
+        ]);
+        self::$messages[$result][] = $message;
+        return $result;
     }
 
     protected function jump(array $args): ?bool
@@ -128,10 +105,19 @@ class ConditionService
             throw new ModelNotFoundException('موجودیت در هنگام بررسی شرط یافت نشد');
         $fieldValueBefore = $modelBefore->{$field};
         if ($fieldValueBefore == $fieldValue)
-            return null;
-        if ($fieldValueBefore == $from && $fieldValue == $to && $can)
-            return true;
-        return false;
+            $result = null;
+        elseif ($fieldValueBefore == $from && $fieldValue == $to && $can)
+            $result = true;
+        else $result = false;
+        if (is_bool($result)) {
+            $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
+                'field' => $field,
+                'to' => $to,
+                'from' => $from
+            ]);
+            self::$messages[$result][] = $message;
+        }
+        return $result;
     }
 
     protected function requirement(array $args): ?bool
@@ -139,14 +125,20 @@ class ConditionService
         $field = $args['field'];
         $this->allowedFields[] = $field;
 
-        return !empty($this->model->{$field});
+        $modelBefore = get_class($this->model)::find($this->model->{$this->model->getPrimaryKey()});
+        $result = !empty($this->model->{$field}) || !empty($modelBefore->{$field});
+        $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
+            'field' => $field,
+        ]);
+        self::$messages[$result][] = $message;
+        return $result;
     }
 
     protected function edit(array $args): bool
     {
         $field = $args['field'];
         $this->allowedFields[] = $field;
-        return in_array($field,array_keys($this->model->getDirty()));
+        return in_array($field, array_keys($this->model->getDirty()));
     }
 
     protected function set(array $args): bool
@@ -172,7 +164,7 @@ class ConditionService
     /**
      * @throws AuthorizationException
      */
-    protected function CheckOnlyForReject()
+    public function CheckOnlyForReject()
     {
         if (!$this->only())
             throw new AuthorizationException('فیلد هایی غیر از فیلد های مجاز وارد کرده اید');

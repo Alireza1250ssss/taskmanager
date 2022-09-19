@@ -4,7 +4,7 @@
 namespace App\Services;
 
 
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Exceptions\PermissionException;
 
 class ActionsService
 {
@@ -19,17 +19,21 @@ class ActionsService
     {
         if (empty($this->actions)) return;
 
-        foreach ($this->actions as $action)
-        {
-            if (!method_exists($this,$action->type)) continue;
+        foreach ($this->actions as $action) {
+            if (!method_exists($this, $action->type)) continue;
             $params = [(array)$action];
-            call_user_func_array([$this,$action->type],$params);
+            call_user_func_array([$this, $action->type], $params);
         }
     }
 
     protected function permission(array $args)
     {
         if ($args['value'] === false)
-            throw new AuthorizationException($args['message'] ?? __('apiResponse.forbidden'));
+            throw new PermissionException(
+                $args['message'] ?? __('apiResponse.forbidden'),
+                403,
+                null,
+                $args['data'] ?? []
+            );
     }
 }

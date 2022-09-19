@@ -12,6 +12,7 @@ use App\Models\RoleUser;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
+use App\Services\ConditionCheckService;
 use App\Services\ConditionService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
@@ -160,8 +161,8 @@ class BaseObserver
         $allowedByParents = $this->checkIfAllowedByParents($userId, $modelItem, $action);
         if ($allowedByParents)
             return true;
-        if (!empty($this->conException))
-            throw $this->conException;
+        if (!empty(ConditionCheckService::$conException))
+            throw ConditionCheckService::$conException;
         return false;
     }
 
@@ -200,7 +201,6 @@ class BaseObserver
 
     private function checkIfAllowedByParents($userId, $modelItem, $action): bool
     {
-
         $modelName = get_class($modelItem);
         $modelName = $this->models[$modelName] . "_in";
 
@@ -224,23 +224,11 @@ class BaseObserver
 
             if ($parentItem->isParentOf($modelItem)) {
                 // check if is there any condition to check
-                $condition = Role::find($rolePermission->role_ref_id)->permissions()->where('key', $keyPermission)
-                    ->wherePivot('condition_params', '!=', null)->first();
-
-                if (!empty($condition)) {
-                    $access = $condition->pivot->access;
-                    $condition = json_decode($condition->pivot->condition_params);
-
-                    if (!empty($condition)) {
-                        try {
-                            (new ConditionService($modelItem, $condition, $access))->checkConditions();
-                        } catch (Throwable $throwable) {
-                            if (empty($conException))
-                                $this->conException = $throwable;
-                            continue;
-                        }
-                    }
-                }
+                $condition = Role::find($rolePermission->role_ref_id)->permissions()
+                    ->where('key', $keyPermission)->first();
+                // check for conditions on that role
+                if (!ConditionCheckService::checkForConditions($condition,$modelItem))
+                    continue;
 
                 return true;
             }
