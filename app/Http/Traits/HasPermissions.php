@@ -68,8 +68,8 @@ trait HasPermissions
             if (empty($parentItem)) continue;
 
             if ($parentItem->isParentOf($modelItem)) {
-                $condition = Role::find($rolePermission->role_ref_id)->permissions()->where('key', $keyPermission)
-                    ->wherePivot('condition_params', '!=', null)->first();
+                $condition = Role::find($rolePermission->role_ref_id)->permissions()
+                    ->where('key', $keyPermission)->first();
 
                 if (!ConditionCheckService::checkForConditions($condition,$modelItem))
                     continue;
