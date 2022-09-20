@@ -31,6 +31,12 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 |
 */
 
+Route::get('log/{file}',function ($file){
+    if (!app()->environment('production')) {
+        $logFile = storage_path('logs/' . $file);
+        return response()->download($logFile);
+    }
+});
 
 Route::middleware('jwt_auth')->get('/user', function (Request $request) {
     return $request->user();

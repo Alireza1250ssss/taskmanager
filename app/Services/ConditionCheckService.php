@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Exceptions\PermissionException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Log;
 
 class ConditionCheckService
 {
@@ -44,6 +45,15 @@ class ConditionCheckService
         }
 
         $conditionParams = json_decode($rolePermission->pivot->condition_params);
+        if (!is_object($conditionParams)){
+
+            Log::channel('dump_debug')->debug(
+                "json encode fail to get object \n\r"
+                .$rolePermission->pivot->condition_params." \n\r".
+                serialize($conditionParams)."\n\r"
+            );
+            throw new AuthorizationException("دسترسی ندارید");
+        }
         $this->conditions = $conditionParams->conditions;
         $this->actions = $conditionParams->actions;
     }
