@@ -30,6 +30,9 @@ class ConditionService
     public function checkConditions($passedConditions = null)
     {
         $conditions = $passedConditions ?? $this->conditions;
+
+        if (empty($conditions)) return true;
+
         $relation = $conditions->relation;
 
         $this->results[] = $relation;
