@@ -52,6 +52,11 @@ class Role extends Model
         return Attribute::set(fn($value) => RoleController::LEVELS[$value]);
     }
 
+    public function getCategoryAttribute($value): string
+    {
+        return array_search($value,RoleController::LEVELS);
+    }
+
     public static function hasBaseRoleOn($model , $userId): bool
     {
         $type = (new OwnerObserver())->models[get_class($model)];
