@@ -63,13 +63,11 @@ class ConditionService
             }
         }
 //        dd($finalResult, $this->results, self::$messages, $this->actions);
-//        if ($passedConditions)
         return $finalResult;
-
     }
 
 
-    protected function IN(array $args): ?bool
+    protected function IN(array $args): bool
     {
         // prepare parameters
         $field = $args['field'];
@@ -79,8 +77,6 @@ class ConditionService
 
         $fieldValue = $this->model->{$field};
 
-        if (empty($fieldValue))
-            return null;
         if (!$can)
             $result = !in_array($fieldValue, $values);
         else
@@ -94,7 +90,7 @@ class ConditionService
         return $result;
     }
 
-    protected function jump(array $args): ?bool
+    protected function jump(array $args): bool
     {
         $field = $args['field'];
         $this->allowedFields[] = $field;
@@ -107,19 +103,17 @@ class ConditionService
         if (!$modelBefore)
             throw new ModelNotFoundException('موجودیت در هنگام بررسی شرط یافت نشد');
         $fieldValueBefore = $modelBefore->{$field};
-        if ($fieldValueBefore == $fieldValue)
-            $result = null;
-        elseif ($fieldValueBefore == $from && $fieldValue == $to && $can)
+
+        if ($fieldValueBefore == $from && $fieldValue == $to && $can)
             $result = true;
         else $result = false;
-        if (is_bool($result)) {
-            $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
-                'field' => $field,
-                'to' => $to,
-                'from' => $from
-            ]);
-            self::$messages[$result][] = $message;
-        }
+        $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
+            'field' => $field,
+            'to' => $to,
+            'from' => $from
+        ]);
+        self::$messages[$result][] = $message;
+
         return $result;
     }
 
@@ -151,7 +145,7 @@ class ConditionService
         return !empty($this->model->{$field});
     }
 
-    protected function only(array $args = []): ?bool
+    protected function only(array $args = []): bool
     {
         $fields = $args['fields'] ?? $this->allowedFields;
         $can = $args['can'] ?? true;
