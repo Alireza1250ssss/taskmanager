@@ -281,12 +281,15 @@ class AccountController extends Controller
     public static function freshMembers($model, $users)
     {
         foreach ($users as $user) {
-            do {
+
+            while ($model = RoleController::getParentModel($model)){
                 if (!Role::hasAnyRoleOn($model, $user))
+                    foreach (RoleController::getChildModels($model) as $child)
+                        if (!Role::hasAnyRoleOn($child, $user))
                     $model->members()->detach($user);
                 else
                     break;
-            } while ($model = RoleController::getParentModel($model));
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AssignRoleRequest;
 use App\Http\Requests\AttachConditionRequest;
 use App\Http\Requests\StoreRoleRequest;
+use App\Models\Company;
 use App\Models\Permission;
 use App\Models\Project;
 use App\Models\Role;
@@ -246,6 +247,18 @@ class RoleController extends Controller
             return $model->project;
         elseif ($model instanceof Task)
             return $model->team;
+        else
+            return null;
+    }
+
+    public static function getChildModels($model)
+    {
+        if ($model instanceof Project)
+            return $model->teams;
+        elseif ($model instanceof Company)
+            return $model->projects;
+        elseif ($model instanceof Team)
+            return $model->tasks;
         else
             return null;
     }
