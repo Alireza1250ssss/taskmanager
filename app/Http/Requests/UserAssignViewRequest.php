@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Controllers\ResolvePermissionController;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -17,6 +18,14 @@ class UserAssignViewRequest extends FormRequest
         return true;
     }
 
+    public function withValidator($validator)
+    {
+       $validator->after(function ($validator){
+           if (!in_array($this->route('model'), array_keys(ResolvePermissionController::$models)))
+               $validator->errors()->add('model','برای موجودیت انتخابی عضو تعیین نمی شود');
+       });
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,7 +35,7 @@ class UserAssignViewRequest extends FormRequest
     {
         return [
             'users.*' => [Rule::exists('users', 'email')->withoutTrashed()],
-            'roles' => $this->get('mode','attach')=='detach' ? 'array' : 'required|filled|array' ,
+            'roles' => $this->isMethod('PUT') ? 'array' : 'required|filled|array' ,
             'roles.*' => [Rule::exists('roles','role_id')]
         ];
     }

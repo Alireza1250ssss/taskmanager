@@ -23,7 +23,8 @@ return [
         'حذف کمپانی' => 'can_delete_company_in',
     ],
     'others' => [
-        'تغییر عضو (افزودن و کاستن اعضا)' => 'can_change_member_in',
+        'افزودن عضو' => 'can_add_member_in',
+        'کاستن عضو' => 'can_remove_member_in',
         'تغییر واچر (افزودن و کاستن واچر)' => 'can_change_watcher_in',
         'دریافت واچر ها' => 'can_get_watchers_in' ,
         'دریافت اعضا' => 'can_get_members_in' ,

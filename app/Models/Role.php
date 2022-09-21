@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Controllers\RoleController;
 use App\Http\Traits\FilterRecords;
+use App\Observers\BaseObserver;
 use App\Observers\OwnerObserver;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -82,6 +83,23 @@ class Role extends Model
             'rolable_id' => $modelId,
             'user_ref_id' => $userId
         ])->first();
+    }
+
+    public static function takeRolesOn($model,$userId)
+    {
+        $type = (new BaseObserver())->models[get_class($model)];
+        $modelId = $model->{$model->getPrimaryKey()};
+        $roleUserRecords = RoleUser::query()->where([
+            'rolable_type' => $type,
+            'rolable_id' => $modelId,
+            'user_ref_id' => $userId
+        ])->get();
+
+        foreach ($roleUserRecords as $roleUserRecord)
+        {
+            RoleController::checkAccessOnRole($roleUserRecord->role_ref_id,$model);
+            $roleUserRecord->delete();
+        }
     }
 
 }

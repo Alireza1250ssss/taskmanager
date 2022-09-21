@@ -5,7 +5,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DatabaseController;
-use App\Http\Controllers\EntityController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResolvePermissionController;
@@ -70,7 +69,8 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::delete('/notifications',[AccountController::class , 'deleteNotifications'])->name('delete-notifications');
     Route::put('/notifications/mark-as-read',[AccountController::class , 'markAsRead'])->name('mark-as-read-notifications');
     Route::post('set-watcher/{model}/{modelId}',[AccountController::class ,'setWatcher'])->name('set-watcher');
-    Route::post('set-member/{model}/{modelId}',[AccountController::class ,'setMember'])->name('set-member');
+    Route::post('set-member/{model}/{modelId}',[AccountController::class ,'setMember'])->name('set-member.attach');
+    Route::put('set-member/{model}/{modelId}',[AccountController::class ,'removeMember'])->name('set-member.detach');
     Route::get('/get-watcher/{model}/{modelId}',[AccountController::class,'getWatchers'])->name('get-watchers');
     Route::get('/get-member/{model}/{modelId}',[AccountController::class,'getMembers'])->name('get-members');
 
@@ -79,7 +79,6 @@ Route::middleware(['jwt_auth'])->group(function(){
 
     Route::apiResource('stages', StageController::class)->only(['index']);
     Route::apiResource('statuses', StatusController::class)->only(['index']);
-    Route::apiResource('entities' , EntityController::class)->only(['index','show','destroy']);
     Route::get('permissions',[RoleController::class , 'getPermissions'])->name('permissions.index');
     Route::put('/companies/{company}/assign',[CompanyController::class,'addAssign'])->name('companies.add-viewer');
     Route::put('/projects/{project}/assign',[ProjectController::class,'addAssign'])->name('projects.add-viewer');

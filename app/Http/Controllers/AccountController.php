@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AccountController extends Controller
 {
@@ -144,46 +145,72 @@ class AccountController extends Controller
      */
     public function setMember($model, $modelId, UserAssignViewRequest $request): JsonResponse
     {
-        if (!in_array($model, array_keys(ResolvePermissionController::$models))) {
-            $response = $this->getError('برای موجودیت انتخابی عضو تعیین نمی شود');
-            return response()->json($response, $response['statusCode']);
-        }
-
         try {
             DB::transaction(function () use ($request, $model, $modelId) {
                 // company or project or team or task
                 $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
-                \auth()->user()->authorizeFor('can_change_member_in', $modelInstance);
+                \auth()->user()->authorizeFor('can_add_member_in', $modelInstance);
 
                 $users = User::query()->whereIn('email', $request->get('users'))->get();
 
                 $userIds = $users->pluck('user_id')->toArray();
-                if ($request->get('mode', 'attach') === 'detach') {
-                    $this->NotAllowOwner($modelInstance, $userIds);
-                    $modelInstance->members()->detach($userIds);
-                } else {
-                    $this->setMembersRecursive($modelInstance, $userIds);
-                    foreach ($users as $user) {
-                        foreach ($request->get('roles') as $roleItem) {
-                            RoleController::checkAccessOnRole($roleItem, $modelInstance);
-                            $data = [
-                                'user_ref_id' => $user->user_id,
-                                'role_ref_id' => $roleItem,
-                                'rolable_type' => $model,
-                                'rolable_id' => $modelId
-                            ];
-                            RoleUser::query()->upsert($data, array_keys($data));
-                        }
+
+                $this->setMembersRecursive($modelInstance, $userIds);
+                foreach ($users as $user) {
+                    foreach ($request->get('roles') as $roleItem) {
+                        RoleController::checkAccessOnRole($roleItem, $modelInstance);
+                        $data = [
+                            'user_ref_id' => $user->user_id,
+                            'role_ref_id' => $roleItem,
+                            'rolable_type' => $model,
+                            'rolable_id' => $modelId
+                        ];
+                        RoleUser::query()->upsert($data, array_keys($data));
                     }
                 }
+
             });
         } catch (\Throwable $e) {
-            $response = $this->getError(__('apiResponse.forbidden'));
+            $response = $this->getForbidden(__('apiResponse.forbidden'));
             return response()->json($response, $response['statusCode']);
         }
 
-        $message = $request->get('mode', 'attach') === 'detach' ?
-            ' اعضا با موفقیت کاسته شدند' : 'اعضا با موفقیت افزوده شدند';
+        $message = 'اعضا با موفقیت افزوده شدند';
+        $response = $this->getResponse($message);
+        return response()->json($response, $response['statusCode']);
+    }
+
+    /**
+     * @param $model
+     * @param $modelId
+     * @param UserAssignViewRequest $request
+     * @return JsonResponse
+     */
+    public function removeMember($model, $modelId, UserAssignViewRequest $request): JsonResponse
+    {
+        try {
+            DB::transaction(function () use ($request, $model, $modelId) {
+                // company or project or team or task
+                $modelInstance = ResolvePermissionController::$models[$model]['class']::findOrFail($modelId);
+                \auth()->user()->authorizeFor('can_remove_member_in', $modelInstance);
+
+                $users = User::query()->whereIn('email', $request->get('users'))->get();
+
+                $userIds = $users->pluck('user_id')->toArray();
+
+                $this->NotAllowOwner($modelInstance, $userIds);
+                foreach ($userIds as $userId) {
+                    Role::takeRolesOn($modelInstance, $userId);
+                }
+                $modelInstance->members()->detach($userIds);
+                static::freshMembers($modelInstance, $userIds);
+            });
+        } catch (\Throwable $e) {
+            $response = $this->getForbidden(__('apiResponse.forbidden'));
+            return response()->json($response, $response['statusCode']);
+        }
+
+        $message = ' اعضا با موفقیت کاسته شدند';
         $response = $this->getResponse($message);
         return response()->json($response, $response['statusCode']);
     }
@@ -248,5 +275,18 @@ class AccountController extends Controller
         }
         if ($res)
             throw new AuthorizationException('امکان حذف مالک را ندارید');
+    }
+
+
+    public static function freshMembers($model, $users)
+    {
+        foreach ($users as $user) {
+            do {
+                if (!Role::hasAnyRoleOn($model, $user))
+                    $model->members()->detach($user);
+                else
+                    break;
+            } while ($model = RoleController::getParentModel($model));
+        }
     }
 }
