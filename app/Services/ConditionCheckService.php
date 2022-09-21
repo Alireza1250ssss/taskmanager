@@ -55,7 +55,7 @@ class ConditionCheckService
             if ($action->type == 'permission')
                 $action->value = ($this->access == 'reject') ? $result : !$result;
             if (!$action->value){
-                $action->data =  ConditionService::$messages[$result];
+                $action->data =  ConditionService::$messages[$result] ?? [];
             }
         }
     }
