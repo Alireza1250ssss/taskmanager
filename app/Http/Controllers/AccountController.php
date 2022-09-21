@@ -17,7 +17,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class AccountController extends Controller
 {
@@ -282,12 +281,15 @@ class AccountController extends Controller
     {
         foreach ($users as $user) {
 
-            while ($model = RoleController::getParentModel($model)){
-                if (!Role::hasAnyRoleOn($model, $user))
+            while ($model = RoleController::getParentModel($model)) {
+                if (!Role::hasAnyRoleOn($model, $user)) {
+                    $roleOnChildren = false;
                     foreach (RoleController::getChildModels($model) as $child)
-                        if (!Role::hasAnyRoleOn($child, $user))
+                        if (Role::hasAnyRoleOn($child, $user))
+                            $roleOnChildren = true;
+                    if ($roleOnChildren) break;
                     $model->members()->detach($user);
-                else
+                } else
                     break;
             }
         }
