@@ -16,7 +16,7 @@ class Role extends Model
     use HasFactory,FilterRecords;
 
     protected $primaryKey = 'role_id';
-    protected $fillable = ['name','user_ref_id','category'];
+    protected $fillable = ['name','company_ref_id','category'];
     public array $filters = ['name'];
 
     /**

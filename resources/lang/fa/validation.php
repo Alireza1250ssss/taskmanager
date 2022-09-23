@@ -214,5 +214,6 @@ return [
         "permissions.*.action" => 'عملیات',
         "roles" => 'نقش ها',
         "roles.*" => 'نقش' ,
+        "company_ref_id" => 'کمپانی مربوطه'
     ],
 ];

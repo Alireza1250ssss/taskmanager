@@ -3,8 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Http\Controllers\RoleController;
+use App\Models\Company;
+use App\Models\Role;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class StoreRoleRequest extends FormRequest
 {
@@ -40,7 +43,7 @@ class StoreRoleRequest extends FormRequest
             'permissions' => 'array' ,
             'permissions.*.permission_id' => ['required',Rule::exists('permissions','permission_id')] ,
             'permissions.*.access' => ['required',Rule::in('accept','reject')],
-            'user_ref_id' => 'required'
+            'company_ref_id' => $this->isMethod('POST') ? 'required' : 'numeric'
         ];
     }
 
@@ -50,5 +53,11 @@ class StoreRoleRequest extends FormRequest
             'permissions.*.permission_id' => 'شماره دسترسی',
             'permissions.*.access' => 'وضعیت'
         ];
+    }
+
+    public static function checkForCompanyOwner(Company $company , $userId)
+    {
+        if (!Role::hasBaseRoleOn($company,$userId))
+            throw ValidationException::withMessages(['company_ref_id' => 'شما سازنده این کمپانی نیستید']);
     }
 }
