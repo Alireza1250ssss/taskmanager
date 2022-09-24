@@ -39,6 +39,8 @@ class ConditionService
 
         $finalResult = $relation === 'AND';
         unset($conditions->relation);
+        $status = $conditions->status ?? true;
+        unset($conditions->status);
 
         foreach ($conditions as $i => $condition) {
             if (!empty($condition->relation))
@@ -63,7 +65,8 @@ class ConditionService
             }
         }
 //        dd($finalResult, $this->results, self::$messages, $this->actions);
-        return $finalResult;
+
+        return $status ? $finalResult : !$finalResult;
     }
 
 
@@ -73,21 +76,18 @@ class ConditionService
         $field = $args['field'];
         $this->allowedFields[] = $field;
         $values = $args['values'];
-        $can = $args['can'] ?? true;
+        $status = $args['status'] ?? true;
 
         $fieldValue = $this->model->{$field};
 
-        if (!$can)
-            $result = !in_array($fieldValue, $values);
-        else
-            $result = in_array($fieldValue, $values);
+        $result = in_array($fieldValue, $values);
 
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
             'field' => $field,
             'values' => implode(',', $values)
         ]);
         self::$messages[$result][] = $message;
-        return $result;
+        return $status ? $result : !$result;
     }
 
     protected function jump(array $args): bool
@@ -96,7 +96,7 @@ class ConditionService
         $this->allowedFields[] = $field;
         $from = $args['from'];
         $to = $args['to'];
-        $can = $args['can'] ?? true;
+        $status = $args['status'] ?? true;
 
         $fieldValue = $this->model->{$field};
         $modelBefore = get_class($this->model)::find($this->model->{$this->model->getPrimaryKey()});
@@ -104,7 +104,7 @@ class ConditionService
             throw new ModelNotFoundException('موجودیت در هنگام بررسی شرط یافت نشد');
         $fieldValueBefore = $modelBefore->{$field};
 
-        if ($fieldValueBefore == $from && $fieldValue == $to && $can)
+        if ($fieldValueBefore == $from && $fieldValue == $to)
             $result = true;
         else $result = false;
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
@@ -114,12 +114,13 @@ class ConditionService
         ]);
         self::$messages[$result][] = $message;
 
-        return $result;
+        return $status ? $result : !$result;
     }
 
     protected function requirement(array $args): ?bool
     {
         $field = $args['field'];
+        $status = $args['status'] ?? true;
         $this->allowedFields[] = $field;
 
         $modelBefore = get_class($this->model)::find($this->model->{$this->model->getPrimaryKey()});
@@ -128,35 +129,37 @@ class ConditionService
             'field' => $field,
         ]);
         self::$messages[$result][] = $message;
-        return $result;
+        return $status ? $result : !$result;
     }
 
     protected function edit(array $args): bool
     {
         $field = $args['field'];
+        $status = $args['status'];
         $this->allowedFields[] = $field;
-        return in_array($field, array_keys($this->model->getDirty()));
+        $result = in_array($field, array_keys($this->model->getDirty()));
+        return $status ? $result : !$result;
     }
 
     protected function set(array $args): bool
     {
         $field = $args['field'];
-        $can = $args['can'] ?? true;
+        $status = $args['status'] ?? true;
         $this->allowedFields[] = $field;
-        $isset =  !empty($this->model->{$field});
+        $isset = !empty($this->model->{$field});
         $message = __("conditions." . 'requirement' . "." . ($isset ? 'true' : 'false'), [
             'field' => $field,
         ]);
         self::$messages[$isset][] = $message;
-        return $can ? $isset : !$isset;
+        return $status ? $isset : !$isset;
     }
 
     protected function only(array $args = []): bool
     {
         $fields = $args['fields'] ?? $this->allowedFields;
-        $can = $args['can'] ?? true;
+        $status = $args['status'] ?? true;
 
-        if (!array_diff(array_keys($this->model->getDirty()), $fields) && $can)
+        if (!array_diff(array_keys($this->model->getDirty()), $fields) && $status)
             return true;
         return false;
     }

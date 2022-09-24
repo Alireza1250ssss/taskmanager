@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 class ConditionCheckRule implements Rule
 {
     private ?array $conditions;
-    private string $message ;
+    private string $message;
 
     /**
      * Create a new rule instance.
@@ -34,10 +34,11 @@ class ConditionCheckRule implements Rule
         $conditions = !empty($passedConditions) ? $passedConditions : $this->conditions;
         unset($conditions['relation']);
         unset($conditions['actions']);
+        unset($conditions['status']);
         foreach ($conditions as $condition) {
 
-            if (empty($condition) or empty($condition['type'])){
-                $passed = isset($condition['relation']) ? $this->passes($attribute,$value,$condition) : false;
+            if (empty($condition) or empty($condition['type'])) {
+                $passed = isset($condition['relation']) ? $this->passes($attribute, $value, $condition) : false;
                 $this->message = $this->message ?? 'ساختار شرط به درستی رعایت نشده است و یا خالی ست';
                 break;
             }
@@ -76,7 +77,7 @@ class ConditionCheckRule implements Rule
             [
                 'field' => 'required',
                 'values' => 'bail|required|array|filled',
-                'can' => 'boolean'
+                'status' => 'boolean'
             ];
     }
 
@@ -93,7 +94,7 @@ class ConditionCheckRule implements Rule
         return
             [
                 'fields' => 'required|array|filled',
-                'can' => 'boolean'
+                'status' => 'boolean'
             ];
     }
 
@@ -104,21 +105,23 @@ class ConditionCheckRule implements Rule
                 'field' => 'required',
                 'from' => 'required',
                 'to' => 'required',
-                'can' => 'boolean'
+                'status' => 'boolean'
             ];
     }
 
     protected function edit(): array
     {
         return [
-          'field' => 'required'
+            'field' => 'required',
+            'status' => 'boolean'
         ];
     }
 
     protected function set(): array
     {
         return [
-            'field' => 'required'
+            'field' => 'required',
+            'status' => 'boolean'
         ];
     }
 }
