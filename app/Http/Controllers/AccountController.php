@@ -169,7 +169,7 @@ class AccountController extends Controller
                 }
 
             });
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             $response = $this->getForbidden(__('apiResponse.forbidden'));
             return response()->json($response, $response['statusCode']);
         }

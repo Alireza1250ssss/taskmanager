@@ -9,6 +9,7 @@ use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -55,5 +56,19 @@ class Company extends Model implements Hierarchy
         elseif ($model instanceof Company)
             return $this->company_id == $model->company_id;
         return false;
+    }
+
+    public static function getCompanyOf(Model $model) : ?Company
+    {
+        $result = false;
+        if ($model instanceof Company)
+            $result =  $model;
+        elseif ($model instanceof Project)
+            $result =  $model->company;
+        elseif ($model instanceof Team)
+            $result =  $model->project->company;
+        if (!$result)
+            throw new ModelNotFoundException();
+        return $result;
     }
 }

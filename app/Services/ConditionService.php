@@ -27,7 +27,7 @@ class ConditionService
      * @return bool|void
      * @throws AuthorizationException
      */
-    public function checkConditions($passedConditions = null)
+    public function checkConditions($passedConditions = null): bool
     {
         $conditions = $passedConditions ?? $this->conditions;
 
@@ -141,8 +141,14 @@ class ConditionService
     protected function set(array $args): bool
     {
         $field = $args['field'];
+        $can = $args['can'] ?? true;
         $this->allowedFields[] = $field;
-        return !empty($this->model->{$field});
+        $isset =  !empty($this->model->{$field});
+        $message = __("conditions." . 'requirement' . "." . ($isset ? 'true' : 'false'), [
+            'field' => $field,
+        ]);
+        self::$messages[$isset][] = $message;
+        return $can ? $isset : !$isset;
     }
 
     protected function only(array $args = []): bool

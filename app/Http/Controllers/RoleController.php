@@ -15,10 +15,12 @@ use App\Models\Team;
 use App\Models\User;
 use App\Services\AccessToChangeRoleService;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class RoleController extends Controller
@@ -39,15 +41,19 @@ class RoleController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $request->validate([
+            'category' => ['required', Rule::in(array_keys(self::LEVELS))],
+            'entity_id' => ['required', 'numeric']
+        ]);
+
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'نقش']), [
             Role::getRecords($request->toArray())->addConstraints(function ($query) use ($request) {
+                $category = $request->get('category');
                 $query->with('permissions');
-                $companies = array_filter(explode(',',$request->get('companies', null)));
-                foreach ($companies as $company)
-                    StoreRoleRequest::checkForCompanyOwner(Company::findOrFail($company),auth()->user()->user_id);
-                $query->whereIn('company_ref_id',$companies);
-                if ($request->filled('category') && in_array($request->get('category'), array_keys(self::LEVELS)))
-                    $query->where('category', '>=', self::LEVELS[$request->get('category')]);
+                $model = ResolvePermissionController::$models[$category]['class']::findOrFail($request->get('entity_id'));
+                $company = Company::getCompanyOf($model);
+                $query->where('company_ref_id', $company->company_id);
+                $query->where('category', '>=', self::LEVELS[$category]);
             })->get()
         ]);
         return response()->json($response, $response['statusCode']);
@@ -63,7 +69,7 @@ class RoleController extends Controller
     public function store(StoreRoleRequest $request): JsonResponse
     {
         $company = Company::query()->findOrFail($request->get('company_ref_id'));
-        StoreRoleRequest::checkForCompanyOwner($company,auth()->user()->user_id);
+        StoreRoleRequest::checkForCompanyOwner($company, auth()->user()->user_id);
         $role = Role::create($request->validated());
         if ($request->filled('permissions')) {
             $permissions = collect($request->get('permissions'))
@@ -88,7 +94,8 @@ class RoleController extends Controller
     public function addCondition(AttachConditionRequest $request, Role $role): JsonResponse
     {
         $role = Role::query()->where('role_id', $role->role_id)
-            ->where('user_ref_id', auth()->user()->user_id)->with('permissions')->firstOrFail();
+            ->with('permissions')->firstOrFail();
+        StoreRoleRequest::checkForCompanyOwner(Company::findOrFail($role->company_ref_id), auth()->user()->user_id);
 
         $permission = $role->permissions->find($request->get('permission_id'));
         if (empty($permission))
@@ -152,9 +159,9 @@ class RoleController extends Controller
      */
     public function update(StoreRoleRequest $request, Role $role): JsonResponse
     {
-        if ($request->filled('company_ref_id')){
+        if ($request->filled('company_ref_id')) {
             $company = Company::query()->findOrFail($request->get('company_ref_id'));
-            StoreRoleRequest::checkForCompanyOwner($company,auth()->user()->user_id);
+            StoreRoleRequest::checkForCompanyOwner($company, auth()->user()->user_id);
         }
         $role->update($request->validated());
         if ($request->filled('permissions')) {
