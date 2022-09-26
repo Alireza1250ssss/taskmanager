@@ -6,11 +6,12 @@ namespace App\Services;
 
 use App\Exceptions\PermissionException;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Log;
 
 class ConditionCheckService
 {
-    protected  $conditions;
+    protected $conditions;
+    public bool $isAllowed = false;
+    public array $allowedFields = [];
     protected array $actions;
     protected string $access;
     public static ?\Throwable $conException;
@@ -21,15 +22,25 @@ class ConditionCheckService
 
         try {
             $service->prepareToCheck($rolePermission);
-            $conditionService = new ConditionService($modelItem, $service->conditions);
-            $result = $conditionService->checkConditions();
-//            dd($conditionService->results,$result,$service->access,ConditionService::$messages);
-            if ($service->access === 'reject' and $result)
-                $conditionService->CheckOnlyForReject();
-            $service->prepareActions($result);
-            $actionService = new ActionsService($service->actions);
-            $actionService->callActions();
-        } catch (AuthorizationException|PermissionException $throwable){
+
+            foreach ($service->conditions as $condition) {
+                $conditionService = new ConditionService($modelItem, $condition->when);
+                $result = $conditionService->checkConditions();
+                $service->allowedFields = array_merge($service->allowedFields,$conditionService->allowedFields);
+//              dd($conditionService->results,$result,$service->access,ConditionService::$messages);
+                if ($result === false) continue;
+
+                $service->prepareActions($result, $condition->then);
+                $actionService = new ActionsService($condition->then, $service, $modelItem);
+                $actionService->callActions();
+                $service->allowedFields = array_merge($service->allowedFields,$actionService->allowedFields);
+                if ($service->access === 'reject'){
+                    $service->checkRejectWasAllowed();
+                    $service->CheckOnlyForReject($modelItem);
+                }
+
+            }
+        } catch (AuthorizationException | PermissionException $throwable) {
             if (empty(self::$conException))
                 self::$conException = $throwable;
             return false;
@@ -49,15 +60,23 @@ class ConditionCheckService
         $this->actions = $conditionParams->actions ?? [];
     }
 
-    protected function prepareActions(bool $result)
+    protected function prepareActions(bool $result, &$then)
     {
-        foreach ($this->actions as &$action) {
-            if ($action->type == 'permission')
-                $action->value = ($this->access == 'reject') ? $result : !$result;
-            if (!$action->value){
-                $action->data =  ConditionService::$messages[$result] ?? [];
-            }
-        }
+        foreach ($then as &$action)
+            if ($action->type == 'permission' or $action->type == 'validation')
+                $action->value = ($this->access == 'reject');
+
+
     }
 
+    protected function checkRejectWasAllowed()
+    {
+        if ($this->isAllowed !== true)
+            throw new AuthorizationException('دسترسی شما توسط هیچکدام از شرایط باز نشده است');
+    }
+
+    protected function CheckOnlyForReject($model){
+        if (array_diff(array_keys($model->getDirty()), $this->allowedFields))
+            throw new AuthorizationException('فیلد هایی غیر از فیلد های مجاز وارد کرده اید');
+    }
 }

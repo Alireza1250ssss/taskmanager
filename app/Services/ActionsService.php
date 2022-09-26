@@ -5,14 +5,20 @@ namespace App\Services;
 
 
 use App\Exceptions\PermissionException;
+use Illuminate\Database\Eloquent\Model;
 
 class ActionsService
 {
     public ?array $actions;
+    public array $allowedFields = [];
+    protected ?Model $model;
+    protected $conditionCheckService;
 
-    public function __construct($actions)
+    public function __construct($actions,$service,$model = null)
     {
         $this->actions = $actions;
+        $this->conditionCheckService = $service;
+        $this->model = $model;
     }
 
     public function callActions()
@@ -28,12 +34,43 @@ class ActionsService
 
     protected function permission(array $args)
     {
-        if ($args['value'] === false)
+        $value = $args['value'] ?? false;
+        $result = true;
+        if (!empty($args['when'])){
+            $conditionService = new ConditionService($this->model,$args['when']);
+            ConditionService::$messages = [];
+            $result = $conditionService->checkConditions();
+            $this->allowedFields = array_merge($this->allowedFields,$conditionService->allowedFields);
+        }
+        if ($value === false and  $result === true)
             throw new PermissionException(
                 $args['message'] ?? __('apiResponse.forbidden'),
                 403,
                 null,
-                $args['data'] ?? []
+                ConditionService::$messages[$result] ?? []
             );
+        if ($value == true and $result == true)
+            $this->conditionCheckService->isAllowed = true;
+    }
+
+    protected function validation(array $args)
+    {
+        $value = $args['value'] ?? false;
+        $result = true;
+        if (!empty($args['when'])){
+            $conditionService = new ConditionService($this->model,$args['when']);
+            ConditionService::$messages = [];
+            $result = $conditionService->checkConditions();
+            $this->allowedFields = array_merge($this->allowedFields,$conditionService->allowedFields);
+        }
+        if ($value == false and $result == true)
+            throw new PermissionException(
+                $args['message'] ?? __('apiResponse.forbidden'),
+                403,
+                null,
+                ConditionService::$messages[$result] ?? []
+            );
+        if ($value == true and $result == true)
+            $this->conditionCheckService->isAllowed = true;
     }
 }

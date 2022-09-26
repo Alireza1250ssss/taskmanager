@@ -27,16 +27,16 @@ class AttachConditionRequest extends FormRequest
     {
         return [
             'permission_id' => 'required',
-            'conditions.relation' => [
+            'version' => 'required',
+            'conditions' => ['array'],
+            'conditions.*.then' => [Rule::requiredIf(fn() => $this->filled('conditions'))],
+            'conditions.*.then.*.when' => ['array', new ConditionCheckRule()],
+            'conditions.*.when.relation' => [
                 Rule::requiredIf(fn() => $this->filled('conditions')),
                 Rule::in('AND', 'OR')
             ],
-            'conditions' => ['array', new ConditionCheckRule($this->get('conditions'))],
-            'actions' => [
-                Rule::requiredIf(fn() => $this->filled('conditions')),
-                'array'
-            ],
-            'actions.*.type' => ['required', Rule::in(['permission'])]
+            'conditions.*.then.*.type' => ['required', Rule::in(['permission','validation'])],
+            'conditions.*.when' => ['array','required', new ConditionCheckRule()],
         ];
     }
 

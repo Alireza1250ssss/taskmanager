@@ -154,6 +154,11 @@ class ConditionService
         return $status ? $isset : !$isset;
     }
 
+    protected function boolean(array $args)
+    {
+        return $args['value'];
+    }
+
     protected function only(array $args = []): bool
     {
         $fields = $args['fields'] ?? $this->allowedFields;
@@ -163,7 +168,6 @@ class ConditionService
             return true;
         return false;
     }
-
 
     // helper methods
 

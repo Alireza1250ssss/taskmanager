@@ -7,18 +7,8 @@ use Illuminate\Support\Facades\Validator;
 
 class ConditionCheckRule implements Rule
 {
-    private ?array $conditions;
-    private string $message;
 
-    /**
-     * Create a new rule instance.
-     *
-     * @param $conditions
-     */
-    public function __construct(?array $conditions)
-    {
-        $this->conditions = $conditions;
-    }
+    private string $message;
 
     /**
      * Determine if the validation rule passes.
@@ -31,9 +21,8 @@ class ConditionCheckRule implements Rule
     public function passes($attribute, $value, array $passedConditions = []): bool
     {
         $passed = true;
-        $conditions = !empty($passedConditions) ? $passedConditions : $this->conditions;
+        $conditions = !empty($passedConditions) ? $passedConditions : $value;
         unset($conditions['relation']);
-        unset($conditions['actions']);
         unset($conditions['status']);
         foreach ($conditions as $condition) {
 
@@ -122,6 +111,13 @@ class ConditionCheckRule implements Rule
         return [
             'field' => 'required',
             'status' => 'boolean'
+        ];
+    }
+
+    protected function boolean(): array
+    {
+        return [
+          'value' => 'required|boolean'
         ];
     }
 }
