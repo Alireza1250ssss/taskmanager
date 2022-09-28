@@ -7,9 +7,12 @@ use App\Models\Entity;
 use App\Models\Permission;
 use App\Models\Project;
 use App\Models\Role;
+use App\Models\RoleUser;
 use App\Models\Task;
 use App\Models\Team;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ResolvePermissionController extends Controller
 {
@@ -39,5 +42,15 @@ class ResolvePermissionController extends Controller
         return response()->json($response, $response['statusCode']);
     }
 
-
+    public function getBaseRoles(Request $request): JsonResponse
+    {
+        $request->validate([
+            'category' => ['required', Rule::in(['company', 'project', 'team'])]
+        ]);
+        $result = RoleUser::getBaseRolesOfUser(auth()->user()->user_id,$request->get('category'));
+        $response = $this->getResponse('موجودیت های ساخته شده دریافت شدند',[
+           $result
+        ]);
+        return response()->json($response,$response['statusCode']);
+    }
 }

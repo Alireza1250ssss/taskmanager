@@ -88,6 +88,7 @@ Route::middleware(['jwt_auth'])->group(function(){
 
     Route::get('/users/{user}/roles',[UserController::class,'getRolesOfUser'])->name('users.roles.index');
 
+    Route::get('/users/owner',[ResolvePermissionController::class,'getBaseRoles'])->name('users.owner');
     Route::put('/roles/assign',[RoleController::class ,'setRolesForUser'])->name('roles.assign');
     Route::put('/roles/detach',[RoleController::class ,'detachRoleFromUser'])->name('roles.detach');
     Route::put('/roles/{role}/permissions/attach-condition',[RoleController::class , 'addCondition'])->name('roles.permissions.attach-condition');
