@@ -64,6 +64,7 @@ class UpdateTaskRequest extends FormRequest
             'task_metas' => 'array',
             'task_metas.*.task_key' => 'required|distinct',
             'task_metas.*.task_value' => 'required',
+            'task_metas.*.column_ref_id' => 'numeric',
         ];
     }
 

@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResolvePermissionController;
 use App\Http\Controllers\RoleController;
@@ -104,6 +106,8 @@ Route::middleware(['jwt_auth'])->group(function(){
         'schedules' => ScheduleController::class ,
         'leave' => LeaveController::class ,
         'roles' => RoleController::class ,
+        'personals' => PersonalController::class,
+        'columns' => ColumnController::class,
         ]);
 
 

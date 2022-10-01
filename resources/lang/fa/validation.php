@@ -214,6 +214,8 @@ return [
         "permissions.*.action" => 'عملیات',
         "roles" => 'نقش ها',
         "roles.*" => 'نقش' ,
-        "company_ref_id" => 'کمپانی مربوطه'
+        "company_ref_id" => 'کمپانی مربوطه',
+        'personal_ref_id' => 'تایپ کارد',
+        'type_args' => 'پارامتر های تایپ'
     ],
 ];

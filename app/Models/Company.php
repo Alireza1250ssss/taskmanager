@@ -71,4 +71,9 @@ class Company extends Model implements Hierarchy
             throw new ModelNotFoundException();
         return $result;
     }
+
+    public static function isCompanyOwner(Company $company ,int $userId): bool
+    {
+        return Role::hasBaseRoleOn($company,$userId);
+    }
 }

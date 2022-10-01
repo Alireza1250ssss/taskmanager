@@ -11,7 +11,7 @@ class TaskMeta extends Model
     use HasFactory;
 
     protected $primaryKey = 'task_meta_id';
-    protected $fillable = ['task_key' ,'task_value' ,'task_ref_id'];
+    protected $fillable = ['task_key' ,'task_value' ,'task_ref_id','column_ref_id'];
 
     /**
      * @return BelongsTo
