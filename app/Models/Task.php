@@ -54,7 +54,7 @@ class Task extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(Status::class, 'status_ref_id');
+        return $this->belongsTo(Status::class, 'status_ref_id')->select(['name','status_id']);
     }
 
     /**
@@ -62,7 +62,7 @@ class Task extends Model
      */
     public function stage(): BelongsTo
     {
-        return $this->belongsTo(Stage::class, 'stage_ref_id');
+        return $this->belongsTo(Stage::class, 'stage_ref_id')->select(['name','stage_id']);
     }
 
     /**
