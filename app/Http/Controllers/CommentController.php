@@ -17,15 +17,16 @@ class CommentController extends Controller
      * @param Task $task
      * @return JsonResponse
      */
-    public function index(Request $request,Task $task) : JsonResponse
+    public function index(Request $request, Task $task): JsonResponse
     {
-        $response = $this->getResponse(__('apiResponse.index',['resource'=>'کامنت']),[
-            Comment::getRecords($request->toArray())->addConstraints(function ($query) use ($task){
-                $query->where('commentable_type',get_class($task))->where('commentable_id',$task->task_id)
-                ->with(['user','replyComments']);
+        $response = $this->getResponse(__('apiResponse.index', ['resource' => 'کامنت']), [
+            Comment::getRecords($request->toArray())->addConstraints(function ($query) use ($task) {
+                $query->where('commentable_type', get_class($task))->where('commentable_id', $task->task_id)
+                    ->whereNull('parent_id')
+                    ->with(['user', 'replyComments.user']);
             })->get()
         ]);
-        return response()->json($response,$response['statusCode']);
+        return response()->json($response, $response['statusCode']);
     }
 
     /**
@@ -35,10 +36,10 @@ class CommentController extends Controller
      * @param Task $task
      * @return JsonResponse
      */
-    public function store(StoreCommentRequest $request,Task $task) : JsonResponse
+    public function store(StoreCommentRequest $request, Task $task): JsonResponse
     {
         $comment = $task->comments()->create($request->validated());
-        $response = $this->getResponse(__('apiResponse.store',['resource'=>'کامنت']), [
+        $response = $this->getResponse(__('apiResponse.store', ['resource' => 'کامنت']), [
             'comment' => $comment->load('parentComment')
         ]);
         return response()->json($response, $response['statusCode']);
@@ -50,10 +51,10 @@ class CommentController extends Controller
      * @param Comment $comment
      * @return JsonResponse
      */
-    public function show(Comment $comment) : JsonResponse
+    public function show(Comment $comment): JsonResponse
     {
-        $response = $this->getResponse(__('apiResponse.show',['resource'=>'کامنت']), [
-            'comment' => $comment->load('replyComments','parentComment')
+        $response = $this->getResponse(__('apiResponse.show', ['resource' => 'کامنت']), [
+            'comment' => $comment->load('replyComments', 'parentComment')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -65,11 +66,11 @@ class CommentController extends Controller
      * @param Comment $comment
      * @return JsonResponse
      */
-    public function update(StoreCommentRequest $request, Comment $comment) : JsonResponse
+    public function update(StoreCommentRequest $request, Comment $comment): JsonResponse
     {
         $comment->update($request->validated());
-        $response = $this->getResponse(__('apiResponse.update',['resource'=>'کامنت']), [
-            'comment' => $comment->load('replyComments','parentComment')
+        $response = $this->getResponse(__('apiResponse.update', ['resource' => 'کامنت']), [
+            'comment' => $comment->load('replyComments', 'parentComment')
         ]);
 
         return response()->json($response, $response['statusCode']);
@@ -78,13 +79,13 @@ class CommentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  string  $comment
+     * @param string $comment
      * @return JsonResponse
      */
-    public function destroy($comment) : JsonResponse
+    public function destroy($comment): JsonResponse
     {
-        $count = Comment::destroy(explode(',',$comment));
-        $response = $this->getResponse(__('apiResponse.destroy',['items'=>$count]));
+        $count = Comment::destroy(explode(',', $comment));
+        $response = $this->getResponse(__('apiResponse.destroy', ['items' => $count]));
         return response()->json($response, $response['statusCode']);
     }
 }

@@ -52,6 +52,8 @@ class StoreColumnRequest extends FormRequest
             'enum_values' => 'array',
             'type' => ['required', Rule::in(array_keys(self::$types))],
             'length' => 'numeric',
+            'level_type' => 'string',
+            'level_id' => 'numeric',
             'type_args' => 'present|array'
         ];
     }

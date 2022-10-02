@@ -112,7 +112,7 @@ class PersonalController extends Controller
 
         $team = Team::query()->findOrFail($request->get('team_ref_id'));
         $response = $this->getResponse(__('apiResponse.index',['resource' => 'تایپ کارد']),[
-           Personal::query()->where([
+           Personal::query()->with('columns')->where([
                'level_type' => 'team',
                'level_id' => $team->team_id
            ])->orWhere(function (Builder $builder) use($team){
