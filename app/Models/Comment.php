@@ -39,7 +39,7 @@ class Comment extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class , 'user_ref_id');
+        return $this->belongsTo(User::class , 'user_ref_id')->select(['user_id','first_name','last_name','email']);
     }
 
     /**
