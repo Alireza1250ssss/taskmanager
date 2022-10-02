@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Http\ColumnTypes\DropDown;
+use App\Models\Personal;
 use App\Rules\RelatedCompanyOwner;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Validator;
@@ -42,11 +43,11 @@ class StoreColumnRequest extends FormRequest
     {
 
         return [
-            'name' => 'required',
+            'name' => 'required|unique:columns,name',
             'title' => 'required',
             'nullable' => 'boolean',
             'default' => 'string',
-            'personal_ref_id' => ['required', new RelatedCompanyOwner()],
+            'personal_ref_id' => ['required', new RelatedCompanyOwner(Personal::class)],
             'params' => 'array',
             'enum_values' => 'array',
             'type' => ['required', Rule::in(array_keys(self::$types))],
@@ -60,8 +61,7 @@ class StoreColumnRequest extends FormRequest
         if ($validator->fails()) return;
         $validator->after(function ($validator) {
             $type = new self::$types[$this->get('type')];
-            $args = $this->get('type_args');
-            $typeValidation = Validator::make($args, $type->validation());
+            $typeValidation = Validator::make($this->all(), $type->validation(),[],$type->validationMessages());
             $typeValidation->validate();
         });
     }

@@ -96,6 +96,7 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::put('/roles/{role}/permissions/attach-condition',[RoleController::class , 'addCondition'])->name('roles.permissions.attach-condition');
     Route::get('/columns/{model}',[RoleController::class , 'getColumnsFor'])->name('columns.show')
         ->where('model', '(company)|(project)|(team)|(task)');
+    Route::get('/personals/available',[PersonalController::class , 'getAvailablePersonals'])->name('personals.available');
 
     Route::apiResources([
         'companies' => CompanyController::class ,

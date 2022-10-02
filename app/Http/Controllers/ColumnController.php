@@ -37,7 +37,6 @@ class ColumnController extends Controller
      */
     public function store(StoreColumnRequest $request) : JsonResponse
     {
-        dd($request->validated());
         $column = Column::create($request->validated());
         $response = $this->getResponse(__('apiResponse.store',['resource'=>'فیلد']), [
             'column' => $column
@@ -48,13 +47,13 @@ class ColumnController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Column  $column
+     * @param Column $column
      * @return JsonResponse
      */
     public function show(Column $column) : JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'فیلد']), [
-            '' => $column
+            'column' => $column
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -63,18 +62,18 @@ class ColumnController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  \App\Models\Column  $column
+     * @param Column $column
      * @return JsonResponse
      */
-    public function update(Request $request, Column $column) : JsonResponse
-    {
-        $column->update($request->validated());
-        $response = $this->getResponse(__('apiResponse.update',['resource'=>'فیلد']), [
-            '' => $column
-        ]);
-
-        return response()->json($response, $response['statusCode']);
-    }
+//    public function update(Request $request, Column $column) : JsonResponse
+//    {
+//        $column->update($request->validated());
+//        $response = $this->getResponse(__('apiResponse.update',['resource'=>'فیلد']), [
+//            'column' => $column
+//        ]);
+//
+//        return response()->json($response, $response['statusCode']);
+//    }
 
     /**
      * Remove the specified resource from storage.

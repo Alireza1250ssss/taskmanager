@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePersonalRequest;
 use App\Models\Company;
 use App\Models\Personal;
+use App\Models\Team;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use phpDocumentor\Reflection\DocBlock\Tags\Author;
 
@@ -99,5 +102,31 @@ class PersonalController extends Controller
         $count = Personal::destroy(explode(',',$personal));
         $response = $this->getResponse(__('apiResponse.destroy',['items'=>$count]));
         return response()->json($response, $response['statusCode']);
+    }
+
+    public function getAvailablePersonals(Request $request): JsonResponse
+    {
+        $request->validate([
+           'team_ref_id' => ['required']
+        ]);
+
+        $team = Team::query()->findOrFail($request->get('team_ref_id'));
+        $response = $this->getResponse(__('apiResponse.index',['resource' => 'تایپ کارد']),[
+           Personal::query()->where([
+               'level_type' => 'team',
+               'level_id' => $team->team_id
+           ])->orWhere(function (Builder $builder) use($team){
+               $builder->where([
+                   'level_type' => 'project',
+                   'level_id' => $team->project->project_id
+               ]);
+           })->orWhere(function (Builder $builder) use($team){
+               $builder->where([
+                   'level_type' => 'company',
+                   'level_id' => $team->project->company->company_id
+               ]);
+           })->get()
+        ]);
+        return response()->json($response,$response['statusCode']);
     }
 }

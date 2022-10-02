@@ -13,12 +13,14 @@ class DropDown extends CustomField
     public function validation(): array
     {
         return [
-            'values' => 'required|array'
+            'type_args.values' => 'required|array'
         ];
     }
 
-    public function getEnumValues($data)
+    public function validationMessages(): array
     {
-        return $data['values'];
+        return [
+          'type_args.values' => 'مقادیر ممکن'
+        ];
     }
 }

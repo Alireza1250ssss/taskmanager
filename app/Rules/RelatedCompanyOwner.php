@@ -7,14 +7,16 @@ use Illuminate\Contracts\Validation\Rule;
 
 class RelatedCompanyOwner implements Rule
 {
+    public string $classType;
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($classType)
     {
-        //
+        $this->classType = $classType;
+
     }
 
     /**
@@ -26,7 +28,8 @@ class RelatedCompanyOwner implements Rule
      */
     public function passes($attribute, $value): bool
     {
-        if (!Company::isCompanyOwner(Company::findOrFail($value),auth()->user()->user_id))
+        $relatedModel = $this->classType::findOrFail($value);
+        if (!Company::isCompanyOwner(Company::findOrFail($relatedModel->company_ref_id),auth()->user()->user_id))
             return false;
         return true;
     }
