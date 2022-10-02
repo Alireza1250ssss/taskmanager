@@ -27,6 +27,7 @@ class TaskController extends Controller
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'تسک']),[
             Task::getRecords($request->toArray())->addConstraints(function ($query){
                 $query->with('watchers');
+                $query->withCount('comments');
             })->get()
         ]);
         return response()->json($response,$response['statusCode']);
