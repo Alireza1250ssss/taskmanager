@@ -15,7 +15,7 @@ class Column extends Model
     use HasFactory,SoftDeletes,FilterRecords;
 
     protected $primaryKey = 'column_id';
-    protected $fillable = ['title','name','personal_ref_id','type','default','enum_values','nullable','length','params'];
+    protected $fillable = ['title','name','personal_ref_id','type','default','enum_values','nullable','length','params','level_type','level_id'];
     public $filters = ['title','name','personal_ref_id','type','nullable'];
     protected $casts =[
       'nullable' => 'boolean',
