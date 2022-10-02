@@ -68,10 +68,11 @@ class BaseObserver
 
         $isAllowed = in_array(auth()->user()->user_id, $modelItem->members->pluck('user_id')->toArray());
         $isAllowedByParents = false;
-
+        $modelItem->unsetRelation('members');
         if (!$isAllowed) {
             $parent = RoleController::getParentModel($modelItem);
             while ($parent) {
+                $parent->unsetRelation('members');
                 if (!empty($parent->getAttributes()) && Role::hasAnyRoleOn($parent,auth()->user()->user_id)) {
                     $isAllowedByParents = true;
                     break;
@@ -83,9 +84,12 @@ class BaseObserver
 
         //check if the authenticated user is among the allowed users or not
         if (!$isAllowed && !$isAllowedByParents) {
+            if ($modelItem instanceof Team)
+                dd($modelItem);
             $modelItem->setAttributes([]);
             return;
         }
+
     }
 
     /**

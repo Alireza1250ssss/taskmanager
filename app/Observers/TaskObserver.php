@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class TaskObserver extends BaseObserver
@@ -24,10 +25,12 @@ class TaskObserver extends BaseObserver
 
         $userId = auth()->user()->user_id;
         $isAllowed = empty($task->user_ref_id) ?
-            (in_array($userId,$task->team->members->pluck('user_id')->toArray()) || in_array($userId,$task->members->pluck('user_id')->toArray()))
+            (in_array($userId,$task->team->members->pluck("user_id")->toArray()) || in_array($userId,$task->members->pluck('user_id')->toArray()))
             :
             ($userId == $task->user_ref_id || in_array($userId , $task->members->pluck('user_id')->toArray()));
 
+        $task->unsetRelation('members');
+        $task->team->unsetRelation('members');
         if (!$isAllowed) {
             $task->setAttributes([]);
             return;
