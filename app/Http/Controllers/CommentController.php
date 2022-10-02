@@ -22,7 +22,7 @@ class CommentController extends Controller
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'کامنت']),[
             Comment::getRecords($request->toArray())->addConstraints(function ($query) use ($task){
                 $query->where('commentable_type',get_class($task))->where('commentable_id',$task->task_id)
-                ->with('user');
+                ->with(['user','replyComments']);
             })->get()
         ]);
         return response()->json($response,$response['statusCode']);
