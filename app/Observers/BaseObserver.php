@@ -84,8 +84,6 @@ class BaseObserver
 
         //check if the authenticated user is among the allowed users or not
         if (!$isAllowed && !$isAllowedByParents) {
-            if ($modelItem instanceof Team)
-                dd($modelItem);
             $modelItem->setAttributes([]);
             return;
         }
