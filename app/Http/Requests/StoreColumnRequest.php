@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Http\ColumnTypes\DropDown;
-use App\Models\Personal;
+use App\Models\CardType;
 use App\Rules\RelatedCompanyOwner;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Validator;
@@ -47,7 +47,7 @@ class StoreColumnRequest extends FormRequest
             'title' => 'required',
             'nullable' => 'boolean',
             'default' => 'string',
-            'personal_ref_id' => ['required', new RelatedCompanyOwner(Personal::class)],
+            'card_type_ref_id' => ['required', new RelatedCompanyOwner(CardType::class)],
             'params' => 'array',
             'enum_values' => 'array',
             'type' => ['required', Rule::in(array_keys(self::$types))],

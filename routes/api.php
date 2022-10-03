@@ -7,7 +7,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\LeaveController;
-use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\CardTypeController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResolvePermissionController;
 use App\Http\Controllers\RoleController;
@@ -96,7 +96,8 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::put('/roles/{role}/permissions/attach-condition',[RoleController::class , 'addCondition'])->name('roles.permissions.attach-condition');
     Route::get('/columns/{model}',[RoleController::class , 'getColumnsFor'])->name('columns.show')
         ->where('model', '(company)|(project)|(team)|(task)');
-    Route::get('/personals/available',[PersonalController::class , 'getAvailablePersonals'])->name('personals.available');
+    Route::get('/cardTypes/available',[CardTypeController::class , 'getAvailableCardTypes'])->name('cardTypes.available');
+    Route::get('/cardTypes/{cardType}/teams/{team}/columns',[CardTypeController::class , 'getCardTypeColumns'])->name('cardTypes.columns');
 
     Route::apiResources([
         'companies' => CompanyController::class ,
@@ -107,7 +108,7 @@ Route::middleware(['jwt_auth'])->group(function(){
         'schedules' => ScheduleController::class ,
         'leave' => LeaveController::class ,
         'roles' => RoleController::class ,
-        'personals' => PersonalController::class,
+        'cardTypes' => CardTypeController::class,
         'columns' => ColumnController::class,
         ]);
 

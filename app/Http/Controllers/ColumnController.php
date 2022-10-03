@@ -19,11 +19,11 @@ class ColumnController extends Controller
     public function index(Request $request) : JsonResponse
     {
         $request->validate([
-           'personal_ref_id' => ['required']
+           'card_type_ref_id' => ['required']
         ]);
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'فیلد']),[
             Column::getRecords($request->toArray())->addConstraints(function ($query) use($request){
-                $query->where('personal_ref_id',$request->get('personal_ref_id'));
+                $query->where('card_type_ref_id',$request->get('card_type_ref_id'));
             })->get()
         ]);
         return response()->json($response,$response['statusCode']);

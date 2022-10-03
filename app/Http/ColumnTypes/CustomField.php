@@ -5,13 +5,12 @@ namespace App\Http\ColumnTypes;
 
 
 use App\Models\Company;
-use App\Models\Personal;
+use App\Models\CardType;
 use Illuminate\Auth\Access\AuthorizationException;
 
 abstract class CustomField
 {
     protected string $name,$title,$default;
-    protected int $personal_ref_id;
     protected bool $nullable;
 
 

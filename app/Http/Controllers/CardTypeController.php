@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePersonalRequest;
+use App\Http\Requests\StoreCardTypeRequest;
+use App\Models\Column;
 use App\Models\Company;
-use App\Models\Personal;
+use App\Models\CardType;
 use App\Models\Team;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,7 +15,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use phpDocumentor\Reflection\DocBlock\Tags\Author;
 
-class PersonalController extends Controller
+class CardTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -28,7 +29,7 @@ class PersonalController extends Controller
            'company_id' => 'required'
         ]);
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'تایپ کارد']),[
-            Personal::getRecords($request->toArray())->addConstraints(function ($query) use($request){
+            CardType::getRecords($request->toArray())->addConstraints(function ($query) use($request){
                 $companyId = $request->get('company_id');
                 $company = Company::findOrFail($companyId);
                 if (!Company::isCompanyOwner($company,auth()->user()->user_id))
@@ -42,14 +43,14 @@ class PersonalController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param StorePersonalRequest $request
+     * @param StoreCardTypeRequest $request
      * @return JsonResponse
      */
-    public function store(StorePersonalRequest $request) : JsonResponse
+    public function store(StoreCardTypeRequest $request) : JsonResponse
     {
-        $personal = Personal::create($request->validated());
+        $cardType = CardType::create($request->validated());
         $response = $this->getResponse(__('apiResponse.store',['resource'=>'تایپ کارد']), [
-            'personal' => $personal
+            'card_type' => $cardType
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -57,16 +58,16 @@ class PersonalController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Personal $personal
+     * @param CardType $cardType
      * @return JsonResponse
      * @throws AuthorizationException
      */
-    public function show(Personal $personal) : JsonResponse
+    public function show(CardType $cardType) : JsonResponse
     {
-        if (!Company::isCompanyOwner(Company::findOrFail($personal->company_ref_id),auth()->user()->user_id))
+        if (!Company::isCompanyOwner(Company::findOrFail($cardType->company_ref_id),auth()->user()->user_id))
             throw new AuthorizationException('شما به این تایپ کارد دسترسی ندارید');
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'تایپ کارد']), [
-            'personal' => $personal
+            'card_type' => $cardType
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -74,18 +75,18 @@ class PersonalController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param StorePersonalRequest $request
-     * @param Personal $personal
+     * @param StoreCardTypeRequest $request
+     * @param CardType $cardType
      * @return JsonResponse
      * @throws AuthorizationException
      */
-    public function update(StorePersonalRequest $request, Personal $personal) : JsonResponse
+    public function update(StoreCardTypeRequest $request, CardType $cardType) : JsonResponse
     {
-        if (!Company::isCompanyOwner(Company::findOrFail($personal->company_ref_id),auth()->user()->user_id))
+        if (!Company::isCompanyOwner(Company::findOrFail($cardType->company_ref_id),auth()->user()->user_id))
             throw new AuthorizationException('شما به این تایپ کارد دسترسی ندارید');
-        $personal->update($request->validated());
+        $cardType->update($request->validated());
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'تایپ کارد']), [
-            'personal' => $personal
+            'card_type' => $cardType
         ]);
 
         return response()->json($response, $response['statusCode']);
@@ -94,17 +95,17 @@ class PersonalController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  string  $personal
+     * @param  string  $cardType
      * @return JsonResponse
      */
-    public function destroy($personal) : JsonResponse
+    public function destroy($cardType) : JsonResponse
     {
-        $count = Personal::destroy(explode(',',$personal));
+        $count = CardType::destroy(explode(',',$cardType));
         $response = $this->getResponse(__('apiResponse.destroy',['items'=>$count]));
         return response()->json($response, $response['statusCode']);
     }
 
-    public function getAvailablePersonals(Request $request): JsonResponse
+    public function getAvailableCardTypes(Request $request): JsonResponse
     {
         $request->validate([
            'team_ref_id' => ['required']
@@ -112,7 +113,7 @@ class PersonalController extends Controller
 
         $team = Team::query()->findOrFail($request->get('team_ref_id'));
         $response = $this->getResponse(__('apiResponse.index',['resource' => 'تایپ کارد']),[
-           Personal::query()->with('columns')->where([
+           CardType::query()->where([
                'level_type' => 'team',
                'level_id' => $team->team_id
            ])->orWhere(function (Builder $builder) use($team){
@@ -126,6 +127,14 @@ class PersonalController extends Controller
                    'level_id' => $team->project->company->company_id
                ]);
            })->get()
+        ]);
+        return response()->json($response,$response['statusCode']);
+    }
+
+    public function getCardTypeColumns(CardType $cardType, Team $team): JsonResponse
+    {
+        $response = $this->getResponse(__('apiResponse.index',['resource'=>'برای کارد تایپ انتخابی فیلد']),[
+           Column::getCardTypeColumns($cardType->card_type_id,$team->team_id)
         ]);
         return response()->json($response,$response['statusCode']);
     }

@@ -215,7 +215,7 @@ return [
         "roles" => 'نقش ها',
         "roles.*" => 'نقش' ,
         "company_ref_id" => 'کمپانی مربوطه',
-        'personal_ref_id' => 'تایپ کارد',
+        'card_type_ref_id' => 'تایپ کارد',
         'type_args' => 'پارامتر های تایپ',
         'team_ref_id' => 'تیم مربوطه',
     ],

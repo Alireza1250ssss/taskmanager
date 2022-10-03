@@ -12,21 +12,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Personal extends Model
+class CardType extends Model
 {
     use HasFactory,SoftDeletes,FilterRecords,MainPropertySetter,MainPropertyGetter;
 
-    protected $primaryKey = 'personal_id';
+    protected $primaryKey = 'card_type_id';
     protected $fillable = ['name','company_ref_id','description','level_id','level_type'];
     public $filters = ['name','company_ref_id'];
 
     public function tasks(): HasMany
     {
-        return $this->hasMany(Task::class,'type_ref_id');
+        return $this->hasMany(Task::class,'card_type_ref_id');
     }
 
     public function columns(): HasMany
     {
-        return $this->hasMany(Column::class , 'personal_ref_id');
+        return $this->hasMany(Column::class , 'card_type_ref_id');
     }
 }

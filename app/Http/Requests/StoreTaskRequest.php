@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Column;
+use App\Models\CardType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,26 +26,35 @@ class StoreTaskRequest extends FormRequest
      */
     public function rules()
     {
+        if ($this->filled('card_type_ref_id') && $this->filled('team_ref_id'))
+            $cardTypeFields = Column::getCardTypeColumns($this->get('card_type_ref_id'),$this->get('team_ref_id'));
+
         return [
-            'title' =>'required' ,
-            'user_ref_id' => ['nullable',Rule::exists('users','user_id')->withoutTrashed()],
-            'parent_id' => Rule::exists('tasks','task_id')->withoutTrashed() ,
-            'team_ref_id' => ['required', Rule::exists('teams','team_id')->withoutTrashed()],
+            'title' => 'required',
+            'card_type_ref_id' => ['required'],
+            'user_ref_id' => ['nullable', Rule::exists('users', 'user_id')->withoutTrashed()],
+            'parent_id' => Rule::exists('tasks', 'task_id')->withoutTrashed(),
+            'team_ref_id' => ['required', Rule::exists('teams', 'team_id')->withoutTrashed()],
             'description' => 'string',
-            'stage_ref_id' => [Rule::exists('stages','stage_id')->withoutTrashed()],
-            'status_ref_id' => Rule::exists('statuses','status_id')->withoutTrashed(),
+            'stage_ref_id' => [Rule::exists('stages', 'stage_id')->withoutTrashed()],
+            'status_ref_id' => Rule::exists('statuses', 'status_id')->withoutTrashed(),
             'real_time' => 'array',
             'estimate_time' => 'string',
             'priority' => 'string',
             'labels' => 'string',
-            'due_date' => 'string' ,
-            'order'  => 'array' ,
-            'task_metas' => 'array' ,
+            'due_date' => 'string',
+            'order' => 'array',
+            'task_metas' => 'array',
             'task_metas.*.task_key' => 'required|distinct',
             'task_metas.*.task_value' => 'required',
             'task_metas.*.column_ref_id' => ['numeric'],
-            'watchers' => 'array' ,
+            'watchers' => 'array',
             'watchers.*' => [Rule::exists('users', 'user_id')->withoutTrashed()]
         ];
+    }
+
+    public function with()
+    {
+
     }
 }

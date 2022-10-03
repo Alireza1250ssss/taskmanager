@@ -78,6 +78,7 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task) : JsonResponse
     {
+
         $task->update($request->validated());
 
         //check if the stage is being updated to set a log and send notification to its watchers
