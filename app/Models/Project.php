@@ -7,6 +7,7 @@ use App\Http\Traits\FilterRecords;
 use App\Http\Traits\HasMembers;
 use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -61,5 +62,17 @@ class Project extends Model implements Hierarchy
         elseif ($model instanceof Project)
             return $this->project_id == $model->project_id;
         return false;
+    }
+
+    public static function getHierarchyItems(Model $model): Collection
+    {
+        $result = new Collection();
+        if ($model instanceof Company)
+            $result = $model->projects;
+        elseif ($model instanceof Project)
+            $result->push($model);
+        elseif ($model instanceof Team)
+            $result->push($model->project);
+        return $result;
     }
 }

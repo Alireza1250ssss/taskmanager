@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
 use App\Http\Requests\UserAssignViewRequest;
+use App\Models\Column;
 use App\Models\Company;
 use App\Models\Entity;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 
 class CompanyController extends Controller
@@ -22,10 +24,12 @@ class CompanyController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $companies = Company::getRecords($request->toArray())->addConstraints(function ($query) {
+            $query->with(['projects.teams','cardTypes.columns']);
+        })->get();
+        Column::prepareColumns($companies);
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'کمپانی']), [
-            Company::getRecords($request->toArray())->addConstraints(function ($query) {
-                $query->with('projects.teams');
-            })->get()
+            $companies
         ]);
         return response()->json($response, $response['statusCode']);
     }

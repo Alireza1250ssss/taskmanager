@@ -7,28 +7,30 @@ use App\Http\Traits\FilterRecords;
 use App\Http\Traits\HasMembers;
 use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model implements Hierarchy
 {
-    use HasFactory,SoftDeletes,FilterRecords,MainPropertyGetter,MainPropertySetter,HasMembers;
+    use HasFactory, SoftDeletes, FilterRecords, MainPropertyGetter, MainPropertySetter, HasMembers;
 
     protected $fillable = ['name'];
     protected $primaryKey = 'company_id';
     public array $filters = ['name'];
-    protected $hidden = ['created_at','updated_at'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     /**
      * @return HasMany
      */
     public function projects(): HasMany
     {
-        return $this->hasMany(Project::class,'company_ref_id');
+        return $this->hasMany(Project::class, 'company_ref_id');
     }
 
     /**
@@ -37,11 +39,29 @@ class Company extends Model implements Hierarchy
     public function watchers(): MorphToMany
     {
         return $this->morphToMany(
-            User::class ,
+            User::class,
             'watchable',
-            'watchers' ,
+            'watchers',
             'watchable_id',
             'user_ref_id'
+        );
+    }
+
+    public function cardTypes(): HasMany
+    {
+        return $this->hasMany(CardType::class, 'company_ref_id');
+    }
+
+    /**
+     * @return HasManyThrough
+     */
+    public function teams(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Team::class ,
+            Project::class,
+            'company_ref_id',
+            'project_ref_id',
         );
     }
 
@@ -58,22 +78,34 @@ class Company extends Model implements Hierarchy
         return false;
     }
 
-    public static function getCompanyOf(Model $model) : ?Company
+    public static function getCompanyOf(Model $model): ?Company
     {
         $result = false;
         if ($model instanceof Company)
-            $result =  $model;
+            $result = $model;
         elseif ($model instanceof Project)
-            $result =  $model->company;
+            $result = $model->company;
         elseif ($model instanceof Team)
-            $result =  $model->project->company;
+            $result = $model->project->company;
         if (!$result)
             throw new ModelNotFoundException();
         return $result;
     }
 
-    public static function isCompanyOwner(Company $company ,int $userId): bool
+    public static function isCompanyOwner(Company $company, int $userId): bool
     {
-        return Role::hasBaseRoleOn($company,$userId);
+        return Role::hasBaseRoleOn($company, $userId);
+    }
+
+    public static function getHierarchyItems(Model $model): Collection
+    {
+        $result = new Collection();
+        if ($model instanceof Company)
+            $result->push($model);
+        elseif ($model instanceof Project)
+            $result->push($model->company);
+        elseif ($model instanceof Team)
+            $result->push($model->project->company);
+        return $result;
     }
 }
