@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Column;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -78,6 +79,7 @@ class StoreTaskRequest extends FormRequest
             }
 
             if (!empty($cardTypeField->enum_values) && !empty($metaItem['task_value']) && !in_array($metaItem['task_value'],$cardTypeField->enum_values)){
+                Log::channel('dump_debug')->debug(json_encode($metaItem['task_value'])."\n".json_encode($cardTypeField->enum_values));
                 $validationErrors[$cardTypeField->name][] = sprintf(
                     "فیلد %s در تسک متا مقدار معتبری ندارد", $cardTypeField->title);
             }
