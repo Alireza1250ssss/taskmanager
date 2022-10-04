@@ -43,7 +43,7 @@ class UpdateTaskRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
 
         return [
@@ -52,6 +52,7 @@ class UpdateTaskRequest extends FormRequest
             'team_ref_id' => [Rule::exists('teams', 'team_id')->withoutTrashed()],
             'stage_ref_id' => [Rule::exists('stages', 'stage_id')->withoutTrashed()],
             'status_ref_id' => Rule::exists('statuses', 'status_id')->withoutTrashed(),
+            'card_type_ref_id' => ['prohibited'],
             'real_time' => ['array'],
             'estimate_time' => 'string',
             'priority' => 'string',

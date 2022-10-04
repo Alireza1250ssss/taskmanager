@@ -59,8 +59,6 @@ class StoreTaskRequest extends FormRequest
             $errors = $this->getCardTypeValidation();
             if (!empty($errors))
                 throw ValidationException::withMessages($errors);
-//            $cardTypeValidator = Validator::make($this->all(), $rules, $messages, $attributes);
-//            $cardTypeValidator->validate();
         });
     }
 

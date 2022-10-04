@@ -7,6 +7,7 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use App\Models\TaskLog;
+use App\Models\TaskMeta;
 use App\Notifications\TaskWatcherNotification;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -89,8 +90,7 @@ class TaskController extends Controller
         }
 
         if ($request->filled('task_metas')) {
-            $task->taskMetas()->delete();
-            $task->taskMetas()->createMany($request->get('task_metas'));
+            TaskMeta::updateMeta($task,$request->get('task_metas'));
         }
         $task->mergeMeta('taskMetas');
 

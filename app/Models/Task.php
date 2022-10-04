@@ -110,9 +110,15 @@ class Task extends Model
 
     public function mergeMeta($relationship)
     {
+
         $meta = $this->$relationship;
+
         $meta->map(function ($item, $key) {
-            $this->{$item->task_key} = $item->task_value;
+            $this->{$item->task_key} = [
+                'meta' => true,
+                'value' => $item->task_value,
+                'column' => $item->column
+            ];
         });
     }
 
