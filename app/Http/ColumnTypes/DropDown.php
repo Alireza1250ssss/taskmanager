@@ -4,6 +4,8 @@
 namespace App\Http\ColumnTypes;
 
 
+use Illuminate\Http\Request;
+
 class DropDown extends CustomField
 {
     protected array $values;
@@ -22,5 +24,13 @@ class DropDown extends CustomField
         return [
           'type_args.values' => 'مقادیر ممکن'
         ];
+    }
+
+    public function extractColumn(array $data): array
+    {
+        $result = [];
+        if (array_key_exists('values',$data))
+            $result['enum_values'] = $data['values'];
+        return $result;
     }
 }

@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Http\ColumnTypes\CustomField;
 use App\Http\ColumnTypes\DropDown;
+use App\Http\ColumnTypes\Text;
 use App\Models\CardType;
+use App\Models\Column;
 use App\Rules\RelatedCompanyOwner;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Validator;
@@ -12,8 +15,10 @@ use Illuminate\Validation\Rule;
 class StoreColumnRequest extends FormRequest
 {
     public static array $types = [
-        'dropdown' => DropDown::class
+        'dropdown' => DropDown::class,
+        'text' => Text::class
     ];
+    public CustomField $customField;
 
 
     /**
@@ -26,13 +31,6 @@ class StoreColumnRequest extends FormRequest
         return true;
     }
 
-    public function prepareForValidation()
-    {
-        if ($this->filled('type_args.values'))
-            $this->merge([
-               'enum_values' => $this->get('type_args')['values']
-            ]);
-    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -43,7 +41,7 @@ class StoreColumnRequest extends FormRequest
     {
 
         return [
-            'name' => 'required|unique:columns,name',
+            'name' => ['required'],
             'title' => 'required',
             'nullable' => 'boolean',
             'default' => 'string',
@@ -63,8 +61,19 @@ class StoreColumnRequest extends FormRequest
         if ($validator->fails()) return;
         $validator->after(function ($validator) {
             $type = new self::$types[$this->get('type')];
-            $typeValidation = Validator::make($this->all(), $type->validation(),[],$type->validationMessages());
+            $this->customField = $type;
+            $typeValidation = Validator::make($this->all(), $type->validation(), [], $type->validationMessages());
             $typeValidation->validate();
         });
+    }
+
+
+    public function validated(): array
+    {
+        if (!method_exists($this->customField, 'extractColumn'))
+            return parent::validated();
+        $typeColumns = $this->customField->extractColumn($this->get('type_args'));
+        if (!empty($typeColumns))
+            return array_merge(parent::validated(), $typeColumns);
     }
 }

@@ -13,15 +13,8 @@ abstract class CustomField
     protected string $name,$title,$default;
     protected bool $nullable;
 
-
-
-    public function setDefault(string $default)
-    {
-        $this->default = $default;
-    }
-
-
-
+    abstract public function validation(): array;
+    abstract public function validationMessages(): array;
 
 
 }
