@@ -25,11 +25,14 @@ class TaskController extends Controller
      */
     public function index(Request $request) : JsonResponse
     {
+        $tasks = Task::getRecords($request->toArray())->addConstraints(function ($query){
+            $query->with('watchers');
+            $query->withCount('comments');
+        })->get();
+        foreach ($tasks as &$task)
+            $task->mergeMeta('taskMetas');
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'تسک']),[
-            Task::getRecords($request->toArray())->addConstraints(function ($query){
-                $query->with('watchers');
-                $query->withCount('comments');
-            })->get()
+            $tasks
         ]);
         return response()->json($response,$response['statusCode']);
     }
