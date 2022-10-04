@@ -17,10 +17,12 @@ class Column extends Model
     use HasFactory, SoftDeletes, FilterRecords;
 
     protected $primaryKey = 'column_id';
-    protected $fillable = ['title', 'name', 'card_type_ref_id', 'type', 'default', 'enum_values', 'nullable', 'length', 'params', 'level_type', 'level_id'];
+    protected $fillable = ['title', 'name', 'card_type_ref_id', 'type', 'default', 'enum_values',
+        'nullable', 'length', 'params', 'level_type', 'level_id','show'
+    ];
     public $filters = ['title', 'name', 'card_type_ref_id', 'type', 'nullable'];
     protected $casts = [
-        'nullable' => 'boolean',
+        'nullable' => 'boolean', 'show' => 'boolean',
         'enum_values' => 'array', 'params' => 'array'
     ];
 

@@ -44,6 +44,7 @@ class StoreColumnRequest extends FormRequest
             'name' => ['required'],
             'title' => 'required',
             'nullable' => 'boolean',
+            'show' => 'boolean',
             'default' => 'string',
             'card_type_ref_id' => ['required', new RelatedCompanyOwner(CardType::class)],
             'params' => 'array',
