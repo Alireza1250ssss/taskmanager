@@ -2,12 +2,19 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Stage;
+use App\Models\Column;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class UpdateTaskRequest extends FormRequest
 {
+    /**
+     * @var mixed
+     */
+    private $cardTypeFields = [];
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -60,7 +67,7 @@ class UpdateTaskRequest extends FormRequest
             'description' => 'string',
             'labels' => 'string',
             'due_date' => 'string',
-            'order' => 'array' ,
+            'order' => 'array',
             'reviewed_at' => 'date',
             'task_metas' => 'array',
             'task_metas.*.task_key' => 'required|distinct',
@@ -69,10 +76,50 @@ class UpdateTaskRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
+    public function withValidator($validator)
     {
-        return [
-            'prohibited_if' => 'این فیلد قبلا وارد شده است'
-        ];
+        if ($validator->fails()) return;
+        $validator->after(function ($validator) {
+            $errors = $this->getCardTypeValidation();
+            if (!empty($errors))
+                throw ValidationException::withMessages($errors);
+        });
+    }
+
+    protected function getCardTypeValidation(): array
+    {
+        $validationErrors = [];
+        $cardTypeId = $this->route('task')->card_type_ref_id;
+        $teamId = $this->get('team_ref_id') ?? $this->route('task')->team_ref_id;
+        $this->cardTypeFields = Column::getCardTypeColumns($cardTypeId, $teamId);
+        foreach ($this->cardTypeFields as $cardTypeField) {
+
+            $metaItem = $this->checkoutFieldFromMeta($cardTypeField->column_id);
+
+            if ($cardTypeField->nullable == false && !empty($metaItem) && is_null($metaItem['task_value'])) {
+                $validationErrors[$cardTypeField->name][] = sprintf(
+                    "فیلد %s در تسک متا الزامی است", $cardTypeField->title);
+            }
+
+            if (!empty($cardTypeField->enum_values) && !empty($metaItem['task_value']) && !in_array($metaItem['task_value'], $cardTypeField->enum_values)) {
+//                Log::channel('dump_debug')->debug(json_encode($metaItem['task_value']) . "\n" . json_encode($cardTypeField->enum_values));
+                $validationErrors[$cardTypeField->name][] = sprintf(
+                    "فیلد %s در تسک متا مقدار معتبری ندارد", $cardTypeField->title);
+            }
+
+
+        }
+        return $validationErrors;
+    }
+
+    public function checkoutFieldFromMeta(int $columnId)
+    {
+        foreach ($this->get('task_metas', []) as $item) {
+            if (isset($item['column_ref_id']) && $item['column_ref_id'] == $columnId) {
+                $res = $item;
+                break;
+            }
+        }
+        return $res ?? null;
     }
 }
