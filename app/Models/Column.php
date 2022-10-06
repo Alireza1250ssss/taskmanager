@@ -31,12 +31,6 @@ class Column extends Model
         return $this->belongsTo(CardType::class, 'card_type_ref_id')->select(['card_type_id', 'name', 'description']);
     }
 
-    protected function type(): Attribute
-    {
-        return Attribute::set(fn($value) => StoreColumnRequest::$types[$value]);
-    }
-
-
     public static function getCardTypeColumns(int $cardTypeId, int $teamId)
     {
         $team = Team::query()->find($teamId);

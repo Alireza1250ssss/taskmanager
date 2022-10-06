@@ -6,7 +6,6 @@ use App\Http\ColumnTypes\CustomField;
 use App\Http\ColumnTypes\DropDown;
 use App\Http\ColumnTypes\Text;
 use App\Models\CardType;
-use App\Models\Column;
 use App\Rules\RelatedCompanyOwner;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Validator;
@@ -41,19 +40,25 @@ class StoreColumnRequest extends FormRequest
     {
 
         return [
-            'name' => ['required'],
-            'title' => 'required',
+            'name' => [$this->isMethod('POST') ? 'required' : 'string'],
+            'title' => [$this->isMethod('POST') ? 'required' : 'string'],
             'nullable' => 'boolean',
             'show' => 'boolean',
             'default' => 'string',
-            'card_type_ref_id' => ['required', new RelatedCompanyOwner(CardType::class)],
+            'card_type_ref_id' => [
+                $this->isMethod('POST') ? 'required' : 'numeric',
+                new RelatedCompanyOwner(CardType::class)
+            ],
             'params' => 'array',
             'enum_values' => 'array',
-            'type' => ['required', Rule::in(array_keys(self::$types))],
+            'type' => [
+                $this->isMethod('POST') ? 'required' : 'prohibited',
+                Rule::in(array_keys(self::$types))
+            ],
             'length' => 'numeric',
             'level_type' => 'string',
             'level_id' => 'numeric',
-            'type_args' => 'present|array'
+            'type_args' => $this->isMethod('POST') ? 'present|array' : 'array'
         ];
     }
 
@@ -61,7 +66,7 @@ class StoreColumnRequest extends FormRequest
     {
         if ($validator->fails()) return;
         $validator->after(function ($validator) {
-            $type = new self::$types[$this->get('type')];
+            $type = new self::$types[$this->get('type') ?? $this->route('column')->type];
             $this->customField = $type;
             $typeValidation = Validator::make($this->all(), $type->validation(), [], $type->validationMessages());
             $typeValidation->validate();

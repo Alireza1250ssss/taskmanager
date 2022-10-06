@@ -61,19 +61,19 @@ class ColumnController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param StoreColumnRequest $request
      * @param Column $column
      * @return JsonResponse
      */
-//    public function update(Request $request, Column $column) : JsonResponse
-//    {
-//        $column->update($request->validated());
-//        $response = $this->getResponse(__('apiResponse.update',['resource'=>'فیلد']), [
-//            'column' => $column
-//        ]);
-//
-//        return response()->json($response, $response['statusCode']);
-//    }
+    public function update(StoreColumnRequest $request, Column $column) : JsonResponse
+    {
+        $column->update($request->validated());
+        $response = $this->getResponse(__('apiResponse.update',['resource'=>'فیلد']), [
+            'column' => $column
+        ]);
+
+        return response()->json($response, $response['statusCode']);
+    }
 
     /**
      * Remove the specified resource from storage.
