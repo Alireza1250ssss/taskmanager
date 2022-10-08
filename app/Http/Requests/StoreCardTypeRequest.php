@@ -30,7 +30,7 @@ class StoreCardTypeRequest extends FormRequest
     {
         return [
             'name' => $this->isMethod('POST') ? 'required' : 'string',
-            'description' => 'string' ,
+            'description' => 'nullable|string' ,
             'company_ref_id' => [Rule::requiredIf(fn() => $this->isMethod('POST')),function ($attribute, $value, $fail) {
                 $this->relatedCompany = Company::findOrFail($value);
                 if (!Company::isCompanyOwner($this->relatedCompany,auth()->user()->user_id))
