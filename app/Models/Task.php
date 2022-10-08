@@ -114,11 +114,11 @@ class Task extends Model
         $meta = $this->$relationship;
 
         $meta->map(function ($item, $key) {
-            $this->{$item->task_key} = [
+            $this->setAttribute($item->column_ref_id, [
                 'meta' => true,
                 'value' => $item->task_value,
                 'column' => $item->column
-            ];
+            ]);
         });
     }
 
