@@ -49,7 +49,7 @@ class ResolvePermissionController extends Controller
         ]);
         $result = RoleUser::getBaseRolesOfUser(auth()->user()->user_id,$request->get('category'));
         $response = $this->getResponse('موجودیت های ساخته شده دریافت شدند',[
-           $result
+           $result->values()
         ]);
         return response()->json($response,$response['statusCode']);
     }
