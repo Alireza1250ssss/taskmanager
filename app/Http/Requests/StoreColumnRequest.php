@@ -83,5 +83,6 @@ class StoreColumnRequest extends FormRequest
         $typeColumns = $this->customField->extractColumn($this->get('type_args',[]));
         if (!empty($typeColumns))
             return array_merge(parent::validated(), $typeColumns);
+        return parent::validated();
     }
 }
