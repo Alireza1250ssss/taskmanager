@@ -68,8 +68,10 @@ class StoreColumnRequest extends FormRequest
         $validator->after(function ($validator) {
             $type = new self::$types[$this->get('type') ?? $this->route('column')->type];
             $this->customField = $type;
-            $typeValidation = Validator::make($this->all(), $type->validation(), [], $type->validationMessages());
-            $typeValidation->validate();
+            if ($this->filled('type_args')) {
+                $typeValidation = Validator::make($this->all(), $type->validation(), [], $type->validationMessages());
+                $typeValidation->validate();
+            }
         });
     }
 
@@ -78,7 +80,7 @@ class StoreColumnRequest extends FormRequest
     {
         if (!method_exists($this->customField, 'extractColumn'))
             return parent::validated();
-        $typeColumns = $this->customField->extractColumn($this->get('type_args'));
+        $typeColumns = $this->customField->extractColumn($this->get('type_args',[]));
         if (!empty($typeColumns))
             return array_merge(parent::validated(), $typeColumns);
     }
