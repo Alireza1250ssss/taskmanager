@@ -43,13 +43,13 @@ class CardType extends Model
     {
         $this->columns()->createMany([
             [
-                'name' => 'title', 'title' => 'عنوان', 'type' => 'text', 'nullable' => false, 'show' => true
+                'name' => 'name', 'title' => 'عنوان', 'type' => 'text', 'nullable' => false, 'show' => true
                 , 'level_type' => 'company', 'level_id' => $this->company_ref_id
             ],
             [
                 'name' => 'stage', 'title' => 'مرحله', 'type' => 'dropdown', 'nullable' => false, 'show' => true
                 , 'level_type' => 'company', 'level_id' => $this->company_ref_id ,'default' => 'backlog' ,
-                'enum_values' => json_encode(['backlog','todo','doing','done','review'])
+                'enum_values' => ['backlog','todo','doing','done','review']
             ]
         ]);
     }
