@@ -69,6 +69,7 @@ class Column extends Model
                     $teamCards = $cardTypes->map(fn($card, $key) => static::filterColumns($card->replicate(), $team));
                     $team->cardTypes = $teamCards;
                 }
+                $project->unsetRelation('company');
             }
         }
     }

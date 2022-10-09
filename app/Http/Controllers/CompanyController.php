@@ -27,9 +27,13 @@ class CompanyController extends Controller
         $companies = Company::getRecords($request->toArray())->addConstraints(function ($query) {
             $query->with(['projects.teams','cardTypes.columns']);
         })->get();
+        $companies = $companies->filter(function ($item,$key){
+            return !empty($item->company_id);
+        });
         Column::prepareColumns($companies);
+
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'کمپانی']), [
-            $companies
+            $companies->values()
         ]);
         return response()->json($response, $response['statusCode']);
     }
