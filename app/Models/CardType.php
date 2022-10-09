@@ -17,6 +17,7 @@ class CardType extends Model
     protected $primaryKey = 'card_type_id';
     protected $fillable = ['name', 'company_ref_id', 'description', 'level_id', 'level_type'];
     public $filters = ['name', 'company_ref_id'];
+    protected $hidden = ['created_at','updated_at','deleted_at'];
 
     public function tasks(): HasMany
     {

@@ -5,11 +5,10 @@ namespace App\Models;
 use App\Http\ColumnTypes\CalcTime;
 use App\Http\ColumnTypes\CustomField;
 use App\Http\ColumnTypes\DropDown;
+use App\Http\ColumnTypes\Number;
 use App\Http\ColumnTypes\Text;
-use App\Http\Requests\StoreColumnRequest;
 use App\Http\Traits\FilterRecords;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,18 +21,20 @@ class Column extends Model
 
     protected $primaryKey = 'column_id';
     protected $fillable = ['title', 'name', 'card_type_ref_id', 'type', 'default', 'enum_values',
-        'nullable', 'length', 'params', 'level_type', 'level_id','show'
+        'nullable', 'length', 'params', 'level_type', 'level_id', 'show'
     ];
     public $filters = ['title', 'name', 'card_type_ref_id', 'type', 'nullable'];
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
     protected $casts = [
         'nullable' => 'boolean', 'show' => 'boolean',
         'enum_values' => 'array', 'params' => 'array'
     ];
 
     public static array $columnTypes = [
-      'text' => Text::class,
-      'dropdown' => DropDown::class,
-      'calc-time' => CalcTime::class
+        'text' => Text::class,
+        'dropdown' => DropDown::class,
+        'calc-time' => CalcTime::class,
+        'number' => Number::class
     ];
 
     public function cardType(): BelongsTo
@@ -75,9 +76,10 @@ class Column extends Model
             foreach ($item->projects as &$project) {
                 $projectCards = $cardTypes->map(fn($card, $key) => static::filterColumns($card->replicate(), $project));
                 $project->cardTypes = $projectCards;
-                foreach ($project->teams as $team){
+                foreach ($project->teams as $team) {
                     $teamCards = $cardTypes->map(fn($card, $key) => static::filterColumns($card->replicate(), $team));
                     $team->cardTypes = $teamCards;
+                    $team->unsetRelation('project');
                 }
                 $project->unsetRelation('company');
             }
@@ -92,16 +94,16 @@ class Column extends Model
             $teams = Team::getHierarchyItems($model)->pluck('team_id')->toArray();
             $projects = Project::getHierarchyItems($model)->pluck('project_id')->toArray();
             $companies = Company::getHierarchyItems($model)->pluck('company_id')->toArray();
-            if ($column->level_type === 'team' && !in_array($column->level_id,$teams)) continue;
-            if ($column->level_type === 'project' && !in_array($column->level_id,$projects)) continue;
-            if ($column->level_type === 'company' && !in_array($column->level_id,$companies)) continue;
+            if ($column->level_type === 'team' && !in_array($column->level_id, $teams)) continue;
+            if ($column->level_type === 'project' && !in_array($column->level_id, $projects)) continue;
+            if ($column->level_type === 'company' && !in_array($column->level_id, $companies)) continue;
             $filteredCols->push($column);
         }
-        $cardType->setRelation('columns',$filteredCols);
+        $cardType->setRelation('columns', $filteredCols);
         return $cardType;
     }
 
-    public static function getFieldType(int $columnId) : ?CustomField
+    public static function getFieldType(int $columnId): ?CustomField
     {
         $column = Column::find($columnId);
         if (empty($column)) return null;

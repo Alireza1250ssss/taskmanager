@@ -22,6 +22,7 @@ class Project extends Model implements Hierarchy
     protected $primaryKey = 'project_id';
     protected $fillable = ['name','company_ref_id'];
     public array $filters = ['name','company_ref_id'];
+    protected $hidden = ['created_at','updated_at','deleted_at'];
 
     /**
      * @return BelongsTo
