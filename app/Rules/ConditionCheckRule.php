@@ -120,4 +120,11 @@ class ConditionCheckRule implements Rule
           'value' => 'required|boolean'
         ];
     }
+
+    protected function clientIn(): array
+    {
+        return [
+          'client_type' => 'required'
+        ];
+    }
 }

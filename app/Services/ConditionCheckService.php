@@ -34,11 +34,11 @@ class ConditionCheckService
                 $actionService = new ActionsService($condition->then, $service, $modelItem);
                 $actionService->callActions();
                 $service->allowedFields = array_merge($service->allowedFields,$actionService->allowedFields);
-                if ($service->access === 'reject'){
-                    $service->checkRejectWasAllowed();
-                    $service->CheckOnlyForReject($modelItem);
-                }
+            }
 
+            if ($service->access === 'reject'){
+                $service->checkRejectWasAllowed();
+                $service->CheckOnlyForReject($modelItem);
             }
         } catch (AuthorizationException | PermissionException $throwable) {
             if (empty(self::$conException))

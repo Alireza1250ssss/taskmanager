@@ -12,5 +12,9 @@ return [
     'requirement' => [
         'true' => 'وارد شده است ( :field ) فیلد',
         'false' => 'وارد نشده است ( :field ) فیلد',
+    ],
+    'clientIn' => [
+        'true' => 'وارد شده است ( :client ) کلاینت توسط',
+        'false' => 'وارد نشده است ( :client ) کلاینت توسط',
     ]
 ];

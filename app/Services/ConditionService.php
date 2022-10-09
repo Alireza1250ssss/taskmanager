@@ -76,6 +76,7 @@ class ConditionService
         $field = $args['field'];
         $this->allowedFields[] = $field;
         $values = $args['values'];
+        $was = $args['was'] ?? true;
         $status = $args['status'] ?? true;
 
         $fieldValue = $this->model->{$field};
@@ -120,6 +121,7 @@ class ConditionService
     protected function requirement(array $args): ?bool
     {
         $field = $args['field'];
+        $was = $args['was'] ?? true;
         $status = $args['status'] ?? true;
         $this->allowedFields[] = $field;
 
@@ -152,6 +154,22 @@ class ConditionService
         ]);
         self::$messages[$isset][] = $message;
         return $status ? $isset : !$isset;
+    }
+
+    protected function clientIn(array $args) : bool
+    {
+        $status = $args['status'] ?? true;
+        $clientType = $args['client_type'];
+
+        $requestClient = request()->get('ClientName','Web');
+        $result = false;
+        if ($clientType == $requestClient)
+            $result = true;
+        $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
+            'client' => $clientType,
+        ]);
+        self::$messages[$result][] = $message;
+        return $status ? $result : !$result;
     }
 
     protected function boolean(array $args)
