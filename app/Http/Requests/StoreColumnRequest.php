@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\ColumnTypes\CustomField;
 use App\Http\ColumnTypes\DropDown;
+use App\Http\ColumnTypes\Number;
 use App\Http\ColumnTypes\Text;
 use App\Models\CardType;
 use App\Rules\RelatedCompanyOwner;
@@ -15,7 +16,8 @@ class StoreColumnRequest extends FormRequest
 {
     public static array $types = [
         'dropdown' => DropDown::class,
-        'text' => Text::class
+        'text' => Text::class,
+        'number' => Number::class
     ];
     public CustomField $customField;
 

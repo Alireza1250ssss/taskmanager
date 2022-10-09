@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Http\ColumnTypes\CalcTime;
+use App\Http\ColumnTypes\CustomField;
+use App\Http\ColumnTypes\DropDown;
+use App\Http\ColumnTypes\Text;
 use App\Http\Requests\StoreColumnRequest;
 use App\Http\Traits\FilterRecords;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,6 +28,12 @@ class Column extends Model
     protected $casts = [
         'nullable' => 'boolean', 'show' => 'boolean',
         'enum_values' => 'array', 'params' => 'array'
+    ];
+
+    public static array $columnTypes = [
+      'text' => Text::class,
+      'dropdown' => DropDown::class,
+      'calc-time' => CalcTime::class
     ];
 
     public function cardType(): BelongsTo
@@ -89,5 +99,12 @@ class Column extends Model
         }
         $cardType->setRelation('columns',$filteredCols);
         return $cardType;
+    }
+
+    public static function getFieldType(int $columnId) : ?CustomField
+    {
+        $column = Column::find($columnId);
+        if (empty($column)) return null;
+        return new self::$columnTypes[$column->type]($column);
     }
 }

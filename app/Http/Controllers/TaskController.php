@@ -48,7 +48,7 @@ class TaskController extends Controller
         $task = Task::create($request->validated());
         $task->setLastOrderInStage();
         if ($request->filled('task_metas'))
-            $task->taskMetas()->createMany($request->get('task_metas'));
+            TaskMeta::updateMeta($task,$request->get('task_metas'));
         if ($request->filled('watchers'))
             $task->watchers()->sync($request->get('watchers'));
         $task->mergeMeta('taskMetas');

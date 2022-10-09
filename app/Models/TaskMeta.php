@@ -33,17 +33,17 @@ class TaskMeta extends Model
             $doDelete = $metaItem['delete'] ?? false;
             if (empty($metaItem['column_ref_id']) && $doDelete == true)
                 static::deleteMetaRecord($task, $metaItem);
-            elseif (!empty($metaItem['column_ref_id']))
-                TaskMeta::query()->updateOrCreate(
-                    ['task_ref_id' => $taskId, 'column_ref_id' => $metaItem['column_ref_id']],
-                    ['task_value' => $metaItem['task_value'], 'task_key' => $metaItem['task_key']]
-                );
-            else
+            elseif (!empty($metaItem['column_ref_id'])) {
+                $fieldType = Column::getFieldType($metaItem['column_ref_id']);
+                if (!empty($fieldType))
+                    $fieldType->updateOrCreate($taskId,$metaItem['task_value']);
+            }
+            else {
                 TaskMeta::query()->updateOrCreate(
                     ['task_ref_id' => $taskId, 'task_key' => $metaItem['task_key']],
                     ['task_value' => $metaItem['task_value']]
                 );
-
+            }
         }
     }
 
