@@ -66,6 +66,9 @@ Route::post('/register',[AuthController::class,'register'])->name('register');
 Route::post('/login',[AuthController::class,'login'])->name('login');
 
 Route::middleware(['jwt_auth'])->group(function(){
+    Route::get('/conditions/methods',function (){
+       return response()->json(config('condition-methods-routes'));
+    });
 
     Route::get('/notifications',[AccountController::class ,'getNotifications'])->name('get-notifications');
     Route::delete('/notifications',[AccountController::class , 'deleteNotifications'])->name('delete-notifications');
