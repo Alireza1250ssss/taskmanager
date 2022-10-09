@@ -14,7 +14,7 @@ abstract class CustomField
 {
     protected ?Column $relatedColumn;
 
-    public function __construct(Column $column)
+    public function __construct(Column $column = null)
     {
         $this->relatedColumn = $column;
     }
