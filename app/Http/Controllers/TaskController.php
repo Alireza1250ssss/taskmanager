@@ -92,18 +92,19 @@ class TaskController extends Controller
             Notification::send($task->watchers , new TaskWatcherNotification($taskLog));
         }
 
+        if ($task->stage->name === 'review')
+            $task->setDoneAt();
+
         if ($request->filled('task_metas')) {
             TaskMeta::updateMeta($task,$request->get('task_metas'));
         }
+
         $task->mergeMeta('taskMetas');
 
         if (!empty($task->commit_id) && empty($task->commit_message)) {
             //send event to get and fill the commit message automatically
             CommitIDSentEvent::dispatch($task);
         }
-        if ($task->stage->name === 'review')
-            $task->setDoneAt();
-
 
         $response = $this->getResponse(__('apiResponse.update',['resource'=>'تسک']), [
             'task' => $task->load('team','status','stage','watchers')
