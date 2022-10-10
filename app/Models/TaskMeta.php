@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TaskMeta extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $primaryKey = 'task_meta_id';
     protected $fillable = ['task_key', 'task_value', 'task_ref_id', 'column_ref_id'];
