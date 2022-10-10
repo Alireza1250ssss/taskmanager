@@ -209,6 +209,12 @@ class User extends Authenticatable implements JWTSubject
         return Attribute::set(fn($value) => Hash::make($value));
     }
 
+
+    public function getFullNameAttribute(): string
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
     /**
      * @inheritDoc
      */
