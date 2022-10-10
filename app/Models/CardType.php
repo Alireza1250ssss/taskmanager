@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Contracts\ClearRelations;
 use App\Http\Traits\FilterRecords;
 use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CardType extends Model
+class CardType extends Model implements ClearRelations
 {
     use HasFactory, SoftDeletes, FilterRecords, MainPropertySetter, MainPropertyGetter;
 
@@ -53,5 +54,10 @@ class CardType extends Model
                 'enum_values' => ['backlog','todo','doing','done','review']
             ]
         ]);
+    }
+
+    public function deleteRelations()
+    {
+        $this->tasks()->delete();
     }
 }

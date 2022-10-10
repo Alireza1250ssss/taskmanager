@@ -7,6 +7,7 @@ use App\Http\ColumnTypes\CustomField;
 use App\Http\ColumnTypes\DropDown;
 use App\Http\ColumnTypes\Number;
 use App\Http\ColumnTypes\Text;
+use App\Http\Contracts\ClearRelations;
 use App\Http\Traits\FilterRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Column extends Model
+class Column extends Model implements ClearRelations
 {
     use HasFactory, SoftDeletes, FilterRecords;
 
@@ -108,5 +109,10 @@ class Column extends Model
         $column = Column::find($columnId);
         if (empty($column)) return null;
         return new self::$columnTypes[$column->type]($column);
+    }
+
+    public function deleteRelations()
+    {
+        TaskMeta::query()->where('column_ref_id',$this->column_id)->delete();
     }
 }

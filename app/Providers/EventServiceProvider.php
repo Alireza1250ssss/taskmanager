@@ -8,17 +8,22 @@ use App\Events\PermissionAdded;
 use App\Listeners\CheckRetrieveModel;
 use App\Listeners\SetCommitMessage;
 use App\Listeners\SetParentsReadPermission;
+use App\Models\CardType;
+use App\Models\Column;
 use App\Models\Company;
 use App\Models\Leave;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\TaskMeta;
 use App\Models\Team;
 use App\Models\User;
 use App\Observers\BaseObserver;
 use App\Observers\CompanyObserver;
 use App\Observers\DefaultCardForCompanyObserver;
+use App\Observers\DeleteRelationObserver;
 use App\Observers\OwnerObserver;
 use App\Observers\SetLeaveScheduleObserver;
+use App\Observers\TaskLogObserver;
 use App\Observers\TaskObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -58,7 +63,10 @@ class EventServiceProvider extends ServiceProvider
         ]);
         Project::observe([BaseObserver::class,OwnerObserver::class]);
         Team::observe([BaseObserver::class , OwnerObserver::class]);
-        Task::observe([TaskObserver::class]);
+        Task::observe([TaskObserver::class,TaskLogObserver::class]);
+        TaskMeta::observe([TaskLogObserver::class]);
+        CardType::observe([DeleteRelationObserver::class]);
+        Column::observe([DeleteRelationObserver::class]);
 //        User::observe([BaseObserver::class]); !!!!!!!!!!!!!!!!!!!!! DO NOT UNCOMMENT THIS !!!!!!!!!!!!!
 
     }
