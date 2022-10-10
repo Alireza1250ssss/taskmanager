@@ -75,10 +75,10 @@ class Column extends Model implements ClearRelations
         foreach ($items as &$item) {
             $cardTypes = $item->cardTypes;
             foreach ($item->projects as &$project) {
-                $projectCards = $cardTypes->map(fn($card, $key) => static::filterColumns($card->replicate(), $project));
+                $projectCards = $cardTypes->map(fn($card, $key) => static::filterColumns($card->replicate(),$card->card_type_id, $project));
                 $project->cardTypes = $projectCards;
                 foreach ($project->teams as $team) {
-                    $teamCards = $cardTypes->map(fn($card, $key) => static::filterColumns($card->replicate(), $team));
+                    $teamCards = $cardTypes->map(fn($card, $key) => static::filterColumns($card->replicate(),$card->card_type_id, $team));
                     $team->cardTypes = $teamCards;
                     $team->unsetRelation('project');
                 }
@@ -87,7 +87,7 @@ class Column extends Model implements ClearRelations
         }
     }
 
-    public static function filterColumns(CardType $cardType, Model $model): CardType
+    public static function filterColumns(CardType $cardType,int $cardTypeID, Model $model): CardType
     {
         $columns = $cardType->columns;
         $filteredCols = new Collection();
@@ -101,6 +101,7 @@ class Column extends Model implements ClearRelations
             $filteredCols->push($column);
         }
         $cardType->setRelation('columns', $filteredCols);
+        $cardType->setAttribute('card_type_id',$cardTypeID);
         return $cardType;
     }
 
