@@ -88,8 +88,8 @@ class TaskController extends Controller
         //check if the stage is being updated to set a log and send notification to its watchers
         if (array_key_exists('stage_ref_id' , $request->validated())) {
             $task->setLastOrderInStage();
-            $taskLog = TaskLog::stageChangeLog($task, $request);
-            Notification::send($task->watchers , new TaskWatcherNotification($taskLog));
+//            $taskLog = TaskLog::stageChangeLog($task, $request);
+//            Notification::send($task->watchers , new TaskWatcherNotification($taskLog));
         }
 
         if ($task->stage->name === 'review')

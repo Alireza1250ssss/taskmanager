@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\ColumnTypes\CalcTime;
 use App\Http\ColumnTypes\CustomField;
 use App\Http\ColumnTypes\DropDown;
 use App\Http\ColumnTypes\Number;
@@ -17,7 +18,8 @@ class StoreColumnRequest extends FormRequest
     public static array $types = [
         'dropdown' => DropDown::class,
         'text' => Text::class,
-        'number' => Number::class
+        'number' => Number::class,
+        'calc-time' => CalcTime::class
     ];
     public CustomField $customField;
 

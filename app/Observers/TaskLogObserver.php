@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\Task;
 use App\Models\TaskLog;
 use App\Models\TaskMeta;
+use App\Services\CalcTimeService;
 
 class TaskLogObserver
 {
@@ -22,54 +23,58 @@ class TaskLogObserver
         if ($task instanceof Task) {
             $changes = $task->getChanges();
             unset($changes['updated_at']);
-            unset($changes['stage_ref_id']);
             $original = $task->getOriginal();
 
             foreach ($changes as $field => $change){
-                $this->addFieldUpdateLog($task, $field, $change, $original);
+                $log = $this->addFieldUpdateLog($task, $field, $change, $original);
+                if (CalcTimeService::hasCalcTimeField($task))
+                    (new CalcTimeService($task,$log))->calculate();
             }
         } elseif ($task instanceof TaskMeta) {
-            $params = [
-              'meta_item_before' => $task
-            ];
+            $changes = $task->getChanges();
+            $fieldTitle = $task->column->title;
+            unset($changes['updated_at']);
+            $original = $task->getOriginal();
+
+            if (array_key_exists('task_value',$changes)) {
+                $this->addFieldMetaUpdateLog($task, $fieldTitle, $original, $changes);
+            }
         }
     }
 
     /**
      * @param Task $task
      */
-    protected function addTaskCreationLog(Task $task): void
+    protected function addTaskCreationLog(Task $task): TaskLog
     {
-        $params = [
-            'task' => $task->toArray()
-        ];
-        TaskLog::query()->create([
-            'name' => 'ایحاد تسک',
+        /** @var TaskLog $log */
+        $log = TaskLog::query()->create([
             'task_id' => $task->task_id,
-            'tags' => 'create,task',
-            'params' => $params,
+            'action' => 'create',
             'description' => ' ایجاد شد ' . auth()->user()->full_name . ' تسک با موفقیت توسط ',
             'user_ref_id' => auth()->user()->user_id
         ]);
+        return $log;
     }
 
     /**
      * @param TaskMeta $task
+     * @return TaskLog
      */
-    protected function addMetaCreationLog(TaskMeta $task): void
+    protected function addMetaCreationLog(TaskMeta $task): TaskLog
     {
-        $params = [
-            'meta_item' => $task->toArray()
-        ];
-        TaskLog::query()->create([
-            'name' => 'وارد کردن فیلد',
+
+        $fieldTitle = $task->column->title;
+        /** @var TaskLog $log */
+        $log = TaskLog::query()->create([
             'user_ref_id' => auth()->user()->user_id,
-            'params' => $params,
-            'tags' => 'task,meta,create',
-            'description' => '',
+            'action' => 'set',
+            'description' => ' وارد شد ' . $fieldTitle . ' فیلد ',
             'task_id' => $task->task_ref_id,
-            'column' => $task->column_ref_id
+            'column' => $task->column_ref_id,
+            'after_value' => $task->task_value
         ]);
+        return $log;
     }
 
     /**
@@ -78,19 +83,42 @@ class TaskLogObserver
      * @param $change
      * @param array $original
      */
-    protected function addFieldUpdateLog(Task $task, string $field, $change, array $original): void
+    protected function addFieldUpdateLog(Task $task, string $field, $change, array $original): TaskLog
     {
-        $params = [
-            'task_before_update' => $task->toArray(),
-            'request_update' => request()->all()
-        ];
-        TaskLog::query()->create([
-            'name' => $field . ' ویرایش فیلد ',
-            'params' => $params,
+        $before = $original[$field] ?? '--';
+        /** @var TaskLog $log */
+        $log = TaskLog::query()->create([
             'task_id' => $task->task_id,
             'user_ref_id' => auth()->user()->user_id,
-            'tags' => "update,task,$field",
-            'description' => ' ویرایش شد' . $change . ' به مقدار ' . $original[$field] . ' از مقدار ' . $field . 'فیلد '
+            'action' => "update",
+            'description' => "field $field changed from $before to $change value",
+            'column' => $field,
+            'before_value' => $original[$field],
+            'after_value' => $change
         ]);
+        return $log;
+    }
+
+    /**
+     * @param TaskMeta $taskMeta
+     * @param $fieldTitle
+     * @param array $original
+     * @param array $changes
+     */
+    protected function addFieldMetaUpdateLog(TaskMeta $taskMeta, $fieldTitle, array $original, array $changes): TaskLog
+    {
+        $before = $original['task_value'];
+        $after = $changes['task_value'];
+        /** @var TaskLog $log */
+        $log = TaskLog::query()->create([
+            'user_ref_id' => auth()->user()->user_id,
+            'task_id' => $taskMeta->task_ref_id,
+            'action' => "update",
+            'column' => $taskMeta->column_ref_id,
+            'description' => "field $fieldTitle changed from $before to $after value",
+            'before_value' => $before,
+            'after_value' => $after
+        ]);
+        return $log;
     }
 }

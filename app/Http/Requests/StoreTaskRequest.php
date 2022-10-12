@@ -32,7 +32,7 @@ class StoreTaskRequest extends FormRequest
     {
         return [
             'title' => 'required',
-            'card_type_ref_id' => ['required'],
+            'card_type_ref_id' => ['required','numeric'],
             'user_ref_id' => ['nullable', Rule::exists('users', 'user_id')->withoutTrashed()],
             'parent_id' => Rule::exists('tasks', 'task_id')->withoutTrashed(),
             'team_ref_id' => ['required', Rule::exists('teams', 'team_id')->withoutTrashed()],
