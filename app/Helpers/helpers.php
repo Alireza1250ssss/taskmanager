@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 function getFloatBetween(float $num1 , float $num2) : float
 {
     $maxDecimalsCount = (int)max(strpos(strrev($num1) , '.'),strpos(strrev($num2) , '.'));
@@ -23,4 +26,10 @@ function execPrint($command) {
         print($line . "\n");
     }
     print("</pre>");
+}
+
+function cleanCollection (LengthAwarePaginator &$paginator)
+{
+    $res = $paginator->getCollection()->filter(fn($item,$key) => !empty($item->getAttributes()))->values();
+    $paginator->setCollection($res);
 }

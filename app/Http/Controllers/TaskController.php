@@ -29,8 +29,10 @@ class TaskController extends Controller
             $query->with('watchers');
             $query->withCount('comments');
         })->get();
-        foreach ($tasks as &$task)
+        cleanCollection($tasks);
+        foreach ($tasks as &$task) {
             $task->mergeMeta('taskMetas');
+        }
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'تسک']),[
             $tasks
         ]);
