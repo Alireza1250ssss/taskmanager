@@ -30,10 +30,10 @@ class TaskController extends Controller
             $query->withCount('comments');
         })->get();
         cleanCollection($tasks);
-        dd($tasks);
         foreach ($tasks as &$task) {
             $task->mergeMeta('taskMetas');
         }
+        dd($tasks);
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'تسک']),[
             $tasks
         ]);
