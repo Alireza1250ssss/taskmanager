@@ -33,7 +33,6 @@ class TaskController extends Controller
         foreach ($tasks as &$task) {
             $task->mergeMeta('taskMetas');
         }
-        dd($tasks);
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'تسک']),[
             $tasks
         ]);
