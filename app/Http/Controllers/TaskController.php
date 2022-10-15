@@ -29,6 +29,7 @@ class TaskController extends Controller
             $query->with('watchers');
             $query->withCount('comments');
         })->get();
+        dd($tasks->items());
         cleanCollection($tasks);
         foreach ($tasks as &$task) {
             $task->mergeMeta('taskMetas');
