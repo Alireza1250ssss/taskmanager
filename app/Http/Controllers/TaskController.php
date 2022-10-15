@@ -6,14 +6,11 @@ use App\Events\CommitIDSentEvent;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
-use App\Models\TaskLog;
 use App\Models\TaskMeta;
-use App\Notifications\TaskWatcherNotification;
+use App\Models\Team;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
@@ -23,20 +20,25 @@ class TaskController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function index(Request $request) : JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $tasks = Task::getRecords($request->toArray())->addConstraints(function ($query){
+        $tasks = Task::getRecords($request->toArray())->addConstraints(function ($query) use ($request) {
             $query->with('watchers');
+            if (!$request->filled('team_ref_id'))
+                $query->whereIn('team_ref_id', function ($q) {
+                    $q->select('memberable_id')->from('members')->where('user_ref_id', auth()->user()->user_id)
+                        ->where('memberable_type', Team::class);
+                });
             $query->withCount('comments');
         })->get();
         cleanCollection($tasks);
         foreach ($tasks as &$task) {
             $task->mergeMeta('taskMetas');
         }
-        $response = $this->getResponse(__('apiResponse.index',['resource'=>'تسک']),[
+        $response = $this->getResponse(__('apiResponse.index', ['resource' => 'تسک']), [
             $tasks
         ]);
-        return response()->json($response,$response['statusCode']);
+        return response()->json($response, $response['statusCode']);
     }
 
     /**
@@ -45,17 +47,17 @@ class TaskController extends Controller
      * @param StoreTaskRequest $request
      * @return JsonResponse
      */
-    public function store(StoreTaskRequest $request) : JsonResponse
+    public function store(StoreTaskRequest $request): JsonResponse
     {
         $task = Task::create($request->validated());
         $task->setLastOrderInStage();
         if ($request->filled('task_metas'))
-            TaskMeta::updateMeta($task,$request->get('task_metas'));
+            TaskMeta::updateMeta($task, $request->get('task_metas'));
         if ($request->filled('watchers'))
             $task->watchers()->sync($request->get('watchers'));
         $task->mergeMeta('taskMetas');
-        $response = $this->getResponse(__('apiResponse.store',['resource'=>'تسک']), [
-            'task' => $task->load('team','stage','status','watchers')
+        $response = $this->getResponse(__('apiResponse.store', ['resource' => 'تسک']), [
+            'task' => $task->load('team', 'stage', 'status', 'watchers')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -66,11 +68,11 @@ class TaskController extends Controller
      * @param Task $task
      * @return JsonResponse
      */
-    public function show(Task $task) : JsonResponse
+    public function show(Task $task): JsonResponse
     {
         $task->mergeMeta('taskMetas');
-        $response = $this->getResponse(__('apiResponse.show',['resource'=>'تسک']), [
-            'task' => $task->load('team.project.company','status','stage','comments','watchers')
+        $response = $this->getResponse(__('apiResponse.show', ['resource' => 'تسک']), [
+            'task' => $task->load('team.project.company', 'status', 'stage', 'comments', 'watchers')
         ]);
         return response()->json($response, $response['statusCode']);
     }
@@ -82,13 +84,13 @@ class TaskController extends Controller
      * @param Task $task
      * @return JsonResponse
      */
-    public function update(UpdateTaskRequest $request, Task $task) : JsonResponse
+    public function update(UpdateTaskRequest $request, Task $task): JsonResponse
     {
 
         $task->update($request->validated());
 
         //check if the stage is being updated to set a log and send notification to its watchers
-        if (array_key_exists('stage_ref_id' , $request->validated())) {
+        if (array_key_exists('stage_ref_id', $request->validated())) {
             $task->setLastOrderInStage();
 //            $taskLog = TaskLog::stageChangeLog($task, $request);
 //            Notification::send($task->watchers , new TaskWatcherNotification($taskLog));
@@ -98,7 +100,7 @@ class TaskController extends Controller
             $task->setDoneAt();
 
         if ($request->filled('task_metas')) {
-            TaskMeta::updateMeta($task,$request->get('task_metas'));
+            TaskMeta::updateMeta($task, $request->get('task_metas'));
         }
 
         $task->mergeMeta('taskMetas');
@@ -108,8 +110,8 @@ class TaskController extends Controller
             CommitIDSentEvent::dispatch($task);
         }
 
-        $response = $this->getResponse(__('apiResponse.update',['resource'=>'تسک']), [
-            'task' => $task->load('team','status','stage','watchers')
+        $response = $this->getResponse(__('apiResponse.update', ['resource' => 'تسک']), [
+            'task' => $task->load('team', 'status', 'stage', 'watchers')
         ]);
 
         return response()->json($response, $response['statusCode']);
@@ -118,13 +120,13 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  string  $task
+     * @param string $task
      * @return JsonResponse
      */
-    public function destroy($task) : JsonResponse
+    public function destroy($task): JsonResponse
     {
-        $count = Task::destroy(explode(',',$task));
-        $response = $this->getResponse(__('apiResponse.destroy',['items'=>$count]));
+        $count = Task::destroy(explode(',', $task));
+        $response = $this->getResponse(__('apiResponse.destroy', ['items' => $count]));
         return response()->json($response, $response['statusCode']);
     }
 
@@ -138,10 +140,10 @@ class TaskController extends Controller
         if (!empty($task->user_ref_id))
             throw new AuthorizationException();
         $task->update([
-           'user_ref_id' => auth()->user()->user_id
+            'user_ref_id' => auth()->user()->user_id
         ]);
         $response = $this->getResponse('تسک با به شما موفقیت اختصاص داده شد');
-        return response()->json($response,$response['statusCode']);
+        return response()->json($response, $response['statusCode']);
     }
 
     /**
@@ -149,21 +151,21 @@ class TaskController extends Controller
      * @param Task $task
      * @return JsonResponse
      */
-    public function taskReorder(Request $request,Task $task): JsonResponse
+    public function taskReorder(Request $request, Task $task): JsonResponse
     {
         $request->validate([
-            'previous_task_order' => 'required|numeric' ,
-            'next_task_order' => 'required|numeric' ,
+            'previous_task_order' => 'required|numeric',
+            'next_task_order' => 'required|numeric',
         ]);
         \auth()->user()->authorizeFor('can_reorder_task_in', $task);
-        $orderInStage =  getFloatBetween($request->get('previous_task_order') ,$request->get('next_task_order'));
+        $orderInStage = getFloatBetween($request->get('previous_task_order'), $request->get('next_task_order'));
 
         $task->order = $orderInStage;
         $task->saveQuietly();
 
-        $response = $this->getResponse("ترتیب با موفقیت تغییر یافت",[
+        $response = $this->getResponse("ترتیب با موفقیت تغییر یافت", [
             'task' => $task
         ]);
-        return response()->json($response,$response['statusCode']);
+        return response()->json($response, $response['statusCode']);
     }
 }

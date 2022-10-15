@@ -44,6 +44,7 @@ class TaskLogObserver
 
     /**
      * @param Task $task
+     * @return TaskLog
      */
     protected function addTaskCreationLog(Task $task): TaskLog
     {
@@ -51,7 +52,7 @@ class TaskLogObserver
         $log = TaskLog::query()->create([
             'task_id' => $task->task_id,
             'action' => 'create',
-            'description' => ' ایجاد شد ' . auth()->user()->full_name . ' تسک با موفقیت توسط ',
+            'description' => "task created successfully by  ".auth()->user()->full_name  ,
             'user_ref_id' => auth()->user()->user_id
         ]);
         return $log;
@@ -69,7 +70,7 @@ class TaskLogObserver
         $log = TaskLog::query()->create([
             'user_ref_id' => auth()->user()->user_id,
             'action' => 'set',
-            'description' => ' وارد شد ' . $fieldTitle . ' فیلد ',
+            'description' => "$fieldTitle field set",
             'task_id' => $task->task_ref_id,
             'column' => $task->column_ref_id,
             'after_value' => $task->task_value
@@ -82,6 +83,7 @@ class TaskLogObserver
      * @param string $field
      * @param $change
      * @param array $original
+     * @return TaskLog
      */
     protected function addFieldUpdateLog(Task $task, string $field, $change, array $original): TaskLog
     {
@@ -104,6 +106,7 @@ class TaskLogObserver
      * @param $fieldTitle
      * @param array $original
      * @param array $changes
+     * @return TaskLog
      */
     protected function addFieldMetaUpdateLog(TaskMeta $taskMeta, $fieldTitle, array $original, array $changes): TaskLog
     {
