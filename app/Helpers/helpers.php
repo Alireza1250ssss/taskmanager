@@ -30,6 +30,11 @@ function execPrint($command) {
 
 function cleanCollection (LengthAwarePaginator &$paginator)
 {
-    $res = $paginator->getCollection()->filter(fn($item,$key) => !empty($item->getAttributes()))->values();
+    $res = $paginator->getCollection()->filter(function ($item,$key) {
+        if ($item->task_id ==20 )
+            dd($item->getAttributes(),$item,empty($item->getAttributes()));
+        return !empty($item->getAttributes());
+    })->values();
+
     $paginator->setCollection($res);
 }
