@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Traits\FilterRecords;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TaskLog extends Model
 {
-    use HasFactory;
+    use HasFactory,FilterRecords;
 
     const UPDATED_AT = null;
 
@@ -18,6 +19,7 @@ class TaskLog extends Model
     protected $casts = [
         'params' => 'array'
     ];
+    public array $filters = ['action','column','task_id','user_ref_id'];
 
     /**
      * @return BelongsTo

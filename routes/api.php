@@ -15,6 +15,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StageController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskLogController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -81,6 +82,7 @@ Route::middleware(['jwt_auth'])->group(function(){
 
 
     Route::apiResource('tasks.comments', CommentController::class)->shallow();
+    Route::apiResource('tasks.taskLogs', TaskLogController::class)->only(['index'])->shallow();
 
     Route::apiResource('stages', StageController::class)->only(['index']);
     Route::apiResource('statuses', StatusController::class)->only(['index']);
