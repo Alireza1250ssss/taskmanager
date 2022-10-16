@@ -10,6 +10,7 @@ use App\Listeners\SetCommitMessage;
 use App\Listeners\SetParentsReadPermission;
 use App\Models\CardType;
 use App\Models\Column;
+use App\Models\Comment;
 use App\Models\Company;
 use App\Models\Leave;
 use App\Models\Project;
@@ -65,6 +66,7 @@ class EventServiceProvider extends ServiceProvider
         Team::observe([BaseObserver::class , OwnerObserver::class]);
         Task::observe([TaskObserver::class,TaskLogObserver::class]);
         TaskMeta::observe([TaskLogObserver::class]);
+        Comment::observe([TaskLogObserver::class]);
         CardType::observe([DeleteRelationObserver::class]);
         Column::observe([DeleteRelationObserver::class]);
 //        User::observe([BaseObserver::class]); !!!!!!!!!!!!!!!!!!!!! DO NOT UNCOMMENT THIS !!!!!!!!!!!!!

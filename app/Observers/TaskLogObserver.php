@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\Comment;
 use App\Models\Task;
 use App\Models\TaskLog;
 use App\Models\TaskMeta;
@@ -9,12 +10,15 @@ use App\Services\CalcTimeService;
 
 class TaskLogObserver
 {
-    public function created($task)
+    public function created($model)
     {
-        if ($task instanceof Task) {
-            $this->addTaskCreationLog($task);
-        } elseif ($task instanceof TaskMeta) {
-            $this->addMetaCreationLog($task);
+        if ($model instanceof Task) {
+            $this->addTaskCreationLog($model);
+        } elseif ($model instanceof TaskMeta) {
+            $this->addMetaCreationLog($model);
+        }
+        elseif (($model instanceof Comment) && $model->commentable_type == Task::class){
+            $this->addCommentLog($model);
         }
     }
 
@@ -74,6 +78,23 @@ class TaskLogObserver
             'task_id' => $task->task_ref_id,
             'column' => $task->column_ref_id,
             'after_value' => $task->task_value
+        ]);
+        return $log;
+    }
+
+    /**
+     * @param Comment $comment
+     * @return TaskLog
+     */
+    protected function addCommentLog(Comment $comment): TaskLog
+    {
+        /** @var TaskLog $log */
+        $log = TaskLog::query()->create([
+           'user_ref_id' => auth()->user()->user_id,
+            'task_id' => $comment->commentable_id ,
+            'action' => 'create',
+            'description' => 'comment added by '. auth()->user()->full_name,
+            'after_value' => $comment->content
         ]);
         return $log;
     }
