@@ -27,6 +27,7 @@ class TaskLogObserver
         if ($task instanceof Task) {
             $changes = $task->getChanges();
             unset($changes['updated_at']);
+            unset($changes['real_time']);
             $original = $task->getOriginal();
 
             foreach ($changes as $field => $change){

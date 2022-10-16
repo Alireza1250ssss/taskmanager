@@ -32,17 +32,6 @@ class UpdateTaskRequest extends FormRequest
                 'user_ref_id' => auth()->user()->user_id
             ]);
         }
-
-        if ($this->filled('real_time')) {
-            $beforeRealTime = $this->route('task')->real_time;
-
-            $this->merge([
-                'real_time' => empty($beforeRealTime) ?
-                    [$this->get('real_time')]
-                    :
-                    [...$beforeRealTime, $this->get('real_time')]
-            ]);
-        }
     }
 
     /**
