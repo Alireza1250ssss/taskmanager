@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Models\Column;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -14,7 +13,7 @@ class UpdateTaskRequest extends FormRequest
      * @var mixed
      */
     private $cardTypeFields = [];
-
+    protected $stopOnFirstFailure = true;
     /**
      * Determine if the user is authorized to make this request.
      *

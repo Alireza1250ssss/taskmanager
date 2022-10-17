@@ -46,7 +46,7 @@ class Column extends Model implements ClearRelations
     public static function getCardTypeColumns(int $cardTypeId, int $teamId)
     {
         $team = Team::query()->find($teamId);
-        $columns = CardType::query()->find($cardTypeId)->columns()
+        $columns = CardType::query()->findOrFail($cardTypeId)->columns()
             ->where(function ($query) use ($team) {
                 $query->whereNull('level_type')
                     ->orWhere(function (Builder $builder) use ($team) {

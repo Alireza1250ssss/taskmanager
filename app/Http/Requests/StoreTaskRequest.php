@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 class StoreTaskRequest extends FormRequest
 {
     public $cardTypeFields = [];
-
+    protected $stopOnFirstFailure = true;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -56,6 +56,7 @@ class StoreTaskRequest extends FormRequest
 
     public function withValidator($validator)
     {
+        if ($validator->fails()) return;
         $validator->after(function ($validator) {
             $errors = $this->getCardTypeValidation();
             if (!empty($errors))
