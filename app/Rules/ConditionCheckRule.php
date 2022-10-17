@@ -124,7 +124,7 @@ class ConditionCheckRule implements Rule
     protected function clientIn(): array
     {
         return [
-          'client_type' => 'required'
+          'client_type' => 'required|array'
         ];
     }
 }

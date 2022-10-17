@@ -162,7 +162,7 @@ class ConditionService
         $requestClient = request()->get('ClientName','web');
 
         $result = false;
-        if ($clientType == $requestClient)
+        if (in_array($requestClient,$clientType))
             $result = true;
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
             'client' => $clientType,
@@ -186,19 +186,5 @@ class ConditionService
         return false;
     }
 
-    // helper methods
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function CheckOnlyForReject()
-    {
-        if (!$this->only())
-            throw new AuthorizationException('فیلد هایی غیر از فیلد های مجاز وارد کرده اید');
-        /*$conditions = (array) $this->conditions;
-        $conditions[] = (object) [
-            'type' => 'only'
-        ];
-        $this->conditions = (object) $conditions;*/
-    }
 }
