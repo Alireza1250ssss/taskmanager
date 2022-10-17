@@ -158,6 +158,8 @@ class ConditionService
     {
         $status = $args['status'] ?? true;
         $clientType = $args['client_type'];
+        if (!is_array($clientType))
+            $clientType = [$clientType];
 
         $requestClient = request()->get('ClientName','web');
 
@@ -165,7 +167,7 @@ class ConditionService
         if (in_array($requestClient,$clientType))
             $result = true;
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
-            'client' => $clientType,
+            'client' => implode(',',$clientType),
         ]);
         self::$messages[$result][] = $message;
         return $status ? $result : !$result;
