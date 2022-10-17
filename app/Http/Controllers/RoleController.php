@@ -186,7 +186,14 @@ class RoleController extends Controller
      */
     public function destroy($role): JsonResponse
     {
-        $count = Role::destroy(explode(',', $role));
+        $count = 0 ;
+        foreach (explode(',', $role) as $role){
+            $role = Role::query()->findOrFail($role);
+            if (!Company::isCompanyOwner(Company::findOrFail($role->company_ref_id),auth()->user()->user_id))
+                throw new AuthorizationException();
+            if ($role->delete())
+                $count++;
+        }
         $response = $this->getResponse(__('apiResponse.destroy', ['items' => $count]));
         return response()->json($response, $response['statusCode']);
     }
