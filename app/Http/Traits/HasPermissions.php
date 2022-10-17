@@ -31,6 +31,9 @@ trait HasPermissions
 
         foreach ($rolePermissionRecordForUser as $rolePermission) {
 
+            $permission =$rolesHavingPermission->find($rolePermission->role_ref_id)->permissions()
+                ->where('key',$keyPermission)->first();
+            if ($permission->pivot->access === 'reject') continue;
             $parentItem = ResolvePermissionController::$models[$rolePermission->rolable_type]['class']::find($rolePermission->rolable_id);
             if (empty($parentItem)) continue;
 
