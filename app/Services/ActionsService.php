@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services;
-
 
 use App\Exceptions\PermissionException;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +10,8 @@ class ActionsService
     public ?array $actions;
     public array $allowedFields = [];
     protected ?Model $model;
-    protected $conditionCheckService;
+    // used in action that are unlocking an access for a rejected permission
+    public bool $unlockAccess = false;
 
     public function __construct($actions,$service,$model = null)
     {
@@ -50,7 +49,7 @@ class ActionsService
                 ConditionService::$messages[$result] ?? []
             );
         if ($value == true and $result == true)
-            $this->conditionCheckService->isAllowed = true;
+            $this->unlockAccess = true;
     }
 
     protected function validation(array $args)
@@ -71,6 +70,6 @@ class ActionsService
                 ConditionService::$messages[$result] ?? []
             );
         if ($value == true and $result == true)
-            $this->conditionCheckService->isAllowed = true;
+            $this->unlockAccess = true;
     }
 }

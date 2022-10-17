@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services;
-
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -161,7 +159,8 @@ class ConditionService
         $status = $args['status'] ?? true;
         $clientType = $args['client_type'];
 
-        $requestClient = request()->get('ClientName','Web');
+        $requestClient = request()->get('ClientName','web');
+
         $result = false;
         if ($clientType == $requestClient)
             $result = true;
