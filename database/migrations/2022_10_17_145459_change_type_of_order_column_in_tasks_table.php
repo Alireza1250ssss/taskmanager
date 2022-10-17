@@ -14,7 +14,8 @@ class ChangeTypeOfOrderColumnInTasksTable extends Migration
     public function up()
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->unsignedBigInteger('order')->nullable()->change();
+            $table->dropColumn('order');
+            $table->unsignedBigInteger('order')->nullable();
         });
     }
 
