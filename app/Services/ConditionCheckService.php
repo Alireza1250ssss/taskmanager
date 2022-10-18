@@ -3,16 +3,16 @@
 namespace App\Services;
 
 use App\Exceptions\PermissionException;
+use App\Http\Traits\AllowedFieldTrait;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class ConditionCheckService
 {
+    use AllowedFieldTrait;
+
     protected $conditions;
     // put this to false by default for "reject" type permissions to be true by conditions
     public bool $isAllowed = false;
-    // boolean to check only allowed field (which are defined on the condition access is getting unlocked) is entered
-    public bool $isOnlyAllowedFields = false;
-    public array $allowedFields = [];
     protected string $access; // "reject" or "accept"
     public static ?\Throwable $conException;
 
@@ -63,6 +63,8 @@ class ConditionCheckService
 
         $conditionParams = json_decode($rolePermission->pivot->condition_params);
         $this->conditions = $conditionParams->conditions ?? [];
+
+        $this->mergeAllowedFieldForPermission($rolePermission->key);
     }
 
     protected function prepareActions(bool $result, &$then)
@@ -78,8 +80,4 @@ class ConditionCheckService
             throw new AuthorizationException('دسترسی شما توسط هیچکدام از شرایط باز نشده است');
     }
 
-    protected function CheckOnlyForReject(){
-        if (!$this->isOnlyAllowedFields)
-            throw new AuthorizationException('فیلد هایی غیر از فیلد های مجاز وارد کرده اید');
-    }
 }
