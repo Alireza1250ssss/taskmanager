@@ -26,6 +26,7 @@ class CompanyController extends Controller
     {
         $companies = Company::getRecords($request->toArray())->addConstraints(function ($query) {
             $query->with(['projects.teams','cardTypes.columns']);
+            $query->whereIn('company_id',auth()->user()->companiesJoined->pluck('company_id')->toArray());
         })->get();
         $companies = $companies->filter(function ($item,$key){
             return !empty($item->company_id);

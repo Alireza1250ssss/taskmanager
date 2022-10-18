@@ -6,6 +6,7 @@ use App\Http\Traits\FilterRecords;
 use App\Http\Traits\HasMembers;
 use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,21 +17,21 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Task extends Model
 {
-    use HasFactory, FilterRecords, SoftDeletes, MainPropertyGetter, MainPropertySetter,HasMembers;
+    use HasFactory, FilterRecords, SoftDeletes, MainPropertyGetter, MainPropertySetter, HasMembers;
 
     protected $primaryKey = 'task_id';
     protected $fillable = [
         'title', 'description', 'user_ref_id', 'parent_id', 'team_ref_id', 'stage_ref_id', 'status_ref_id',
-        'priority', 'labels', 'real_time', 'estimate_time', 'due_date', 'order' , 'reviewed_at','card_type_ref_id'
+        'priority', 'labels', 'real_time', 'estimate_time', 'due_date', 'order', 'reviewed_at', 'card_type_ref_id'
     ];
     public array $filters = [
         'title', 'description', 'user_ref_id', 'parent_id', 'team_ref_id', 'stage_ref_id', 'status_ref_id',
-        'priority', 'labels', 'real_time', 'estimate_time', 'due_date','card_type_ref_id'
+        'priority', 'labels', 'real_time', 'estimate_time', 'due_date', 'card_type_ref_id'
     ];
     protected $hidden = ['taskMetas'];
     protected $casts = [
         'real_time' => 'array',
-        'done_at' => 'datetime' , 'reviewed_at' => 'datetime'
+        'done_at' => 'datetime', 'reviewed_at' => 'datetime'
     ];
 
     /**
@@ -43,7 +44,7 @@ class Task extends Model
 
     public function cardType(): BelongsTo
     {
-        return $this->belongsTo(CardType::class,'card_type_ref_id');
+        return $this->belongsTo(CardType::class, 'card_type_ref_id');
     }
 
     /**
@@ -59,7 +60,7 @@ class Task extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(Status::class, 'status_ref_id')->select(['name','status_id']);
+        return $this->belongsTo(Status::class, 'status_ref_id')->select(['name', 'status_id']);
     }
 
     /**
@@ -67,7 +68,7 @@ class Task extends Model
      */
     public function stage(): BelongsTo
     {
-        return $this->belongsTo(Stage::class, 'stage_ref_id')->select(['name','stage_id']);
+        return $this->belongsTo(Stage::class, 'stage_ref_id')->select(['name', 'stage_id']);
     }
 
     /**
@@ -114,7 +115,7 @@ class Task extends Model
         $meta = $this->$relationship;
 
         $meta->map(function ($item, $key) {
-            $this->setAttribute("m-".$item->column_ref_id, [
+            $this->setAttribute("m-" . $item->column_ref_id, [
                 'meta' => true,
                 'value' => $item->task_value,
                 'column' => $item->column
@@ -130,8 +131,40 @@ class Task extends Model
 
     public function setLastOrderInStage()
     {
-        $lastOrder = static::query()->where('stage_ref_id',$this->stage_ref_id)->max('order');
+        $lastOrder = static::query()->where('stage_ref_id', $this->stage_ref_id)->max('order');
         $this->order = (int)$lastOrder + 1000;
         $this->saveQuietly();
+    }
+
+    public static function getAvailableTeams(int $userID): Collection
+    {
+        $items = RoleUser::query()->whereNotNull(['rolable_type', 'rolable_id'])
+            ->where('user_ref_id', $userID)->get();
+        $items = $items->groupBy('rolable_type')->all();
+
+        $result = new Collection();
+
+        if (array_key_exists('company', $items)) {
+            foreach ($items['company'] as $companyItem) {
+                $company = Company::query()->find($companyItem->rolable_id);
+                if (empty($company)) continue;
+                $result = $result->merge($company->teams);
+            }
+        }
+        if (array_key_exists('project', $items)) {
+            foreach ($items['project'] as $projectItem) {
+                $project = Project::query()->find($projectItem->rolable_id);
+                if (empty($project)) continue;
+                $result = $result->merge($project->teams);
+            }
+        }
+        if (array_key_exists('team', $items)) {
+            foreach ($items['team'] as $teamItem) {
+                $team = Team::query()->find($teamItem->rolable_id);
+                if (empty($team)) continue;
+                $result = $result->push($team);
+            }
+        }
+        return $result->unique();
     }
 }

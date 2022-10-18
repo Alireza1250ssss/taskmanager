@@ -64,7 +64,7 @@ class EventServiceProvider extends ServiceProvider
         ]);
         Project::observe([BaseObserver::class,OwnerObserver::class]);
         Team::observe([BaseObserver::class , OwnerObserver::class]);
-        Task::observe([TaskObserver::class,TaskLogObserver::class]);
+        Task::observe([BaseObserver::class,TaskLogObserver::class]);
         TaskMeta::observe([TaskLogObserver::class]);
         Comment::observe([TaskLogObserver::class]);
         CardType::observe([DeleteRelationObserver::class]);

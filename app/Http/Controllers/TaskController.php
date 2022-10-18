@@ -24,12 +24,13 @@ class TaskController extends Controller
     {
         $tasks = Task::getRecords($request->toArray())->addConstraints(function ($query) use ($request) {
             $query->with('watchers');
-            if (!$request->filled('team_ref_id'))
-                $query->whereIn('team_ref_id', function ($q) {
-                    $q->select('memberable_id')->from('members')->where('user_ref_id', auth()->user()->user_id)
-                        ->where('memberable_type', Team::class);
+            if (!$request->filled('team_ref_id')) {
+                $query->where(function ($q){
+                    $q->whereIn('team_ref_id', Task::getAvailableTeams(auth()->user()->user_id)->pluck('team_id')->toArray());
+                    $q->orWhereIn('task_id',auth()->user()->tasksJoined->pluck('task_id')->toArray());
                 });
-            $query->withCount('comments');
+            }
+                $query->withCount('comments');
         })->get();
         cleanCollection($tasks);
         foreach ($tasks as &$task) {

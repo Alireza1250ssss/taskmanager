@@ -76,4 +76,23 @@ class Project extends Model implements Hierarchy
             $result->push($model->project);
         return $result;
     }
+
+    public static function getAvailableCompanies(int  $userID): Collection
+    {
+        $items = RoleUser::query()->whereNotNull(['rolable_type', 'rolable_id'])
+            ->where('user_ref_id', $userID)->where('rolable_type','!=','team')
+            ->where('rolable_type','!=','project')->get();
+        $items = $items->groupBy('rolable_type')->all();
+
+        $result = new Collection();
+
+        if (array_key_exists('company', $items)) {
+            foreach ($items['company'] as $companyItem) {
+                $company = Company::query()->find($companyItem->rolable_id);
+                if (empty($company)) continue;
+                $result = $result->push($company);
+            }
+        }
+        return $result->unique();
+    }
 }

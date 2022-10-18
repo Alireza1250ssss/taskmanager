@@ -106,7 +106,7 @@ trait FilterRecords
      */
     public function get(): LengthAwarePaginator
     {
-        return $this->queryHandler->paginate($this->requestFilters['limit'] ?? 10);
+        return $this->queryHandler->paginate($this->requestFilters['limit'] ?? env('DEFAULT_PAGINATION',30));
     }
 
     /**

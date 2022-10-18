@@ -24,7 +24,14 @@ class TeamController extends Controller
     public function index(Request $request) : JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'تیم']),[
-            Team::getRecords($request->toArray())->get()
+            Team::getRecords($request->toArray())->addConstraints(function ($query) use($request){
+                if (!$request->filled('project_ref_id')) {
+                    $query->where(function ($q){
+                        $q->whereIn('project_ref_id', Team::getAvailableProjects(auth()->user()->user_id)->pluck('project_id')->toArray());
+                        $q->orWhereIn('team_id',auth()->user()->teamsJoined->pluck('team_id')->toArray());
+                    });
+                }
+                })->get()
         ]);
         return response()->json($response,$response['statusCode']);
     }

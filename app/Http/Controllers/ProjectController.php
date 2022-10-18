@@ -24,7 +24,14 @@ class ProjectController extends Controller
     public function index(Request $request): JsonResponse
     {
         $response = $this->getResponse(__('apiResponse.index', ['resource' => 'پروژه']), [
-            Project::getRecords($request->toArray())->get()
+            Project::getRecords($request->toArray())->addConstraints(function ($query) use($request){
+                if (!$request->filled('company_ref_id')) {
+                    $query->where(function ($q){
+                        $q->whereIn('company_ref_id', Project::getAvailableCompanies(auth()->user()->user_id)->pluck('company_id')->toArray());
+                        $q->orWhereIn('project_id',auth()->user()->projectsJoined->pluck('project_id')->toArray());
+                    });
+                }
+                })->get()
         ]);
         return response()->json($response, $response['statusCode']);
     }

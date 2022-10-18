@@ -75,4 +75,34 @@ class Team extends Model implements Hierarchy
             $result->push($model);
         return $result;
     }
+
+    public static function getAvailableProjects(int $userID): Collection
+    {
+        $items = RoleUser::query()->whereNotNull(['rolable_type', 'rolable_id'])
+            ->where('user_ref_id', $userID)->where('rolable_type','!=','team')->get();
+        $items = $items->groupBy('rolable_type')->all();
+
+        $result = new Collection();
+
+        if (array_key_exists('company', $items)) {
+            foreach ($items['company'] as $companyItem) {
+                $company = Company::query()->find($companyItem->rolable_id);
+                if (empty($company)) continue;
+                $result = $result->merge($company->projects);
+            }
+        }
+        if (array_key_exists('project', $items)) {
+            foreach ($items['project'] as $projectItem) {
+                $project = Project::query()->find($projectItem->rolable_id);
+                if (empty($project)) continue;
+                $result = $result->push($project);
+            }
+        }
+        return $result->unique();
+    }
+
+    public static function getJoinedTeams(int $userID)
+    {
+
+    }
 }
