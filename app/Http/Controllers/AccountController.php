@@ -13,6 +13,7 @@ use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -202,6 +203,10 @@ class AccountController extends Controller
                     Role::takeRolesOn($modelInstance, $userId);
                 }
                 $modelInstance->members()->detach($userIds);
+                // take all membership and roles on any child items
+                static::removeFromChildItems($modelInstance,$userIds);
+                // take membership from parent items if possible
+                // ( if has no role on parent items or membership on same level entity)
                 static::freshMembers($modelInstance, $userIds);
             });
         } catch (\Throwable $e) {
@@ -291,6 +296,19 @@ class AccountController extends Controller
                     $model->members()->detach($user);
                 } else
                     break;
+            }
+        }
+    }
+
+    public static function removeFromChildItems(Model $model, $userIds)
+    {
+        if (empty($childItems = RoleController::getChildModels($model)))
+            return;
+        foreach ($userIds as $userId){
+            foreach ($childItems as $childItem){
+                Role::takeRolesOn($childItem,$userId);
+                $childItem->members()->detach($userId);
+                static::removeFromChildItems($childItem,$userIds);
             }
         }
     }
