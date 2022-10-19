@@ -15,7 +15,7 @@ class DropDown extends CustomField
     public function validation(): array
     {
         return [
-            'type_args.values' => 'required|array'
+            'type_args.values' => 'required|array|filled'
         ];
     }
 
