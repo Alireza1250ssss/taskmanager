@@ -54,7 +54,7 @@ class StoreColumnRequest extends FormRequest
                 new RelatedCompanyOwner(CardType::class)
             ],
             'params' => 'array',
-            'enum_values' => 'array',
+            'enum_values' => 'prohibited',
             'type' => [
                 $this->isMethod('POST') ? 'required' : 'prohibited',
                 Rule::in(array_keys(self::$types))
