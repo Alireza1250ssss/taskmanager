@@ -66,7 +66,8 @@ class ConditionCheckRule implements Rule
             [
                 'field' => 'required',
                 'values' => 'bail|required|array|filled',
-                'status' => 'boolean'
+                'status' => 'boolean',
+                'was' => 'boolean'
             ];
     }
 
@@ -110,7 +111,8 @@ class ConditionCheckRule implements Rule
     {
         return [
             'field' => 'required',
-            'status' => 'boolean'
+            'status' => 'boolean',
+            'was' => 'boolean'
         ];
     }
 

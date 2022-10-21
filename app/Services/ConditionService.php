@@ -21,9 +21,9 @@ class ConditionService
     }
 
     /**
+     * main method checking conditions passed and return the final bool result
      * @param null $passedConditions
-     * @return bool|void
-     * @throws AuthorizationException
+     * @return bool
      */
     public function checkConditions($passedConditions = null): bool
     {
@@ -74,10 +74,11 @@ class ConditionService
         $field = $args['field'];
         $this->allowedFields[] = $field;
         $values = $args['values'];
-        $was = $args['was'] ?? true;
+        $was = $args['was'] ?? false;
         $status = $args['status'] ?? true;
 
-        $fieldValue = $this->model->{$field};
+        $model = !$was ? ConditionCheckService::getPersistingModel() : ConditionCheckService::getExistingModel();
+        $fieldValue = $model->{$field};
 
         $result = in_array($fieldValue, $values);
 
@@ -146,9 +147,11 @@ class ConditionService
     protected function set(array $args): bool
     {
         $field = $args['field'];
+        $was = $args['was'] ?? false;
         $status = $args['status'] ?? true;
         $this->allowedFields[] = $field;
-        $isset = !empty($this->model->{$field});
+        $model = !$was ? ConditionCheckService::getPersistingModel() : ConditionCheckService::getExistingModel();
+        $isset = !empty($model->{$field});
         $message = __("conditions." . 'requirement' . "." . ($isset ? 'true' : 'false'), [
             'field' => $field,
         ]);
