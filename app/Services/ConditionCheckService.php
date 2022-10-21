@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Exceptions\PermissionException;
+use App\Http\Contracts\WithMeta;
 use App\Http\Traits\AllowedFieldTrait;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Model;
 
 class ConditionCheckService
 {
@@ -15,13 +17,16 @@ class ConditionCheckService
     public bool $isAllowed = false;
     protected string $access; // "reject" or "accept"
     public static ?\Throwable $conException;
+    // store model before action getting done, and model stored currently in the database
+    protected static ?Model $modelPersisting;
+    protected static ?Model $modelExisting;
 
     public static function checkForConditions($rolePermission, $modelItem): bool
     {
         $service = new static();
 
         try {
-            $service->prepareToCheck($rolePermission);
+            $service->prepareToCheck($rolePermission,$modelItem);
 
             foreach ($service->conditions as $condition) {
                 $conditionService = new ConditionService($modelItem, $condition->when);
@@ -37,7 +42,7 @@ class ConditionCheckService
                 if ($actionService->unlockAccess === true){
                     $service->isAllowed = true;
                     // check for only allowed fields if the access hasn't got unlocked so far
-                    if (!array_diff(array_keys($modelItem->getDirty()), $service->allowedFields) && !$service->isOnlyAllowedFields)
+                    if (!array_diff(array_keys(self::$dirties), $service->allowedFields) && !$service->isOnlyAllowedFields)
                         $service->isOnlyAllowedFields = true;
                 }
             }
@@ -54,7 +59,7 @@ class ConditionCheckService
         return true;
     }
 
-    protected function prepareToCheck($rolePermission)
+    protected function prepareToCheck($rolePermission,$modelItem)
     {
         $this->access = $rolePermission->pivot->access;
         if (empty($rolePermission->pivot->condition_params) && $this->access === 'reject') {
@@ -63,6 +68,10 @@ class ConditionCheckService
 
         $conditionParams = json_decode($rolePermission->pivot->condition_params);
         $this->conditions = $conditionParams->conditions ?? [];
+
+        static::setExistingModel($modelItem);
+        static::setPersistingModel($modelItem);
+        self::$dirties = ($modelItem instanceof WithMeta) ? $modelItem->getAllDirty() : $modelItem->getDirty();
 
         $this->mergeAllowedFieldForPermission($rolePermission->key);
     }
@@ -78,6 +87,40 @@ class ConditionCheckService
     {
         if ($this->isAllowed !== true)
             throw new AuthorizationException('دسترسی شما توسط هیچکدام از شرایط باز نشده است');
+    }
+
+    public static function getPersistingModel(): ?Model
+    {
+        return !empty(static::$modelPersisting) ? static::$modelPersisting : null;
+    }
+
+    protected static function setPersistingModel(Model $modelItem)
+    {
+        if (!($modelItem instanceof WithMeta)) {
+            static::$modelPersisting = $modelItem;
+            return;
+        }
+
+        $modelItem->loadMissing($modelItem->getMetaRelation());
+        $modelItem = clone $modelItem;
+        $modelItem->mergeRawMeta()->syncMetaWithRequest();
+        static::$modelPersisting = $modelItem;
+    }
+
+    public static function getExistingModel(): ?Model
+    {
+        return !empty(static::$modelExisting) ? static::$modelExisting : null;
+    }
+
+    protected static function setExistingModel(Model $modelItem)
+    {
+        $modelExisting = get_class($modelItem)::find($modelItem->{$modelItem->getPrimaryKey()});
+        if (!($modelExisting instanceof WithMeta)) {
+            static::$modelExisting = $modelExisting;
+            return;
+        }
+
+        static::$modelExisting = $modelExisting->mergeRawMeta();
     }
 
 }

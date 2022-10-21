@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Contracts\WithMeta;
 use App\Http\Traits\FilterRecords;
 use App\Http\Traits\HasMembers;
 use App\Http\Traits\MainPropertyGetter;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Task extends Model
+class Task extends Model implements WithMeta
 {
     use HasFactory, FilterRecords, SoftDeletes, MainPropertyGetter, MainPropertySetter, HasMembers;
 
@@ -33,6 +34,9 @@ class Task extends Model
         'real_time' => 'array',
         'done_at' => 'datetime', 'reviewed_at' => 'datetime'
     ];
+
+    public array $metaDirty  = [] ;
+    public array $modelDirty = [] ;
 
     /**
      * @return BelongsTo
@@ -109,9 +113,8 @@ class Task extends Model
         );
     }
 
-    public function mergeMeta($relationship)
+    public function mergeMeta($relationship = 'taskMetas')
     {
-
         $meta = $this->$relationship;
 
         $meta->map(function ($item, $key) {
@@ -121,6 +124,37 @@ class Task extends Model
                 'column' => $item->column
             ]);
         });
+    }
+
+    public function mergeRawMeta(): Task
+    {
+        $meta = $this->taskMetas;
+        $this->modelDirty = parent::getDirty();
+        $meta->map(function ($item, $key) {
+            if (!empty($item->column))
+                if (!empty($item->column->title))
+                    $this->{$item->column->title} = $item->task_value;
+        });
+        return $this;
+    }
+
+    public function syncMetaWithRequest(): Task
+    {
+        $reqMeta = request()->get('task_metas');
+        foreach ($reqMeta as $metaItem) {
+            if (array_key_exists('column_ref_id', $metaItem)) {
+                $column = Column::query()->find($metaItem['column_ref_id']);
+                if (empty($column)) continue;
+                if ($this->{$column->title} != $metaItem['task_value'])
+                    $this->metaDirty[$column->title] = $metaItem['task_value'];
+                $this->{$column->title} = $metaItem['task_value'];
+            } elseif (!isset($metaItem['delete']) || $metaItem['delete'] == false) {
+                if ($this->{$metaItem['task_key']} != $metaItem['task_value'])
+                    $this->metaDirty[$metaItem['task_key']] = $metaItem['task_value'];
+                $this->{$metaItem['task_key']} = $metaItem['task_value'];
+            }
+        }
+        return $this;
     }
 
     public function setDoneAt()
@@ -166,5 +200,15 @@ class Task extends Model
             }
         }
         return $result->unique();
+    }
+
+    public function getMetaRelation(): string
+    {
+        return 'taskMetas';
+    }
+
+    public function getAllDirty(): array
+    {
+        return array_merge($this->modelDirty, $this->metaDirty);
     }
 }

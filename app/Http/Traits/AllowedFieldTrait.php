@@ -17,6 +17,8 @@ trait AllowedFieldTrait
         'can_create_project_in' => ['name', 'company_ref_id'],
         'can_create_company_in' => ['name']
     ];
+    // field that are being changed during action
+    public static array $dirties = [];
 
     /**
      * @throws AuthorizationException

@@ -97,8 +97,9 @@ class ConditionService
         $to = $args['to'];
         $status = $args['status'] ?? true;
 
-        $fieldValue = $this->model->{$field};
-        $modelBefore = get_class($this->model)::find($this->model->{$this->model->getPrimaryKey()});
+        $modelPersisting = ConditionCheckService::getPersistingModel();
+        $fieldValue = $modelPersisting->{$field};
+        $modelBefore = ConditionCheckService::getExistingModel();
         if (!$modelBefore)
             throw new ModelNotFoundException('موجودیت در هنگام بررسی شرط یافت نشد');
         $fieldValueBefore = $modelBefore->{$field};
@@ -119,12 +120,12 @@ class ConditionService
     protected function requirement(array $args): ?bool
     {
         $field = $args['field'];
-        $was = $args['was'] ?? true;
         $status = $args['status'] ?? true;
         $this->allowedFields[] = $field;
 
-        $modelBefore = get_class($this->model)::find($this->model->{$this->model->getPrimaryKey()});
-        $result = !empty($this->model->{$field}) || !empty($modelBefore->{$field});
+        $modelExisting = ConditionCheckService::getExistingModel();
+        $modelPersisting = ConditionCheckService::getPersistingModel();
+        $result = !empty($modelPersisting->{$field}) || !empty($modelExisting->{$field});
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
             'field' => $field,
         ]);
@@ -137,7 +138,8 @@ class ConditionService
         $field = $args['field'];
         $status = $args['status'];
         $this->allowedFields[] = $field;
-        $result = in_array($field, array_keys($this->model->getDirty()));
+
+        $result = in_array($field, array_keys(ConditionCheckService::$dirties));
         return $status ? $result : !$result;
     }
 
@@ -183,7 +185,7 @@ class ConditionService
         $fields = $args['fields'] ?? $this->allowedFields;
         $status = $args['status'] ?? true;
 
-        if (!array_diff(array_keys($this->model->getDirty()), $fields) && $status)
+        if (!array_diff(array_keys(ConditionCheckService::$dirties), $fields) && $status)
             return true;
         return false;
     }
