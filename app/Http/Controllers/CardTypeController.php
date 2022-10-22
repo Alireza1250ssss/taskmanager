@@ -100,8 +100,16 @@ class CardTypeController extends Controller
      */
     public function destroy($cardType) : JsonResponse
     {
-        $count = CardType::destroy(explode(',',$cardType));
-        $response = $this->getResponse(__('apiResponse.destroy',['items'=>$count]));
+        $deletedCount = 0;
+        foreach (explode(',',$cardType) as $cardTypeID){
+            $cardTypeItem = CardType::query()->find($cardTypeID);
+            if (empty($cardTypeItem)) continue;
+            $count = CardType::query()->where('company_ref_id',$cardTypeItem->company_ref_id)->count();
+            if ($count <= 1 ) continue;
+            $cardTypeItem->delete();
+            $deletedCount++;
+        }
+        $response = $this->getResponse(__('apiResponse.destroy',['items' => $deletedCount]));
         return response()->json($response, $response['statusCode']);
     }
 
