@@ -73,7 +73,11 @@ class EventServiceProvider extends ServiceProvider
             OwnerObserver::class,
             DeleteRelationObserver::class
         ]);
-        Task::observe([BaseObserver::class,TaskLogObserver::class]);
+        Task::observe([
+            BaseObserver::class,
+            TaskLogObserver::class,
+            DeleteRelationObserver::class
+        ]);
         TaskMeta::observe([TaskLogObserver::class]);
         Comment::observe([TaskLogObserver::class]);
         CardType::observe([DeleteRelationObserver::class]);

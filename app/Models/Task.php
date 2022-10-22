@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Contracts\ClearRelations;
 use App\Http\Contracts\WithMeta;
 use App\Http\Traits\FilterRecords;
 use App\Http\Traits\HasMembers;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Task extends Model implements WithMeta
+class Task extends Model implements WithMeta,ClearRelations
 {
     use HasFactory, FilterRecords, SoftDeletes, MainPropertyGetter, MainPropertySetter, HasMembers;
 
@@ -210,5 +211,10 @@ class Task extends Model implements WithMeta
     public function getAllDirty(): array
     {
         return array_merge($this->modelDirty, $this->metaDirty);
+    }
+
+    public function deleteRelations()
+    {
+        $this->taskMetas()->delete();
     }
 }

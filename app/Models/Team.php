@@ -109,6 +109,6 @@ class Team extends Model implements Hierarchy,ClearRelations
 
     public function deleteRelations()
     {
-        $this->tasks()->delete();
+        $this->tasks->delete();
     }
 }
