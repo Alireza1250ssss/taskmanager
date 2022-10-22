@@ -76,13 +76,13 @@ class StoreTaskRequest extends FormRequest
 
             if ($cardTypeField->nullable == false && (empty($metaItem) || empty($metaItem['task_value']))) {
                 $validationErrors[$cardTypeField->name][] = sprintf(
-                    "فیلد %s در تسک متا الزامی است", $cardTypeField->title);
+                    "فیلد %s در الزامی است", $cardTypeField->title);
             }
 
             if (!empty($cardTypeField->enum_values) && !empty($metaItem['task_value']) && !in_array($metaItem['task_value'],$cardTypeField->enum_values)){
 //                Log::channel('dump_debug')->debug(json_encode($metaItem['task_value'])."\n".json_encode($cardTypeField->enum_values));
                 $validationErrors[$cardTypeField->name][] = sprintf(
-                    "فیلد %s در تسک متا مقدار معتبری ندارد", $cardTypeField->title);
+                    "فیلد %s در مقدار معتبری ندارد", $cardTypeField->title);
             }
 
 
