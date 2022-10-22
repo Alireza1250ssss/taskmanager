@@ -60,10 +60,19 @@ class EventServiceProvider extends ServiceProvider
         Company::observe([
             BaseObserver::class,
             OwnerObserver::class,
-            DefaultCardForCompanyObserver::class
+            DefaultCardForCompanyObserver::class,
+            DeleteRelationObserver::class
         ]);
-        Project::observe([BaseObserver::class,OwnerObserver::class]);
-        Team::observe([BaseObserver::class , OwnerObserver::class]);
+        Project::observe([
+            BaseObserver::class,
+            OwnerObserver::class,
+            DeleteRelationObserver::class
+        ]);
+        Team::observe([
+            BaseObserver::class ,
+            OwnerObserver::class,
+            DeleteRelationObserver::class
+        ]);
         Task::observe([BaseObserver::class,TaskLogObserver::class]);
         TaskMeta::observe([TaskLogObserver::class]);
         Comment::observe([TaskLogObserver::class]);

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Contracts\ClearRelations;
 use App\Http\Contracts\Hierarchy;
 use App\Http\Traits\FilterRecords;
 use App\Http\Traits\HasMembers;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Team extends Model implements Hierarchy
+class Team extends Model implements Hierarchy,ClearRelations
 {
     use HasFactory,SoftDeletes,FilterRecords,MainPropertyGetter,MainPropertySetter,HasMembers;
 
@@ -104,5 +105,10 @@ class Team extends Model implements Hierarchy
     public static function getJoinedTeams(int $userID)
     {
 
+    }
+
+    public function deleteRelations()
+    {
+        $this->tasks()->delete();
     }
 }

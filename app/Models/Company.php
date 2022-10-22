@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Contracts\ClearRelations;
 use App\Http\Contracts\Hierarchy;
 use App\Http\Traits\FilterRecords;
 use App\Http\Traits\HasMembers;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Company extends Model implements Hierarchy
+class Company extends Model implements Hierarchy,ClearRelations
 {
     use HasFactory, SoftDeletes, FilterRecords, MainPropertyGetter, MainPropertySetter, HasMembers;
 
@@ -107,5 +108,10 @@ class Company extends Model implements Hierarchy
         elseif ($model instanceof Team)
             $result->push($model->project->company);
         return $result;
+    }
+
+    public function deleteRelations()
+    {
+        $this->projects()->delete();
     }
 }
