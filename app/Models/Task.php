@@ -140,7 +140,7 @@ class Task extends Model implements WithMeta
 
     public function syncMetaWithRequest(): Task
     {
-        $reqMeta = request()->get('task_metas');
+        $reqMeta = request()->get('task_metas',[]);
         foreach ($reqMeta as $metaItem) {
             if (array_key_exists('column_ref_id', $metaItem)) {
                 $column = Column::query()->find($metaItem['column_ref_id']);

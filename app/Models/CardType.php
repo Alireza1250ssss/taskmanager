@@ -44,15 +44,16 @@ class CardType extends Model implements ClearRelations
     public function makeDefaultColumns()
     {
         $this->columns()->createMany([
-            [
-                'name' => 'name', 'title' => 'عنوان', 'type' => 'text', 'nullable' => false, 'show' => true
-                , 'level_type' => 'company', 'level_id' => $this->company_ref_id
-            ],
-            [
-                'name' => 'stage', 'title' => 'مرحله', 'type' => 'dropdown', 'nullable' => false, 'show' => true
-                , 'level_type' => 'company', 'level_id' => $this->company_ref_id ,'default' => 'backlog' ,
-                'enum_values' => ['backlog','todo','doing','done','review']
-            ]
+
+//            [
+//                'name' => 'name', 'title' => 'عنوان', 'type' => 'text', 'nullable' => false, 'show' => true
+//                , 'level_type' => 'company', 'level_id' => $this->company_ref_id
+//            ],
+//            [
+//                'name' => 'stage', 'title' => 'مرحله', 'type' => 'dropdown', 'nullable' => false, 'show' => true
+//                , 'level_type' => 'company', 'level_id' => $this->company_ref_id ,'default' => 'backlog' ,
+//                'enum_values' => ['backlog','todo','doing','done','review']
+//            ]
         ]);
     }
 
