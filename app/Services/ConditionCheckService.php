@@ -33,8 +33,7 @@ class ConditionCheckService
                 $conditionService = new ConditionService($modelItem, $condition->when);
                 $result = $conditionService->checkConditions();
                 $service->allowedFields = array_merge($service->allowedFields,$conditionService->allowedFields);
-//              dd($conditionService->results,$result,$service->access,ConditionService::$messages);
-                Log::channel('dump_debug')->debug(implode(',',ConditionService::$messages));
+              dd($conditionService->results,$result,$service->access,ConditionService::$messages);
                 if ($result === false) continue;
 
                 $service->prepareActions($result, $condition->then);
