@@ -7,6 +7,7 @@ use App\Http\Contracts\WithMeta;
 use App\Http\Traits\AllowedFieldTrait;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class ConditionCheckService
 {
@@ -33,6 +34,7 @@ class ConditionCheckService
                 $result = $conditionService->checkConditions();
                 $service->allowedFields = array_merge($service->allowedFields,$conditionService->allowedFields);
 //              dd($conditionService->results,$result,$service->access,ConditionService::$messages);
+                Log::channel('dump_debug')->debug(implode(',',ConditionService::$messages));
                 if ($result === false) continue;
 
                 $service->prepareActions($result, $condition->then);
