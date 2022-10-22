@@ -86,13 +86,13 @@ class UpdateTaskRequest extends FormRequest
 
             if ($cardTypeField->nullable == false && !empty($metaItem) && is_null($metaItem['task_value'])) {
                 $validationErrors[$cardTypeField->name][] = sprintf(
-                    "فیلد %s در الزامی است", $cardTypeField->title);
+                    "فیلد %s الزامی است", $cardTypeField->title);
             }
 
             if (!empty($cardTypeField->enum_values) && !empty($metaItem['task_value']) && !in_array($metaItem['task_value'], $cardTypeField->enum_values)) {
 //                Log::channel('dump_debug')->debug(json_encode($metaItem['task_value']) . "\n" . json_encode($cardTypeField->enum_values));
                 $validationErrors[$cardTypeField->name][] = sprintf(
-                    "فیلد %s در مقدار معتبری ندارد", $cardTypeField->title);
+                    "فیلد %s مقدار معتبری ندارد", $cardTypeField->title);
             }
 
 
