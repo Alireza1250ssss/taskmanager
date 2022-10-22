@@ -99,6 +99,6 @@ class Project extends Model implements Hierarchy,ClearRelations
 
     public function deleteRelations()
     {
-        $this->teams->delete();
+        Team::destroy($this->teams->pluck('team_id')->toArray());
     }
 }

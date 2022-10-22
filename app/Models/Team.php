@@ -109,6 +109,6 @@ class Team extends Model implements Hierarchy,ClearRelations
 
     public function deleteRelations()
     {
-        $this->tasks->delete();
+        Task::destroy($this->tasks->pluck('task_id')->toArray());
     }
 }

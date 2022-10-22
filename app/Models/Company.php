@@ -112,7 +112,7 @@ class Company extends Model implements Hierarchy,ClearRelations
 
     public function deleteRelations()
     {
-        $this->projects->delete();
+        Project::destroy($this->projects->pluck('project_id')->toArray());
         $this->cardTypes()->delete();
     }
 }
