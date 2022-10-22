@@ -217,4 +217,9 @@ class Task extends Model implements WithMeta,ClearRelations
     {
         $this->taskMetas()->delete();
     }
+
+    public function touchUpdating()
+    {
+        $this->fireModelEvent('updating',$this);
+    }
 }

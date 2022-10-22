@@ -22,6 +22,7 @@ use App\Observers\BaseObserver;
 use App\Observers\CompanyObserver;
 use App\Observers\DefaultCardForCompanyObserver;
 use App\Observers\DeleteRelationObserver;
+use App\Observers\MetaFireEventOnMainModelObserver;
 use App\Observers\OwnerObserver;
 use App\Observers\SetLeaveScheduleObserver;
 use App\Observers\TaskLogObserver;
@@ -78,7 +79,7 @@ class EventServiceProvider extends ServiceProvider
             TaskLogObserver::class,
             DeleteRelationObserver::class
         ]);
-        TaskMeta::observe([TaskLogObserver::class]);
+        TaskMeta::observe([TaskLogObserver::class,MetaFireEventOnMainModelObserver::class]);
         Comment::observe([TaskLogObserver::class]);
         CardType::observe([DeleteRelationObserver::class]);
         Column::observe([DeleteRelationObserver::class]);
