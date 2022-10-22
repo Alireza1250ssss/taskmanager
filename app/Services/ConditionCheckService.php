@@ -33,7 +33,7 @@ class ConditionCheckService
                 $conditionService = new ConditionService($modelItem, $condition->when);
                 $result = $conditionService->checkConditions();
                 $service->allowedFields = array_merge($service->allowedFields,$conditionService->allowedFields);
-//              dd($conditionService->results,$result,$service->access,ConditionService::$messages);
+              dd($conditionService->results,$result,$service->access,ConditionService::$messages,self::getPersistingModel());
                 if ($result === false) continue;
 
 
