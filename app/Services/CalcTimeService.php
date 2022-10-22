@@ -50,9 +50,9 @@ class CalcTimeService
                     'column' => $this->taskLog->column,
                     'after_value' => $this->taskLog->before_value
                 ])->orderBy('created_at','DESC')->first();
-                if (empty($beforeLog)) continue;
+                if (empty($beforeLog) and $this->task->{$field} != $to_value) continue;
                 /** @var Carbon $timeBefore */
-                $timeBefore = $beforeLog->created_at;
+                $timeBefore = !empty($beforeLog) ? $beforeLog->created_at : $this->task->created_at;
 //                Log::channel('dump_debug')->debug("timestamp :  ".$timeBefore->timestamp. " date : ".$timeBefore->toDateTimeString());
 //                Log::channel('dump_debug')->debug("timestamp :  ".$timeAfter->timestamp. " date : ".$timeAfter->toDateTimeString());
 //                Log::channel('dump_debug')->debug("diff in seconds :  " . ($timeBefore->timestamp - $timeAfter->timestamp));

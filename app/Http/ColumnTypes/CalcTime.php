@@ -33,31 +33,31 @@ class CalcTime extends CustomField implements Appendable
     public function extractColumn(array $data): array
     {
         return [
-            'params' => array_filter($data,fn ($key) => in_array($key,['field','from_value','to_value']),ARRAY_FILTER_USE_KEY)
+            'params' => array_filter($data, fn($key) => in_array($key, ['field', 'from_value', 'to_value']), ARRAY_FILTER_USE_KEY),
+            'nullable' => true
         ];
     }
 
-    public function updateOrCreate(int $taskID,$value)
+    public function updateOrCreate(int $taskID, $value)
     {
 
     }
 
-    public function append(Column $calcTimeCol,Task $task,$diff)
+    public function append(Column $calcTimeCol, Task $task, $diff)
     {
         $lastRecord = TaskMeta::query()->where([
             'column_ref_id' => $calcTimeCol->column_id,
             'task_ref_id' => $task->task_id
         ])->first();
-        if (!empty($lastRecord)){
+        if (!empty($lastRecord)) {
             $data = json_decode($lastRecord->task_value);
             $data[] = $diff;
-        }
-        else{
+        } else {
             $data[] = $diff;
         }
         TaskMeta::query()->updateOrCreate(
-            ['column_ref_id' => $calcTimeCol->column_id , 'task_ref_id' => $task->task_id] ,
-            ['task_key' => $calcTimeCol->title , 'task_value' => json_encode($data)]
+            ['column_ref_id' => $calcTimeCol->column_id, 'task_ref_id' => $task->task_id],
+            ['task_key' => $calcTimeCol->title, 'task_value' => json_encode($data)]
         );
     }
 
