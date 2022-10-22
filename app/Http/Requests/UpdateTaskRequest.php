@@ -85,14 +85,12 @@ class UpdateTaskRequest extends FormRequest
             $metaItem = $this->checkoutFieldFromMeta($cardTypeField->column_id);
 
             if ($cardTypeField->nullable == false && !empty($metaItem) && is_null($metaItem['task_value'])) {
-                $validationErrors[$cardTypeField->name][] = sprintf(
-                    "فیلد %s الزامی است", $cardTypeField->title);
+                $validationErrors[$cardTypeField->name][] =  " الزامی است ". $cardTypeField->title." فیلد ";
             }
 
             if (!empty($cardTypeField->enum_values) && !empty($metaItem['task_value']) && !in_array($metaItem['task_value'], $cardTypeField->enum_values)) {
 //                Log::channel('dump_debug')->debug(json_encode($metaItem['task_value']) . "\n" . json_encode($cardTypeField->enum_values));
-                $validationErrors[$cardTypeField->name][] = sprintf(
-                    "فیلد %s مقدار معتبری ندارد", $cardTypeField->title);
+                $validationErrors[$cardTypeField->name][] = " مقدار معتبری ندارد ". $cardTypeField->title." فیلد ";
             }
 
 
