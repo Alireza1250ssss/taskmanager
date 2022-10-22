@@ -105,7 +105,7 @@ class ConditionService
         if (!$modelBefore)
             throw new ModelNotFoundException('موجودیت در هنگام بررسی شرط یافت نشد');
         $fieldValueBefore = $modelBefore->{$field};
-        Log::channel('dump_debug')->debug('jump',['bef'=>$fieldValueBefore , 'af' => $fieldValue]);
+
         if ($fieldValueBefore == $from && $fieldValue == $to)
             $result = true;
         else $result = false;
