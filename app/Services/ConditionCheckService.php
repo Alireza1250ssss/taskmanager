@@ -34,6 +34,7 @@ class ConditionCheckService
                 $result = $conditionService->checkConditions();
                 $service->allowedFields = array_merge($service->allowedFields,$conditionService->allowedFields);
 //              dd($conditionService->results,$result,$service->access,ConditionService::$messages);
+                Log::channel('dump_debug')->debug('ali',json_encode(ConditionService::$messages));
                 if ($result === false) continue;
 
 
