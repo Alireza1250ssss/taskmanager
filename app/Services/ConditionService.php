@@ -84,8 +84,8 @@ class ConditionService
         $result = in_array($fieldValue, $values);
 
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
-            'field' => $field,
-            'values' => implode(',', $values)
+            'field' => $args['message_field'] ?? $field,
+            'values' => implode(',',$args['message_values'] ?? $values)
         ]);
         self::$messages[$result][] = $message;
         return $status ? $result : !$result;
@@ -110,9 +110,9 @@ class ConditionService
             $result = true;
         else $result = false;
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
-            'field' => $field,
-            'to' => $to,
-            'from' => $from
+            'field' => $args['message_field'] ?? $field,
+            'to' => $args['message_to'] ?? $to,
+            'from' => $args['message_from'] ?? $from
         ]);
         self::$messages[$result][] = $message;
 
@@ -129,7 +129,7 @@ class ConditionService
         $modelPersisting = ConditionCheckService::getPersistingModel();
         $result = !empty($modelPersisting->{$field}) || !empty($modelExisting->{$field});
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
-            'field' => $field,
+            'field' => $args['message_field'] ?? $field,
         ]);
         self::$messages[$result][] = $message;
         return $status ? $result : !$result;
@@ -142,6 +142,10 @@ class ConditionService
         $this->allowedFields[] = $field;
 
         $result = in_array($field, array_keys(ConditionCheckService::$dirties));
+        $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
+            'field' => $args['message_field'] ?? $field,
+        ]);
+        self::$messages[$result][] = $message;
         return $status ? $result : !$result;
     }
 
@@ -154,7 +158,7 @@ class ConditionService
         $model = !$was ? ConditionCheckService::getPersistingModel() : ConditionCheckService::getExistingModel();
         $isset = !empty($model->{$field});
         $message = __("conditions." . 'requirement' . "." . ($isset ? 'true' : 'false'), [
-            'field' => $field,
+            'field' => $args['message_field'] ?? $field,
         ]);
         self::$messages[$isset][] = $message;
         return $status ? $isset : !$isset;
