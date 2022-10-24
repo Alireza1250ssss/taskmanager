@@ -158,7 +158,7 @@ class TaskController extends Controller
             'previous_task_order' => 'required|numeric',
             'next_task_order' => 'required|numeric',
         ]);
-        \auth()->user()->authorizeFor('can_reorder_task_in', $task);
+        \auth()->user()->authorizeFor('can_reorder_task_in', $task,true);
         $orderInStage = getFloatBetween($request->get('previous_task_order'), $request->get('next_task_order'));
 
         $task->order = $orderInStage;
