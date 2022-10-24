@@ -29,7 +29,7 @@ class ConditionCheckService
         try {
             $service->prepareToCheck($rolePermission,$modelItem);
 
-            foreach ($service->conditions as $condition) {
+            foreach ($service->conditions as $i =>$condition) {
                 $conditionService = new ConditionService($modelItem, $condition->when);
                 $result = $conditionService->checkConditions();
                 $service->allowedFields = array_merge($service->allowedFields,$conditionService->allowedFields);
@@ -44,8 +44,12 @@ class ConditionCheckService
                 if ($actionService->unlockAccess === true){
                     $service->isAllowed = true;
                     // check for only allowed fields if the access hasn't got unlocked so far
-                    if (!array_diff(array_keys(self::$dirties), $service->allowedFields) && !$service->isOnlyAllowedFields)
+                    if (!array_diff(array_keys(self::$dirties), $service->allowedFields) && !$service->isOnlyAllowedFields) {
                         $service->isOnlyAllowedFields = true;
+                        Log::channel('dump_debug')->debug('access unlocked',[
+                            'index' => $i ,
+                        ]);
+                    }
                 }
             }
 
