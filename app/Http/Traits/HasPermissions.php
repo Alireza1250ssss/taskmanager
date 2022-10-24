@@ -50,9 +50,11 @@ trait HasPermissions
         $accessCheck = $withCondition ?
             $this->canWithConditions($keyPermission,$modelItem) :
             $this->canDo($keyPermission,$modelItem,$userId);
-        if (!$accessCheck)
+        if (!$accessCheck) {
+            if (!empty(ConditionCheckService::$conException))
+                throw ConditionCheckService::$conException;
             throw new AuthorizationException();
-
+        }
     }
 
     public function canWithConditions($keyPermission, $modelItem): bool

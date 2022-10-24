@@ -73,7 +73,9 @@ class ConditionCheckService
 
         static::setExistingModel($modelItem);
         static::setPersistingModel($modelItem);
-        self::$dirties = ($modelItem instanceof WithMeta) ? $modelItem->getAllDirty() : $modelItem->getDirty();
+
+        self::$dirties = ($modelItem instanceof WithMeta) ?
+            self::getPersistingModel()->getAllDirty() : self::getPersistingModel()->getDirty();
 
         $this->mergeAllowedFieldForPermission($rolePermission->key);
     }

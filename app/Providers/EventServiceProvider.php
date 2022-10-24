@@ -75,7 +75,7 @@ class EventServiceProvider extends ServiceProvider
             DeleteRelationObserver::class
         ]);
         Task::observe([
-            BaseObserver::class,
+            TaskObserver::class,
             TaskLogObserver::class,
             DeleteRelationObserver::class
         ]);
