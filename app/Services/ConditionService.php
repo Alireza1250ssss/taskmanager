@@ -82,13 +82,13 @@ class ConditionService
         $fieldValue = $model->{$field};
 
         $result = in_array($fieldValue, $values);
-
+        $returningResult = $status ? $result : !$result;
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
             'field' => $args['message_field'] ?? $field,
             'values' => implode(',',$args['message_values'] ?? $values)
         ]);
-        self::$messages[$result][] = $message;
-        return $status ? $result : !$result;
+        self::$messages[$returningResult][] = $message;
+        return $returningResult;
     }
 
     protected function jump(array $args): bool
@@ -109,14 +109,15 @@ class ConditionService
         if ($fieldValueBefore == $from && $fieldValue == $to)
             $result = true;
         else $result = false;
+        $returningResult = $status ? $result : !$result;
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
             'field' => $args['message_field'] ?? $field,
             'to' => $args['message_to'] ?? $to,
             'from' => $args['message_from'] ?? $from
         ]);
-        self::$messages[$result][] = $message;
+        self::$messages[$returningResult][] = $message;
 
-        return $status ? $result : !$result;
+        return $returningResult;
     }
 
     protected function requirement(array $args): ?bool
@@ -128,11 +129,13 @@ class ConditionService
         $modelExisting = ConditionCheckService::getExistingModel();
         $modelPersisting = ConditionCheckService::getPersistingModel();
         $result = !empty($modelPersisting->{$field}) || !empty($modelExisting->{$field});
+        $returningResult = $status ? $result : !$result;
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
             'field' => $args['message_field'] ?? $field,
         ]);
-        self::$messages[$result][] = $message;
-        return $status ? $result : !$result;
+        self::$messages[$returningResult][] = $message;
+
+        return $returningResult;
     }
 
     protected function edit(array $args): bool
@@ -142,11 +145,12 @@ class ConditionService
         $this->allowedFields[] = $field;
 
         $result = in_array($field, array_keys(ConditionCheckService::$dirties));
+        $returningResult = $status ? $result : !$result;
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
             'field' => $args['message_field'] ?? $field,
         ]);
-        self::$messages[$result][] = $message;
-        return $status ? $result : !$result;
+        self::$messages[$returningResult][] = $message;
+        return $returningResult;
     }
 
     protected function set(array $args): bool
@@ -157,11 +161,13 @@ class ConditionService
         $this->allowedFields[] = $field;
         $model = !$was ? ConditionCheckService::getPersistingModel() : ConditionCheckService::getExistingModel();
         $isset = !empty($model->{$field});
+        $returningResult = $status ? $isset : !$isset;
         $message = __("conditions." . 'requirement' . "." . ($isset ? 'true' : 'false'), [
             'field' => $args['message_field'] ?? $field,
         ]);
-        self::$messages[$isset][] = $message;
-        return $status ? $isset : !$isset;
+        self::$messages[$returningResult][] = $message;
+
+        return $returningResult;
     }
 
     protected function clientIn(array $args) : bool
@@ -176,11 +182,13 @@ class ConditionService
         $result = false;
         if (in_array($requestClient,$clientType))
             $result = true;
+        $returningResult = $status ? $result : !$result;
         $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'), [
             'client' => implode(',',$clientType),
         ]);
-        self::$messages[$result][] = $message;
-        return $status ? $result : !$result;
+        self::$messages[$returningResult][] = $message;
+
+        return $returningResult;
     }
 
     protected function boolean(array $args)
