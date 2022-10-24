@@ -27,12 +27,12 @@ class ConditionCheckService
         $service = new static();
 
         try {
-            $service->prepareToCheck($rolePermission,$modelItem);
+            $service->prepareToCheck($rolePermission, $modelItem);
 
-            foreach ($service->conditions as $i =>$condition) {
+            foreach ($service->conditions as $i => $condition) {
+                $service->allowedFields = [];
                 $conditionService = new ConditionService($modelItem, $condition->when);
                 $result = $conditionService->checkConditions();
-                $service->allowedFields = array_merge($service->allowedFields,$conditionService->allowedFields);
 //              dd($conditionService->results,$result,$service->access,ConditionService::$messages,self::getPersistingModel());
                 if ($result === false) continue;
 
@@ -40,20 +40,21 @@ class ConditionCheckService
                 $service->prepareActions($result, $condition->then);
                 $actionService = new ActionsService($condition->then, $service, $modelItem);
                 $actionService->callActions();
-                $service->allowedFields = array_merge($service->allowedFields,$actionService->allowedFields);
-                if ($actionService->unlockAccess === true){
+                $service->allowedFields = array_merge($service->allowedFields, $actionService->allowedFields);
+                if ($actionService->unlockAccess === true) {
                     $service->isAllowed = true;
                     // check for only allowed fields if the access hasn't got unlocked so far
                     if (!array_diff(array_keys(self::$dirties), $service->allowedFields) && !$service->isOnlyAllowedFields) {
                         $service->isOnlyAllowedFields = true;
-                        Log::channel('dump_debug')->debug('access unlocked',[
-                            'index' => $i ,
+                        Log::channel('dump_debug')->debug('access unlocked', [
+                            'index' => $i,
+                            'condition_item'=> json_encode($rolePermission)
                         ]);
                     }
                 }
             }
 
-            if ($service->access === 'reject'){
+            if ($service->access === 'reject') {
                 $service->checkRejectWasAllowed();
                 $service->CheckOnlyForReject();
             }
@@ -65,7 +66,7 @@ class ConditionCheckService
         return true;
     }
 
-    protected function prepareToCheck($rolePermission,$modelItem)
+    protected function prepareToCheck($rolePermission, $modelItem)
     {
         $this->access = $rolePermission->pivot->access;
         if (empty($rolePermission->pivot->condition_params) && $this->access === 'reject') {
