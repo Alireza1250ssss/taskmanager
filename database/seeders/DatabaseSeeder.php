@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
 //            LeaveSeeder::class,
             StageSeeder::class ,
             StatusSeeder::class ,
-//            TaskSeeder::class ,
+            ClientSeeder::class
 //            CommentSeeder::class ,
         ]);
     }

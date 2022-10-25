@@ -71,6 +71,7 @@ Route::middleware(['jwt_auth'])->group(function(){
        return response()->json(config('condition-methods-routes'));
     });
 
+
     Route::get('/notifications',[AccountController::class ,'getNotifications'])->name('get-notifications');
     Route::delete('/notifications',[AccountController::class , 'deleteNotifications'])->name('delete-notifications');
     Route::put('/notifications/mark-as-read',[AccountController::class , 'markAsRead'])->name('mark-as-read-notifications');
@@ -83,6 +84,8 @@ Route::middleware(['jwt_auth'])->group(function(){
 
     Route::apiResource('tasks.comments', CommentController::class)->shallow();
     Route::apiResource('tasks.taskLogs', TaskLogController::class)->only(['index'])->shallow();
+    Route::post('tasks/{task}/taskLogs/stage',[TaskLogController::class,'changeStageManual'])
+        ->middleware('client:desktop');
 
     Route::apiResource('stages', StageController::class)->only(['index']);
     Route::apiResource('statuses', StatusController::class)->only(['index']);
