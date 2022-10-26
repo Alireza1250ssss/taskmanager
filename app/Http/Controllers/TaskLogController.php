@@ -21,6 +21,7 @@ class TaskLogController extends Controller
     {
         $response = $this->getResponse(__('apiResponse.index',['resource'=>'تسک لاگ']),[
             TaskLog::getRecords($request->toArray())->addConstraints(function ($query)use($task){
+                $query->with('user');
                 $query->where('task_id',$task->task_id);
             })->get()
         ]);
