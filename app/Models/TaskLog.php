@@ -30,7 +30,7 @@ class TaskLog extends Model
     }
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class,'user_ref_id')->select(['user_id','username']);
+        return $this->belongsTo(User::class,'user_ref_id')->select(['user_id','username','first_name','last_name']);
     }
 
     public static function stageChangeLog(Task $task, UpdateTaskRequest $request)
