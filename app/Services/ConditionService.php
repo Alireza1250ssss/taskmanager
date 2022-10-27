@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Log;
 
 class ConditionService
@@ -206,5 +207,19 @@ class ConditionService
         return false;
     }
 
+    protected function belongsToAuthUser(array $args = []): ?bool
+    {
+        $relation = 'user';
+        $status = $args['status'] ?? true;
+        $modelPersisting = ConditionCheckService::getPersistingModel();
+        if (!$modelPersisting->isRelation($relation) || !($modelPersisting->$relation() instanceof BelongsTo))
+            return null;
+        $relationInstance = $modelPersisting->$relation;
+        $result = (!is_null($relationInstance) && $relationInstance->is(auth()->user()));
+        $returningResult = $status ? $result : !$result;
+        $message = __("conditions." . __FUNCTION__ . "." . ($result ? 'true' : 'false'));
+        self::$messages[$returningResult][] = $message;
 
+        return $returningResult;
+    }
 }

@@ -129,4 +129,11 @@ class ConditionCheckRule implements Rule
           'client_type' => 'required|array'
         ];
     }
+
+    protected function belongsToAuthUser(): array
+    {
+        return [
+          'status' => 'boolean'
+        ];
+    }
 }
