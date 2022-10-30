@@ -20,7 +20,7 @@ trait FilterRecords
         $result = $model->orderBy($filters['order_by'] ?? $model->primaryKey, $filters['order_mode'] ?? 'DESC');
         if (isset($filters['with_trashed']) && $filters['with_trashed'] == true)
             $result->withTrashed();
-        $modelFilters = array_filter($filters, fn($key) => in_array($key, $model->filters), ARRAY_FILTER_USE_KEY);
+        $modelFilters = array_filter($filters, fn($key) => in_array(Str::before($key, '_or'), $model->filters), ARRAY_FILTER_USE_KEY);
         static::doQuery($result, $modelFilters);
 
         $relations = static::getModelRelations();
@@ -63,20 +63,39 @@ trait FilterRecords
     public static function doQuery(&$queryHandler, $filters, bool $forRelations = false)
     {
         foreach ($filters as $field => $value) {
-            if (Str::startsWith($field, 'max_'))
-                $queryHandler->where(explode('max_', $field)[1], $forRelations ? ">=" : '<=', $value);
-            elseif (Str::startsWith($field, 'min'))
-                $queryHandler->where(explode('min_', $field)[1], $forRelations ? "<=" : '>=', $value);
-            elseif (Str::startsWith('in_', $field)) {
-                if ($forRelations)
-                    $queryHandler->whereNotIn(explode('in_', $field)[1], explode(",", $value));
-                else
-                    $queryHandler->whereIn(explode('in_', $field)[1], explode(",", $value));
+            if (Str::startsWith($field, 'max_')) {
+                Str::endsWith($field, '_or') ?
+                    $queryHandler->orWhere(Str::between($field, 'max_', '_or'), $forRelations ? ">=" : '<=', $value)
+                    :
+                    $queryHandler->where(explode('max_', $field)[1], $forRelations ? ">=" : '<=', $value);
+            } elseif (Str::startsWith($field, 'min')) {
+                Str::endsWith($field, '_or') ?
+                    $queryHandler->orWhere(Str::between($field, 'min_', '_or'), $forRelations ? "<=" : '>=', $value)
+                    :
+                    $queryHandler->where(explode('min_', $field)[1], $forRelations ? "<=" : '>=', $value);
+            } elseif (Str::startsWith('in_', $field)) {
+                if ($forRelations) {
+                    Str::endsWith($field, '_or') ?
+                        $queryHandler->orWhereNotIn(Str::between($field, 'in_', '_or'), explode(",", $value))
+                        :
+                        $queryHandler->whereNotIn(explode('in_', $field)[1], explode(",", $value));
+                } else {
+                    Str::endsWith($field, '_or') ?
+                        $queryHandler->orWhereIn(Str::between($field, 'in_', '_or'), explode(",", $value))
+                        :
+                        $queryHandler->whereIn(explode('in_', $field)[1], explode(",", $value));
+                }
+            } elseif (Str::endsWith($field, 'ref_id')) {
+                Str::endsWith($field, '_or') ?
+                    $queryHandler->orWhere(Str::before($field, '_or'), $forRelations ? '!=' : '=', $value)
+                    :
+                    $queryHandler->where($field, $forRelations ? '!=' : '=', $value);
+            } else {
+                Str::endsWith($field, '_or') ?
+                    $queryHandler->orWhere(Str::before($field,'_or'), $forRelations ? "not like" : 'like', "%$value%")
+                    :
+                    $queryHandler->where($field, $forRelations ? "not like" : 'like', "%$value%");
             }
-            elseif (Str::endsWith($field,'ref_id'))
-                $queryHandler->where($field,$forRelations ? '!=' : '=',$value);
-            else
-                $queryHandler->where($field, $forRelations ? "not like" : 'like', "%$value%");
         }
     }
 
@@ -106,7 +125,7 @@ trait FilterRecords
      */
     public function get(): LengthAwarePaginator
     {
-        return $this->queryHandler->paginate($this->requestFilters['limit'] ?? env('DEFAULT_PAGINATION',30));
+        return $this->queryHandler->paginate($this->requestFilters['limit'] ?? env('DEFAULT_PAGINATION', 30));
     }
 
     /**

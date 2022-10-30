@@ -30,7 +30,8 @@ class TaskController extends Controller
                     $q->orWhereIn('task_id',auth()->user()->tasksJoined->pluck('task_id')->toArray());
                 });
             }
-                $query->withCount('comments');
+            TaskMeta::filterMetaForQuery($request->all(), $query);
+            $query->withCount('comments');
         })->get();
         cleanCollection($tasks);
         foreach ($tasks as &$task) {

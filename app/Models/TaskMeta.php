@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class TaskMeta extends Model
 {
@@ -52,5 +53,23 @@ class TaskMeta extends Model
     {
         TaskMeta::query()->where('task_ref_id', $task->task_id)->where('task_key', $metaItem['task_key'])
             ->whereNull('column_ref_id')->delete();
+    }
+
+    public static function filterMetaForQuery(array $filters,&$queryHandler)
+    {
+        foreach ($filters as $field => $val){
+            if (!Str::startsWith($field,'m-')) continue;
+            $columnID = Str::between($field,'m-','_or');
+            Str::endsWith($field,'_or') ?
+                $queryHandler->orWhereIn('task_id',function($subQuery) use($columnID,$val){
+                   $subQuery->select('task_ref_id')->from('task_metas')
+                       ->where('column_ref_id',$columnID)->where('task_value','like',"%$val%");
+                })
+                :
+                $queryHandler->whereIn('task_id',function($subQuery) use($columnID,$val){
+                    $subQuery->select('task_ref_id')->from('task_metas')
+                        ->where('column_ref_id',$columnID)->where('task_value','like',"%$val%");
+                });
+        }
     }
 }
