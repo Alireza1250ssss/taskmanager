@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Http\Contracts\ClearRelations;
 use App\Http\Contracts\WithMeta;
 use App\Http\Traits\FilterRecords;
+use App\Http\Traits\HasAttachments;
 use App\Http\Traits\HasMembers;
 use App\Http\Traits\MainPropertyGetter;
 use App\Http\Traits\MainPropertySetter;
@@ -19,7 +20,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Task extends Model implements WithMeta,ClearRelations
 {
-    use HasFactory, FilterRecords, SoftDeletes, MainPropertyGetter, MainPropertySetter, HasMembers;
+    use HasFactory, FilterRecords, SoftDeletes, MainPropertyGetter, MainPropertySetter;
+    use HasMembers,HasAttachments;
 
     protected $primaryKey = 'task_id';
     protected $fillable = [

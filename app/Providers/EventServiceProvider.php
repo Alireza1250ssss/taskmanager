@@ -8,6 +8,7 @@ use App\Events\PermissionAdded;
 use App\Listeners\CheckRetrieveModel;
 use App\Listeners\SetCommitMessage;
 use App\Listeners\SetParentsReadPermission;
+use App\Models\Attachment;
 use App\Models\CardType;
 use App\Models\Column;
 use App\Models\Comment;
@@ -83,6 +84,7 @@ class EventServiceProvider extends ServiceProvider
         Comment::observe([TaskLogObserver::class]);
         CardType::observe([DeleteRelationObserver::class]);
         Column::observe([DeleteRelationObserver::class]);
+        Attachment::observe([DeleteRelationObserver::class]);
 //        User::observe([BaseObserver::class]); !!!!!!!!!!!!!!!!!!!!! DO NOT UNCOMMENT THIS !!!!!!!!!!!!!
 
     }

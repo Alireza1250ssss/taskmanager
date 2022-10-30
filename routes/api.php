@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Attachment\AttachmentController;
+use App\Http\Controllers\Attachment\TaskAttachmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CommentController;
@@ -82,6 +84,9 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::get('/get-member/{model}/{modelId}',[AccountController::class,'getMembers'])->name('get-members');
 
 
+    Route::apiResource('attachments', AttachmentController::class)->only(['show']);
+    Route::apiResource('tasks.attachments', TaskAttachmentController::class)->only(['index','store'])->shallow();
+    Route::delete('attachments',[AttachmentController::class,'destroy'])->name('attachments.destroy');
     Route::apiResource('tasks.comments', CommentController::class)->shallow();
     Route::apiResource('tasks.taskLogs', TaskLogController::class)->only(['index'])->shallow();
     Route::post('tasks/{task}/taskLogs/stage',[TaskLogController::class,'changeStageManual'])
