@@ -24,7 +24,7 @@ class BaseObserver
     public static ?User $user;
     public static array $cachedPermissions = [];
     public bool $noAuth = false;
-    public array $userRoles = [];
+    public static array $userRoles = [];
     public array $models = [
         Company::class => "company",
         Project::class => "project",
@@ -45,9 +45,10 @@ class BaseObserver
                 // set cache time to a week
                 $timeToStore = 60 * 60 * 24 * 7;
                 $keyCache = 'user-' . $user->user_id . '-roles';
-                $this->userRoles = Cache::remember($keyCache, $timeToStore, function () use ($user) {
-                    return $user->roles->pluck('role_id')->toArray();
-                });
+                if (empty(self::$userRoles))
+                    self::$userRoles = Cache::remember($keyCache, $timeToStore, function () use ($user) {
+                        return $user->roles->pluck('role_id')->toArray();
+                    });
             } else
                 $this->noAuth = true;
         } catch (\Exception $e) {
@@ -72,7 +73,7 @@ class BaseObserver
             $parent = RoleController::getParentModel($modelItem);
             while ($parent) {
                 $parent->unsetRelation('members');
-                if (!empty($parent->getAttributes()) && Role::hasAnyRoleOn($parent,auth()->user()->user_id)) {
+                if (!empty($parent->getAttributes()) && Role::hasAnyRoleOn($parent, auth()->user()->user_id)) {
                     $isAllowedByParents = true;
                     break;
                 }
@@ -232,7 +233,7 @@ class BaseObserver
                 $condition = Role::find($rolePermission->role_ref_id)->permissions()
                     ->where('key', $keyPermission)->first();
                 // check for conditions on that role
-                if (!ConditionCheckService::checkForConditions($condition,$modelItem))
+                if (!ConditionCheckService::checkForConditions($condition, $modelItem))
                     continue;
 
                 return true;

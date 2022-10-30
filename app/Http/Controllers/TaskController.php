@@ -7,7 +7,6 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use App\Models\TaskMeta;
-use App\Models\Team;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,17 +21,20 @@ class TaskController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $tasks = Task::getRecords($request->toArray())->addConstraints(function ($query) use ($request) {
-            $query->with('watchers');
-            if (!$request->filled('team_ref_id')) {
-                $query->where(function ($q){
-                    $q->whereIn('team_ref_id', Task::getAvailableTeams(auth()->user()->user_id)->pluck('team_id')->toArray());
-                    $q->orWhereIn('task_id',auth()->user()->tasksJoined->pluck('task_id')->toArray());
-                });
-            }
-            TaskMeta::filterMetaForQuery($request->all(), $query);
-            $query->withCount('comments');
-        })->get();
+        $tasks = Task::withoutEvents(function () use ($request){
+            return Task::getRecords($request->toArray())->addConstraints(function ($query) use ($request) {
+                $query->with(['watchers', 'taskMetas.column','members']);
+                if (!$request->filled('team_ref_id')) {
+                    $query->where(function ($q) {
+                        $q->whereIn('team_ref_id', Task::getAvailableTeams(auth()->user()->user_id)->pluck('team_id')->toArray());
+                        $q->orWhereIn('task_id', auth()->user()->tasksJoined->pluck('task_id')->toArray());
+                    });
+                }
+                TaskMeta::filterMetaForQuery($request->all(), $query);
+                $query->withCount('comments');
+            })->get();
+        });
+        accessViewFilter($tasks);
         cleanCollection($tasks);
         foreach ($tasks as &$task) {
             $task->mergeMeta('taskMetas');
@@ -159,7 +161,7 @@ class TaskController extends Controller
             'previous_task_order' => 'required|numeric',
             'next_task_order' => 'required|numeric',
         ]);
-        \auth()->user()->authorizeFor('can_reorder_task_in', $task,true);
+        \auth()->user()->authorizeFor('can_reorder_task_in', $task, true);
         $orderInStage = getFloatBetween($request->get('previous_task_order'), $request->get('next_task_order'));
 
         $task->order = $orderInStage;

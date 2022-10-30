@@ -222,4 +222,9 @@ class Task extends Model implements WithMeta,ClearRelations
     {
         $this->fireModelEvent('updating',$this);
     }
+
+    public function touchRetrieved()
+    {
+        $this->fireModelEvent('retrieved',$this);
+    }
 }
