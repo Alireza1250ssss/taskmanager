@@ -16,8 +16,9 @@ class CalcTime extends CustomField implements Appendable
     {
         return [
             'type_args.field' => 'required',
-            'type_args.from_value' => 'required',
-            'type_args.to_value' => 'required',
+            'type_args.events' => 'required|filled',
+            'type_args.events.*.to_value' => 'required',
+            'type_args.events.*.from_value' => 'required',
         ];
     }
 
@@ -25,7 +26,7 @@ class CalcTime extends CustomField implements Appendable
     {
         return [
             'type_args.field' => 'فیلد مورد نظر',
-            'type_args.from_value' => 'مقدار شروع',
+            'type_args.events' => 'رویداد ها',
             'type_args.to_value' => 'مقدار پایان'
         ];
     }
@@ -33,7 +34,7 @@ class CalcTime extends CustomField implements Appendable
     public function extractColumn(array $data): array
     {
         return [
-            'params' => array_filter($data, fn($key) => in_array($key, ['field', 'from_value', 'to_value']), ARRAY_FILTER_USE_KEY),
+            'params' => array_filter($data, fn($key) => in_array($key, ['field', 'events']), ARRAY_FILTER_USE_KEY),
             'nullable' => true
         ];
     }

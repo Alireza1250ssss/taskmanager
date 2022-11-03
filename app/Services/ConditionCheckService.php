@@ -46,10 +46,10 @@ class ConditionCheckService
                     // check for only allowed fields if the access hasn't got unlocked so far
                     if (!array_diff(array_keys(self::$dirties), $service->allowedFields) && !$service->isOnlyAllowedFields) {
                         $service->isOnlyAllowedFields = true;
-                        Log::channel('dump_debug')->debug('access unlocked', [
-                            'index' => $i,
-                            'condition_item'=> json_encode($rolePermission)
-                        ]);
+//                        Log::channel('dump_debug')->debug('access unlocked', [
+//                            'index' => $i,
+//                            'condition_item'=> json_encode($rolePermission)
+//                        ]);
                     }
                 }
             }

@@ -41,24 +41,27 @@ class CalcTimeService
     {
         if (empty(self::$calcTimeCols)) return;
         foreach (self::$calcTimeCols as $calcTimeCol){
-            ['field' => $field , 'from_value' => $from_value , 'to_value'=> $to_value] = $calcTimeCol->params;
-            if ($this->taskLog->column == $field && $this->taskLog->before_value == $from_value && $this->taskLog->after_value == $to_value){
-                /** @var Carbon $timeAfter */
-                $timeAfter = $this->taskLog->created_at;
-                $beforeLog = TaskLog::query()->where([
-                    'task_id' => $this->taskLog->task_id,
-                    'column' => $this->taskLog->column,
-                    'after_value' => $this->taskLog->before_value
-                ])->orderBy('created_at','DESC')->first();
-                if (empty($beforeLog) and $this->task->{$field} != $to_value) continue;
-                /** @var Carbon $timeBefore */
-                $timeBefore = !empty($beforeLog) ? $beforeLog->created_at : $this->task->created_at;
-//                Log::channel('dump_debug')->debug("timestamp :  ".$timeBefore->timestamp. " date : ".$timeBefore->toDateTimeString());
-//                Log::channel('dump_debug')->debug("timestamp :  ".$timeAfter->timestamp. " date : ".$timeAfter->toDateTimeString());
-//                Log::channel('dump_debug')->debug("diff in seconds :  " . ($timeBefore->timestamp - $timeAfter->timestamp));
-                $diff = $timeBefore->diffInRealMinutes($timeAfter);
+            ['field' => $field ,'events' => $events] = $calcTimeCol->params;
+            foreach ($events as $event) {
+                ['from_value' => $from_value , 'to_value' => $to_value] = $event;
+                if ($this->taskLog->column == $field && $this->taskLog->before_value == $from_value && $this->taskLog->after_value == $to_value) {
+                    /** @var Carbon $timeAfter */
+                    $timeAfter = $this->taskLog->created_at;
+                    $beforeLog = TaskLog::query()->where([
+                        'task_id' => $this->taskLog->task_id,
+                        'column' => $this->taskLog->column,
+                        'after_value' => $this->taskLog->before_value
+                    ])->orderBy('created_at', 'DESC')->first();
+                    if (empty($beforeLog) and $this->task->{$field} != $to_value) continue;
+                    /** @var Carbon $timeBefore */
+                    $timeBefore = !empty($beforeLog) ? $beforeLog->created_at : $this->task->created_at;
+                    //                Log::channel('dump_debug')->debug("timestamp :  ".$timeBefore->timestamp. " date : ".$timeBefore->toDateTimeString());
+                    //                Log::channel('dump_debug')->debug("timestamp :  ".$timeAfter->timestamp. " date : ".$timeAfter->toDateTimeString());
+                    //                Log::channel('dump_debug')->debug("diff in seconds :  " . ($timeBefore->timestamp - $timeAfter->timestamp));
+                    $diff = $timeBefore->diffInRealMinutes($timeAfter);
 
-                $this->fieldType->append($calcTimeCol,$this->task,$diff);
+                    $this->fieldType->append($calcTimeCol, $this->task, $diff);
+                }
             }
         }
     }
