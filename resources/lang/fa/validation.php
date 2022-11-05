@@ -219,5 +219,6 @@ return [
         'type_args' => 'پارامتر های تایپ',
         'team_ref_id' => 'تیم مربوطه',
         'github_access_token' => 'توکن گیتهاب',
+        'column_preference' => 'شخصی سازی ستونها',
     ],
 ];

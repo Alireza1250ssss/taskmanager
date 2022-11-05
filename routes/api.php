@@ -10,6 +10,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\CardTypeController;
+use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResolvePermissionController;
 use App\Http\Controllers\RoleController;
@@ -84,6 +85,7 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::get('/get-member/{model}/{modelId}',[AccountController::class,'getMembers'])->name('get-members');
 
 
+    Route::apiResource('preferences', PreferenceController::class)->only(['store','index']);
     Route::apiResource('attachments', AttachmentController::class)->only(['show']);
     Route::apiResource('tasks.attachments', TaskAttachmentController::class)->only(['index','store'])->shallow();
     Route::post('attachments/delete',[AttachmentController::class,'destroy'])->name('attachments.destroy');

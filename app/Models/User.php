@@ -200,6 +200,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Leave::class, 'user_ref_id');
     }
 
+    public function preferences(): HasMany
+    {
+        return $this->hasMany(Preference::class,'user_ref_id');
+    }
+
 
     /**
      * @return Attribute
