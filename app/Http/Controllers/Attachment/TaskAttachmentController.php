@@ -26,6 +26,7 @@ class TaskAttachmentController extends AttachmentController
                     'attachable_type' => get_class($task),
                     'attachable_id' => $task->task_id
                 ]);
+                $query->with('user');
             })->get()
         ]);
         return response()->json($response,$response['statusCode']);

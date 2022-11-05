@@ -29,7 +29,8 @@ class Attachment extends Model implements ClearRelations
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_ref_id');
+        return $this->belongsTo(User::class, 'user_ref_id')
+            ->select(['user_id','username','first_name','last_name']);
     }
 
     /**
