@@ -86,7 +86,7 @@ Route::middleware(['jwt_auth'])->group(function(){
 
     Route::apiResource('attachments', AttachmentController::class)->only(['show']);
     Route::apiResource('tasks.attachments', TaskAttachmentController::class)->only(['index','store'])->shallow();
-    Route::delete('attachments',[AttachmentController::class,'destroy'])->name('attachments.destroy');
+    Route::post('attachments/delete',[AttachmentController::class,'destroy'])->name('attachments.destroy');
     Route::apiResource('tasks.comments', CommentController::class)->shallow();
     Route::apiResource('tasks.taskLogs', TaskLogController::class)->only(['index'])->shallow();
     Route::post('tasks/{task}/taskLogs/stage',[TaskLogController::class,'changeStageManual'])
