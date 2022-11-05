@@ -24,7 +24,7 @@ class Team extends Model implements Hierarchy,ClearRelations
     protected $primaryKey = 'team_id';
     protected $fillable = ['name','project_ref_id','sprint_start_date','sprint_period','git_repo'];
     public array $filters = ['name','project_ref_id','sprint_start_date','sprint_period'];
-    protected $hidden = ['created_at','updated_at','deleted_at'];
+    protected $hidden = ['created_at','updated_at','deleted_at','github_access_token'];
 
     /**
      * @return BelongsTo

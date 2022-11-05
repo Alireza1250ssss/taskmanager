@@ -95,31 +95,5 @@ class ProjectController extends Controller
         return response()->json($response, $response['statusCode']);
     }
 
-    /**
-     * @param Project $project
-     * @param UserAssignViewRequest $request
-     * @return JsonResponse
-     */
-    public function addAssign(Project $project, UserAssignViewRequest $request): JsonResponse
-    {
 
-        $entityToGive = Entity::query()->where([
-            'key' => Project::class,
-            'model_id' => $project->project_id,
-            'action' => 'read'
-        ])->firstOrFail();
-
-        if ($request->filled('users'))
-            foreach ($request->get('users') as $user) {
-                $user = User::query()->where('email',$user)->first();
-                if (!empty($user))
-                    $user->entities()->syncWithoutDetaching($entityToGive->entity_id);
-            }
-
-        $response = $this->getResponse(__('apiResponse.add-viewer'),[
-            'project' => $project
-        ]);
-        return response()->json($response, $response['statusCode']);
-
-    }
 }

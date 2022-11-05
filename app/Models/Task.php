@@ -18,10 +18,10 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Task extends Model implements WithMeta,ClearRelations
+class Task extends Model implements WithMeta, ClearRelations
 {
     use HasFactory, FilterRecords, SoftDeletes, MainPropertyGetter, MainPropertySetter;
-    use HasMembers,HasAttachments;
+    use HasMembers, HasAttachments;
 
     protected $primaryKey = 'task_id';
     protected $fillable = [
@@ -38,8 +38,8 @@ class Task extends Model implements WithMeta,ClearRelations
         'done_at' => 'datetime', 'reviewed_at' => 'datetime'
     ];
 
-    public array $metaDirty  = [] ;
-    public array $modelDirty = [] ;
+    public array $metaDirty = [];
+    public array $modelDirty = [];
 
     /**
      * @return BelongsTo
@@ -121,11 +121,14 @@ class Task extends Model implements WithMeta,ClearRelations
         $meta = $this->$relationship;
 
         $meta->map(function ($item, $key) {
-            $this->setAttribute("m-" . $item->column_ref_id, [
-                'meta' => true,
-                'value' => $item->task_value,
-                'column' => $item->column
-            ]);
+            if (!empty($item->column_ref_id))
+                $this->setAttribute("m-" . $item->column_ref_id, [
+                    'meta' => true,
+                    'value' => $item->task_value,
+                    'column' => $item->column
+                ]);
+            else
+                $this->setAttribute($item->task_key,$item->task_value);
         });
     }
 
@@ -143,7 +146,7 @@ class Task extends Model implements WithMeta,ClearRelations
 
     public function syncMetaWithRequest(): Task
     {
-        $reqMeta = request()->get('task_metas',[]);
+        $reqMeta = request()->get('task_metas', []);
         foreach ($reqMeta as $metaItem) {
             if (array_key_exists('column_ref_id', $metaItem)) {
                 $column = Column::query()->find($metaItem['column_ref_id']);
@@ -222,11 +225,11 @@ class Task extends Model implements WithMeta,ClearRelations
 
     public function touchUpdating()
     {
-        $this->fireModelEvent('updating',$this);
+        $this->fireModelEvent('updating', $this);
     }
 
     public function touchRetrieved()
     {
-        $this->fireModelEvent('retrieved',$this);
+        $this->fireModelEvent('retrieved', $this);
     }
 }

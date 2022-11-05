@@ -14,7 +14,7 @@ class TaskLogObserver
     {
         if ($model instanceof Task) {
             $this->addTaskCreationLog($model);
-        } elseif ($model instanceof TaskMeta) {
+        } elseif ($model instanceof TaskMeta && !empty($model->column_ref_id)) {
             $this->addMetaCreationLog($model);
         }
         elseif (($model instanceof Comment) && $model->commentable_type == Task::class){
@@ -35,7 +35,7 @@ class TaskLogObserver
                 if (CalcTimeService::hasCalcTimeField($task))
                     (new CalcTimeService($task,$log))->calculate();
             }
-        } elseif ($task instanceof TaskMeta) {
+        } elseif ($task instanceof TaskMeta && !empty($model->column_ref_id)) {
             $changes = $task->getChanges();
             $fieldTitle = $task->column->title;
             unset($changes['updated_at']);

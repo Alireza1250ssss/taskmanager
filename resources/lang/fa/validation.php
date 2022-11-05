@@ -218,5 +218,6 @@ return [
         'card_type_ref_id' => 'تایپ کارد',
         'type_args' => 'پارامتر های تایپ',
         'team_ref_id' => 'تیم مربوطه',
+        'github_access_token' => 'توکن گیتهاب',
     ],
 ];

@@ -99,31 +99,4 @@ class CompanyController extends Controller
         return response()->json($response, $response['statusCode']);
     }
 
-    /**
-     * add viewer permission to a company
-     * @param Company $company
-     * @param UserAssignViewRequest $request
-     * @return JsonResponse
-     */
-    public function addAssign(Company $company, UserAssignViewRequest $request): JsonResponse
-    {
-
-        $entityToGive = Entity::query()->where([
-            'key' => Company::class,
-            'model_id' => $company->company_id,
-            'action' => 'read'
-        ])->firstOrFail();
-
-        if ($request->filled('users'))
-            foreach ($request->get('users') as $user) {
-                $user = User::query()->where('email',$user)->first();
-                if (!empty($user))
-                    $user->entities()->syncWithoutDetaching($entityToGive->entity_id);
-            }
-
-        $response = $this->getResponse(__('apiResponse.add-viewer'),[
-            'company' => $company
-        ]);
-        return response()->json($response,$response['statusCode']);
-    }
 }

@@ -95,9 +95,6 @@ Route::middleware(['jwt_auth'])->group(function(){
     Route::apiResource('stages', StageController::class)->only(['index']);
     Route::apiResource('statuses', StatusController::class)->only(['index']);
     Route::get('permissions',[RoleController::class , 'getPermissions'])->name('permissions.index');
-    Route::put('/companies/{company}/assign',[CompanyController::class,'addAssign'])->name('companies.add-viewer');
-    Route::put('/projects/{project}/assign',[ProjectController::class,'addAssign'])->name('projects.add-viewer');
-    Route::put('/teams/{team}/assign',[TeamController::class,'addAssign'])->name('teams.add-viewer');
     Route::get('/tasks/take/{task}',[TaskController::class , 'takeTask'])->name('tasks.take-task');
     Route::put('/tasks/{task}/change-order',[TaskController::class , 'taskReorder'])->name('tasks.reorder');
 
@@ -111,6 +108,8 @@ Route::middleware(['jwt_auth'])->group(function(){
         ->where('model', '(company)|(project)|(team)|(task)');
     Route::get('/cardTypes/available',[CardTypeController::class , 'getAvailableCardTypes'])->name('cardTypes.available');
     Route::get('/cardTypes/{cardType}/teams/{team}/columns',[CardTypeController::class , 'getCardTypeColumns'])->name('cardTypes.columns');
+    Route::post('teams/{team}/set-access-token',[TeamController::class,'setGithubAccessToken'])->name('teams.set-access-token');
+
 
     Route::apiResources([
         'companies' => CompanyController::class ,

@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTeamRequest;
 use App\Http\Requests\UpdateTeamRequest;
 use App\Http\Requests\UserAssignViewRequest;
+use App\Models\Company;
 use App\Models\Entity;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 
 class TeamController extends Controller
@@ -48,6 +50,28 @@ class TeamController extends Controller
         $response = $this->getResponse(__('apiResponse.store',['resource'=>'تیم']), [
             'team' => $team->load('project.company')
         ]);
+        return response()->json($response, $response['statusCode']);
+    }
+
+    /**
+     * @param Request $request
+     * @param Team $team
+     * @return JsonResponse
+     * @throws ValidationException
+     */
+    public function setGithubAccessToken(Request $request,Team $team): JsonResponse
+    {
+        $request->validate([
+           'github_access_token' => 'required'
+        ]);
+        if (!Company::isCompanyOwner($team->project->company,auth()->user()->user_id))
+            throw ValidationException::withMessages(['team' => __('apiResponse.not-company-owner')]);
+        $team->github_access_token = $request->get('github_access_token');
+        $team->save();
+        $response = $this->getResponse(__('apiResponse.update',['resource'=>'توکن گیتهاب تیم']), [
+            'team' => $team->makeVisible('github_access_token')->refresh()
+        ]);
+
         return response()->json($response, $response['statusCode']);
     }
 
@@ -100,30 +124,5 @@ class TeamController extends Controller
         return response()->json($response, $response['statusCode']);
     }
 
-    /**
-     * @param Team $team
-     * @param UserAssignViewRequest $request
-     * @return JsonResponse
-     */
-    public function addAssign(Team $team,UserAssignViewRequest $request): JsonResponse
-    {
 
-        $entityToGive = Entity::query()->where([
-            'key' => Team::class,
-            'model_id' => $team->team_id,
-            'action' => 'read'
-        ])->firstOrFail();
-
-        if ($request->filled('users'))
-            foreach ($request->get('users') as $user) {
-                $user = User::query()->where('email',$user)->first();
-                if (!empty($user))
-                    $user->entities()->syncWithoutDetaching($entityToGive->entity_id);
-            }
-
-        $response = $this->getResponse(__('apiResponse.add-viewer'),[
-            'team' => $team
-        ]);
-        return response()->json($response, $response['statusCode']);
-    }
 }

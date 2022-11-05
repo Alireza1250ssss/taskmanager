@@ -16,10 +16,11 @@ class SetCommitMessage
      */
     public function handle(CommitIDSentEvent $event)
     {
-        if (empty($commitId = $event->task->commit_id) || empty($githubRepo = $event->task->team->git_repo))
+        if (empty($commitId = $event->task->commit_id) || empty($githubRepo = $event->task->team->git_repo)
+            || empty($accessToken = $event->task->team->github_access_token))
             return;
 
-        $commitMessage = $this->getCommitMessage($commitId, $githubRepo);
+        $commitMessage = $this->getCommitMessage($commitId, $githubRepo,$accessToken);
         if (!empty($commitMessage))
             $event->task->taskMetas()->create([
                 'task_key' => 'commit_message',
@@ -27,12 +28,14 @@ class SetCommitMessage
             ]);
     }
 
-    protected function getCommitMessage($commitId, $GithubRepo)
+    protected function getCommitMessage($commitId, $GithubRepo,string $accessToken)
     {
         try {
-            $githubRepoName = explode('/', $GithubRepo);
-            $githubRepoName = array_pop($githubRepoName);
-            return Http::navaxGithub()->get('/' . $githubRepoName . '/commits/' . $commitId)
+            $githubAddressInfo = explode('/', $GithubRepo);
+            $githubRepoName = array_pop($githubAddressInfo);
+            $githubUserName = array_pop($githubAddressInfo);
+
+            return Http::github($githubUserName,$githubRepoName,$accessToken)->get('/commits/' . $commitId)
                 ->throw()->json()['commit']['message'];
         } catch (\Exception $e) {
             return null;

@@ -31,9 +31,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         // setting macro for github Authorization token and base uri (to be used in getting commit message)
-        Http::macro('navaxGithub' , function (){
-            return Http::withToken(env('GITHUB_ACCESS_TOKEN'))
-                ->baseUrl('https://api.github.com/repos/'.env('GITHUB_USERNAME'));
+        Http::macro('github' , function ($userName,$repoName,$accessToken){
+            return Http::withToken($accessToken)
+                ->baseUrl("https://api.github.com/repos/{$userName}/{$repoName}");
         });
     }
 }
