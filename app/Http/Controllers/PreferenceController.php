@@ -22,7 +22,7 @@ class PreferenceController extends Controller
         $request->validate([
            'column_preference' => 'required|array'
         ]);
-        $preference = auth()->user()->preferences()->create([
+        $preference = auth()->user()->preferences()->updateOrCreate([],[
             'column_preference' => $request->get('column_preference',[])
         ]);
         $response = $this->getResponse(__('apiResponse.store',['resource'=>'شخصی سازی']), [
