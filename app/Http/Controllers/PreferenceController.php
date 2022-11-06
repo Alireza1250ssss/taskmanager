@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Preference;
+use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -39,8 +40,12 @@ class PreferenceController extends Controller
      */
     public function index(Request $request) : JsonResponse
     {
+        $preferences = auth()->user()->preferences->isNotEmpty() ? auth()->user()->preferences :
+            auth()->user()->preferences()->create([
+               'column_preference' => array_fill_keys((new Task())->getFillable(),true)
+            ]);
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'شخصی سازی']), [
-            'preference' => auth()->user()->preferences
+            'preference' => $preferences
         ]);
         return response()->json($response, $response['statusCode']);
     }
