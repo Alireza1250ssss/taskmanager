@@ -42,7 +42,7 @@ class PreferenceController extends Controller
     {
         $preferences = auth()->user()->preferences->isNotEmpty() ? auth()->user()->preferences :
             auth()->user()->preferences()->create([
-               'column_preference' => array_fill_keys((new Task())->getFillable(),true)
+               'column_preference' => array_fill_keys(array_merge((new Task())->getFillable(),['comments']),true)
             ]);
         $response = $this->getResponse(__('apiResponse.show',['resource'=>'شخصی سازی']), [
             'preference' => $preferences
