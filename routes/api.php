@@ -86,6 +86,7 @@ Route::middleware(['jwt_auth'])->group(function(){
 
 
     Route::apiResource('preferences', PreferenceController::class)->only(['store','index']);
+    Route::delete('preferences', [PreferenceController::class,'destroy'])->name('preferences.destroy');
     Route::apiResource('attachments', AttachmentController::class)->only(['show']);
     Route::apiResource('tasks.attachments', TaskAttachmentController::class)->only(['index','store'])->shallow();
     Route::post('attachments/delete',[AttachmentController::class,'destroy'])->name('attachments.destroy');

@@ -50,4 +50,10 @@ class PreferenceController extends Controller
         return response()->json($response, $response['statusCode']);
     }
 
+    public function destroy(Request $request): JsonResponse
+    {
+        $count = auth()->user()->preferences()->delete();
+        $response = $this->getResponse(__('apiResponse.destroy',['items'=>$count]));
+        return response()->json($response, $response['statusCode']);
+    }
 }
