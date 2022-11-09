@@ -62,7 +62,7 @@ class TaskController extends Controller
             $task->watchers()->sync($request->get('watchers'));
         $task->mergeMeta('taskMetas');
 
-        Log::channel('dump_channel')->debug('time debug',[
+        Log::channel('dump_debug')->debug('time debug',[
             'time_zone' => date_default_timezone_get() , 'locale' => app()->getLocale()
         ]);
 
