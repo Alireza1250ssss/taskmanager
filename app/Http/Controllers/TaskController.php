@@ -10,7 +10,6 @@ use App\Models\TaskMeta;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -61,11 +60,6 @@ class TaskController extends Controller
         if ($request->filled('watchers'))
             $task->watchers()->sync($request->get('watchers'));
         $task->mergeMeta('taskMetas');
-
-        Log::channel('dump_debug')->debug('time debug',[
-            'time_zone' => date_default_timezone_get() , 'locale' => app()->getLocale()
-        ]);
-
         $response = $this->getResponse(__('apiResponse.store', ['resource' => 'تسک']), [
             'task' => $task->load('team', 'stage', 'status', 'watchers')
         ]);
