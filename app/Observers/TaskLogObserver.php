@@ -47,6 +47,16 @@ class TaskLogObserver
         }
     }
 
+    public function deleted($task)
+    {
+        if ($task instanceof Task){
+            $this->addTaskDeleteLog($task);
+        }elseif ($task instanceof TaskMeta){
+            $fieldTitle = empty($task->column_ref_id) ? $task->task_key : $task->column->title ;
+            $this->addTaskMetaDeleteLog($task,$fieldTitle);
+        }
+    }
+
     /**
      * @param Task $task
      * @return TaskLog
@@ -143,6 +153,34 @@ class TaskLogObserver
             'description' => "field $fieldTitle changed from $before to $after value",
             'before_value' => $before,
             'after_value' => $after
+        ]);
+        return $log;
+    }
+
+    /**
+     * @param Task $task
+     * @return TaskLog
+     */
+    protected function addTaskDeleteLog(Task $task): TaskLog
+    {
+        /** @var TaskLog $log */
+        $log = TaskLog::query()->create([
+            'task_id' => $task->task_id,
+            'action' => 'delete',
+            'description' => "task deleted successfully by  " . auth()->user()->full_name,
+            'user_ref_id' => auth()->user()->user_id
+        ]);
+        return $log;
+    }
+
+    protected function addTaskMetaDeleteLog(TaskMeta $taskMeta,$fieldTitle): TaskLog
+    {
+        /** @var TaskLog $log */
+        $log = TaskLog::query()->create([
+            'task_id' => $taskMeta->task_ref_id,
+            'action' => 'delete',
+            'description' => "field $fieldTitle deleted successfully by  " . auth()->user()->full_name,
+            'user_ref_id' => auth()->user()->user_id
         ]);
         return $log;
     }
